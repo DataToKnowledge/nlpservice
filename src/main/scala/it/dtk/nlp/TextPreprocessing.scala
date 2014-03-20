@@ -51,9 +51,12 @@ object TextPreprocessing {
   }
 
   /**
+   * in order call getSentences for each sentence remove html tags and transform the sentence into words
    * @param document
    * @return given a document as text return its representation as sequence of sentences of words
    */
   def apply(document: String): Document = 
     Document(getSentences(document).map(removeHtmlTags(_)).map(s => Sentence(getTokens(s))))
+  
+    
 }
