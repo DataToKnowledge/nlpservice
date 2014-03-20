@@ -4,7 +4,7 @@ package it.dtk.nlp
  * @author Andrea Scarpino <me@andreascarpino.it>
  */
 
-case class Word(token: String, postTag: String, lemma: String, stem: String)
+case class Word(token: String, postTag: Option[String] = None, lemma: Option[String] = None, stem: Option[String] = None)
 
 case class Sentence(words: Seq[Word])
 
