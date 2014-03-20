@@ -1,7 +1,7 @@
 package it.dtk.nlp
 
 /**
- * @author Andrea Scarpino <me@andreascarpino.it>
+ * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
 
 case class Word(token: String, postTag: Option[String] = None, lemma: Option[String] = None, stem: Option[String] = None)
