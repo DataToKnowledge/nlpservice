@@ -18,9 +18,7 @@ class TreeTaggerSpec extends BaseTestClass {
 
         val results = treeTagger.tag(words)
 
-        results.foreach(
-          x => x.postTag.getClass should be(classOf[Some[String]])
-        )
+        results foreach (_.posTag shouldBe a [Some[String]])
       }
     }
   }
