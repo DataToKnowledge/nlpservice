@@ -6,7 +6,7 @@ package it.dtk
  * Date: 20/03/14
  * Time: 10:12
  */
-class Main {
+object Main {
   def main (args: Array[String]) {
     println("Welcome to Hell, Dude! }:-D")
   }
