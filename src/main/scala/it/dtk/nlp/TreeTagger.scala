@@ -1,7 +1,11 @@
 package it.dtk.nlp
 
-import org.annolab.tt4j.{TokenHandler, TreeTaggerWrapper}
+import org.annolab.tt4j.{TreeTaggerException, TokenHandler, TreeTaggerWrapper}
 import scala.collection.mutable
+import scala.concurrent.{Promise, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+import java.io.IOException
+import scala.util.{Failure, Success}
 
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
@@ -31,7 +35,9 @@ class TreeTagger {
 
   import TreeTagger._
 
-  def tag(tokens: Array[String]) = {
+  def tag(token: String): Future[Word] = {
+    val p = Promise[Word]()
+
     val tags: mutable.Buffer[Word] = mutable.ArrayBuffer()
 
     treeTagger.setHandler(new TokenHandler[String] {
@@ -40,9 +46,31 @@ class TreeTagger {
       }
     })
 
-    treeTagger.process(tokens)
+    try {
+      treeTagger.process(Array(token))
+      p success tags.head
+    } catch {
+      case ex: IOException => p failure ex
+      case ex: TreeTaggerException => p failure ex
+    }
 
-    tags
+    p.future
+  }
+
+  def tag(tokens: Array[String]): Future[mutable.Buffer[Word]] = {
+    val p = Promise[mutable.Buffer[Word]]()
+
+    val tags: mutable.Buffer[Word] = mutable.ArrayBuffer()
+
+    tokens.foreach(x =>
+      tag(x) onComplete {
+        case Success(t) => tags += t
+        case Failure(ex) => p failure ex
+      }
+    )
+    p success tags
+
+    p.future
   }
 
 }
