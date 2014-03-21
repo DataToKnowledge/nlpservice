@@ -1,7 +1,7 @@
 package it.dtk.nlp
 import scala.language.postfixOps
 
-object TextPreprocessingSpec {
+object TextPreprocessorSpec {
   val docWithHtml = """
 Madonnella, aperta la seconda metà della piazza. Ma i lavori non riprenderanno
 Nessuna falsa partenza. Alle prime ore di stamattina i tecnici dell’impresa incaricata della riqualificazione di piazza Madonnella hanno ripreso i lavori. Dopo nove mesi di stop, per residenti e commercianti della zona è ora di tirare un sospiro di sollievo.
@@ -27,25 +27,25 @@ Annuncio promozionale
   val sentenceWithTab = "Madonnella,		 aperta la seconda metà 		della piazza."
 }
 
-class TextPreprocessingSpec extends BaseTestClass {
+class TextPreprocessorSpec extends BaseTestClass {
 
-  import TextPreprocessingSpec._
+  import TextPreprocessorSpec._
 
   "The TextPreprocessing" when {
     "is called the method removeHtmlTasg" should {
       "correctly remove html tags" in {
-        val result = TextPreprocessing.removeHtmlTags(docWithHtml)
+        val result = TextPreprocessor.removeHtmlTags(docWithHtml)
         result should be(expectedDocNoHtml)
       }
 
       "do not modify a correct document" in {
-        TextPreprocessing.removeHtmlTags(expectedDocNoHtml) should be(expectedDocNoHtml)
+        TextPreprocessor.removeHtmlTags(expectedDocNoHtml) should be(expectedDocNoHtml)
       }
     }
 
     "is called the method get sentence" should {
       "correctly split a document into sentences" in {
-        val res = TextPreprocessing.getSentences(expectedDocNoHtml)
+        val res = TextPreprocessor.getSentences(expectedDocNoHtml)
         //todo this is only for output printing
         //val str = res.mkString("\n")
         //println(str)
@@ -53,31 +53,31 @@ class TextPreprocessingSpec extends BaseTestClass {
       }
 
       "return an empty sequence for an empty string" in {
-        val res = TextPreprocessing.getSentences("")
+        val res = TextPreprocessor.getSentences("")
         res should have size 0
       }
 
       "return a sentence for a document containing only a sentence" in {
-        val res = TextPreprocessing.getSentences(oneSentenceDocument)
+        val res = TextPreprocessor.getSentences(oneSentenceDocument)
         res should have size 1
       }
     }
 
     "is called the method get Words" should {
       "for a sentence with 9 words should return 9 words" in {
-        val res = TextPreprocessing.getTokens(nineWordsSentence)
+        val res = TextPreprocessor.getTokens(nineWordsSentence)
         res should have size 9
       }
 
       "for a sentence with 9 words and tabs should return 9 words" in {
-        val res = TextPreprocessing.getTokens(nineWordsSentence)
+        val res = TextPreprocessor.getTokens(nineWordsSentence)
         res should have size 9
       }
     }
     
     "is called the method TextPreprocessing" should {
       "return a document with sentences and words" in {
-        val res = TextPreprocessing(expectedDocNoHtml)
+        val res = TextPreprocessor(expectedDocNoHtml)
         res.sentences.size should be > 0
         for (sentence <- res.sentences){
           sentence.words.size should be > 0

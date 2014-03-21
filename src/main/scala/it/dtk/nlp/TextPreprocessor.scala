@@ -1,10 +1,9 @@
 package it.dtk.nlp
 
-import java.text.BreakIterator
 import java.util.Locale
 import java.text.BreakIterator
 
-object TextPreprocessing {
+object TextPreprocessor {
 
   /**
    * @param text
