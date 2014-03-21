@@ -19,6 +19,7 @@ object TreeTagger {
       throw new Throwable("Operating system is not supported")
     }
   }
+  Runtime.getRuntime.exec("chmod 755 " + treeTaggerPath + "/bin/tree-tagger")
 
   System.setProperty("treetagger.home", treeTaggerPath)
 
