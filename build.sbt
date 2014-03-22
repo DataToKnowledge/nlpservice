@@ -22,6 +22,6 @@ libraryDependencies ++= Seq(
   "org.annolab.tt4j" % "org.annolab.tt4j" % "1.1.2",
   "org.reactivemongo" %% "reactivemongo" % "0.10.0",
   "ch.qos.logback" % "logback-classic" % "1.1.1",
-  "org.scalatest" % "scalatest_2.10" % "2.0" % "test",
+  "org.scalatest" % "scalatest_2.10" % "2.1.2" % "test",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test"
 )
