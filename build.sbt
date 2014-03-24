@@ -23,5 +23,6 @@ libraryDependencies ++= Seq(
   "org.reactivemongo" %% "reactivemongo" % "0.10.0",
   "ch.qos.logback" % "logback-classic" % "1.1.1",
   "org.scalatest" % "scalatest_2.10" % "2.1.2" % "test",
-  "org.scalacheck" %% "scalacheck" % "1.11.3" % "test"
+  "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
+  "com.github.nscala-time" %% "nscala-time" % "0.8.0"
 )
