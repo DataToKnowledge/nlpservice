@@ -46,9 +46,15 @@ class Lemmatizer(host: String, database: String) {
   import Lemmatizer._
 
   val connection = driver.connection(List(host))
-  val db = connection(database)
-  val lemmas = db[BSONCollection]("lemmas")
+  val db = connection.db(database)
+  val lemmas:BSONCollection = db.collection("lemmas")
 
+  /**
+   * Lemmatiza a given token using morph-it
+   *
+   * @param word input token
+   * @return its lemma
+   */
   def getLemma(word: String): Future[Option[String]] = {
     val query = BSONDocument("word" -> word)
     val filter = BSONDocument("_id" -> 0, "word" -> 0, "lemma" -> 1, "features" -> 0)
@@ -56,6 +62,12 @@ class Lemmatizer(host: String, database: String) {
     lemmas.find(query, filter).cursor[Lemma].headOption.map(_.get.lemma)
   }
 
+  /**
+   * Convenience method to lemmatize a Word
+   *
+   * @param word
+   * @return
+   */
   def getLemma(word: Word): Future[Word] = {
     val f = getLemma(word.token)
     val p = Promise[Word]()

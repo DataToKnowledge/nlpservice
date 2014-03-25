@@ -1,7 +1,5 @@
 package it.dtk.nlp
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
@@ -18,8 +16,10 @@ class LemmatizerSpec extends BaseTestClass {
           "in", "manette", "finisce", "anche", "la", "convivente", "dello", "zio", "dei", "due", "fratellini",
           "scampati", "all'agguato", ".")
 
-        words.foreach(
-          x => lemmatizer.getLemma(x).map(_ shouldBe a [Some[String]])
+        val results = words.map(lemmatizer.getLemma)
+
+        results.foreach(
+          _ shouldBe a [Some[String]]
         )
       }
     }
