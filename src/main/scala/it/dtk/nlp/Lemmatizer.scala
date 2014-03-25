@@ -1,53 +1,16 @@
 package it.dtk.nlp
 
-import reactivemongo.api.MongoDriver
-import reactivemongo.api.collections.default.BSONCollection
-import reactivemongo.bson.{BSONDocumentWriter, BSONDocumentReader, BSONObjectID, BSONDocument}
-import scala.concurrent.{Promise, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
+import com.mongodb.casbah.MongoClient
+import com.mongodb.casbah.commons.MongoDBObject
 
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
-object Lemmatizer {
-
-  val driver = new MongoDriver
-
-}
-
-case class Lemma(id: Option[BSONObjectID] = None, word: Option[String], lemma: Option[String], features: Option[String])
-
-object Lemma {
-
-  implicit object LemmaBSONReader extends BSONDocumentReader[Lemma] {
-    def read(doc: BSONDocument): Lemma = {
-      Lemma(
-        doc.getAs[BSONObjectID]("_id"),
-        doc.getAs[String]("word"),
-        doc.getAs[String]("lemma"),
-        doc.getAs[String]("features")
-      )
-    }
-  }
-
-  implicit object LemmaBSONWriter extends BSONDocumentWriter[Lemma] {
-    def write(lemma: Lemma): BSONDocument = BSONDocument(
-      "word" -> lemma.word,
-      "lemma" -> lemma.lemma,
-      "features" -> lemma.features
-    )
-  }
-
-}
-
 class Lemmatizer(host: String, database: String) {
 
-  import Lemmatizer._
-
-  val connection = driver.connection(List(host))
-  val db = connection.db(database)
-  val lemmas:BSONCollection = db.collection("lemmas")
+  val mongoClient = MongoClient(host, 27017)
+  val db = mongoClient(database)
+  val lemmas = db("lemmas")
 
   /**
    * Lemmatiza a given token using morph-it
@@ -55,11 +18,11 @@ class Lemmatizer(host: String, database: String) {
    * @param word input token
    * @return its lemma
    */
-  def getLemma(word: String): Future[Option[String]] = {
-    val query = BSONDocument("word" -> word)
-    val filter = BSONDocument("_id" -> 0, "word" -> 0, "lemma" -> 1, "features" -> 0)
-
-    lemmas.find(query, filter).cursor[Lemma].headOption.map(_.get.lemma)
+  def lemma(word: String): Option[String] = {
+    lemmas.findOne(MongoDBObject( "word" -> word )) match {
+      case Some(res) => Some(res.get("lemma").asInstanceOf[String])
+      case None => None
+    }
   }
 
   /**
@@ -68,18 +31,8 @@ class Lemmatizer(host: String, database: String) {
    * @param word
    * @return
    */
-  def getLemma(word: Word): Future[Word] = {
-    val f = getLemma(word.token)
-    val p = Promise[Word]()
-
-    f onComplete {
-      case Success(l) =>
-        p success word.copy(lemma = l)
-      case Failure(ex) =>
-        p failure ex
-    }
-
-    p.future
+  def lemma(word: Word): Word = {
+    word.copy(lemma = lemma(word.token))
   }
 
 }

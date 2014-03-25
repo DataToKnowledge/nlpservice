@@ -12,11 +12,9 @@ class LemmatizerSpec extends BaseTestClass {
     "lemmatize a word" should {
 
       "return the lemma for each word" in {
-        val words = Array("Maxi", "blitz", "contro", "i", "trafficanti", "di", "droga", "nel", "Tarantino",
-          "in", "manette", "finisce", "anche", "la", "convivente", "dello", "zio", "dei", "due", "fratellini",
-          "scampati", "all'agguato", ".")
+        val words = Array("finisce", "scampati", "rivisto", "mangiato", "dormito")
 
-        val results = words.map(lemmatizer.getLemma)
+        val results = words.map(lemmatizer.lemma)
 
         results.foreach(
           _ shouldBe a [Some[String]]
