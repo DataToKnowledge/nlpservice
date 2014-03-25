@@ -21,6 +21,7 @@ libraryDependencies ++= Seq(
 //  "com.typesafe.akka" %% "akka-cluster" % "2.2.4",
   "org.annolab.tt4j" % "org.annolab.tt4j" % "1.1.2",
   "org.reactivemongo" %% "reactivemongo" % "0.10.0",
+  "com.github.rholder" % "snowball-stemmer" % "1.3.0.581.1",
   "ch.qos.logback" % "logback-classic" % "1.1.1",
   "org.scalatest" % "scalatest_2.10" % "2.1.2" % "test",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
