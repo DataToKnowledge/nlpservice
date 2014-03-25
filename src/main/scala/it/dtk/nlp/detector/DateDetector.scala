@@ -4,6 +4,7 @@ import it.dtk.nlp.Word
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.net.URL
+import org.slf4j.LoggerFactory
 
 /**
  * Implements recognition of date entities
@@ -38,6 +39,8 @@ object DateDetector {
   /* Regular expression to match full dates */
   val FULL_DATE_R = COMPACT_DATE_R + "|((" + DAY_OF_WEEK_R + "(,)?\\s+)?" + DATE_R + ")"
 
+  val log = LoggerFactory.getLogger("DateDetector")
+
   def detect(words: Seq[Word]): Vector[String] = {
     // TODO: Set token type to Date (Will we have a token type, right?)
     var w = words
@@ -48,7 +51,7 @@ object DateDetector {
 
       if (dateR.isDefined) {
         val date = w.slice(dateR.get.head, dateR.get.last + 1).map(word => word.token).mkString(sep = " ")
-        println(s"Found date: $date")
+        log.info(s"Found date: $date")
         results :+= date
         w = w.drop(dateR.get.last + 1)
       } else {
@@ -78,13 +81,13 @@ object DateDetector {
 
       // Validate tokens
       if (!isValidDay(day)) {
-        System.err.println(s"Unable to validate day: $day (token: $dateToken)")
+        log.debug(s"Unable to validate day: $day (token: $dateToken)")
         return None
       } else if (!isValidMonth(month)) {
-        System.err.println(s"Unable to validate month: $month (token: $dateToken)")
+        log.debug(s"Unable to validate month: $month (token: $dateToken)")
         return None
       } else if (!isValidYear(year)) {
-        System.err.println(s"Unable to validate year: $year (token: $dateToken)")
+        log.debug(s"Unable to validate year: $year (token: $dateToken)")
         return None
       }
 
@@ -109,13 +112,13 @@ object DateDetector {
 
       // Validate tokens
       if (!isValidDay(day)) {
-        System.err.println(s"Unable to validate day: $day (token: $dateToken)")
+        log.debug(s"Unable to validate day: $day (token: $dateToken)")
         return None
       } else if (!isValidMonth(month)) {
-        System.err.println(s"Unable to validate month: $month (token: $dateToken)")
+        log.debug(s"Unable to validate month: $month (token: $dateToken)")
         return None
       } else if (!isValidYear(year)) {
-        System.err.println(s"Unable to validate year: $year (token: $dateToken)")
+        log.debug(s"Unable to validate year: $year (token: $dateToken)")
         return None
       }
 
@@ -142,13 +145,13 @@ object DateDetector {
 
       // Validate tokens
       if (!isValidDay(day)) {
-        System.err.println(s"Unable to validate day: $day (token: $dateToken)")
+        log.debug(s"Unable to validate day: $day (token: $dateToken)")
         return None
       } else if (!isValidMonth(month)) {
-        System.err.println(s"Unable to validate month: $month (token: $dateToken)")
+        log.debug(s"Unable to validate month: $month (token: $dateToken)")
         return None
       } else if (!isValidYear(year)) {
-        System.err.println(s"Unable to validate year: $year (token: $dateToken)")
+        log.debug(s"Unable to validate year: $year (token: $dateToken)")
         return None
       }
 
@@ -160,7 +163,7 @@ object DateDetector {
 
       Some(DateTime.parse(day + "/" + toCompactMonth(month).get + "/" + pYear, DateTimeFormat.forPattern(dateFormat)))
     } else {
-      System.err.println(s"Unable to match date token: $dateToken")
+      log.error(s"Unable to match date token: $dateToken")
       None
     }
   }
@@ -182,13 +185,13 @@ object DateDetector {
 
       // Validate tokens
       if (!isValidDay(day)) {
-        System.err.println(s"Unable to validate day: $day (URL: $url)")
+        log.debug(s"Unable to validate day: $day (URL: $url)")
         return None
       } else if (!isValidMonth(month)) {
-        System.err.println(s"Unable to validate month: $month (URL: $url)")
+        log.debug(s"Unable to validate month: $month (URL: $url)")
         return None
       } else if (!isValidYear(year)) {
-        System.err.println(s"Unable to validate year: $year (URL: $url)")
+        log.debug(s"Unable to validate year: $year (URL: $url)")
         return None
       }
 
@@ -205,13 +208,13 @@ object DateDetector {
 
       // Validate tokens
       if (!isValidDay(day)) {
-        System.err.println(s"Unable to validate day: $day (URL: $url)")
+        log.debug(s"Unable to validate day: $day (URL: $url)")
         return None
       } else if (!isValidMonth(month)) {
-        System.err.println(s"Unable to validate month: $month (URL: $url)")
+        log.debug(s"Unable to validate month: $month (URL: $url)")
         return None
       } else if (!isValidYear(year)) {
-        System.err.println(s"Unable to validate year: $year (URL: $url)")
+        log.debug(s"Unable to validate year: $year (URL: $url)")
         return None
       }
 
