@@ -2,7 +2,13 @@ package it.dtk.nlp
 
 object LemmatizerSpec {
 
-  val words = Array("finisce", "scampati", "rivisto", "mangiato", "dormito")
+  val words = Vector(
+    ("finisce", "finire"),
+    ("scampati", "scampare"),
+    ("rivisto", "rivisto"),
+    ("mangiato", "mangiare"),
+    ("dormito", "dormire")
+  )
 
 }
 
@@ -19,13 +25,11 @@ class LemmatizerSpec extends BaseTestClass {
 
     "lemmatize a word" should {
 
-      "return the lemma for each word" in {
-
-        val results = words.map(lemmatizer.lemma)
-
-        results.foreach(
-          _ shouldBe a [Some[String]]
-        )
+      words.foreach {
+        w =>
+          s"return the corrent lemma for '${w._1}'" in {
+            lemmatizer.lemma(w._1) should be(w._2)
+          }
       }
     }
   }

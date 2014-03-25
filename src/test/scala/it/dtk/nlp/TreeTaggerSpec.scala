@@ -2,9 +2,18 @@ package it.dtk.nlp
 
 object TreeTaggerSpec {
 
-  val words = Array("Maxi", "blitz", "contro", "i", "trafficanti", "di", "droga", "nel", "Tarantino",
-    "in", "manette", "finisce", "anche", "la", "convivente", "dello", "zio", "dei", "due", "fratellini",
-    "scampati", "all'agguato", ".")
+  val words = Vector(
+    ("Maxi", "NOM"),
+    ("blitz", "NOM"),
+    ("contro", "ADV"),
+    ("i", "DET:def"),
+    ("trafficanti", "NOM"),
+    ("di", "PRE"),
+    ("droga", "NOM"),
+    ("nel", "PRE:det"),
+    ("Tarantino", "NOM"),
+    (".", "SENT")
+  )
 
 }
 
@@ -21,15 +30,15 @@ class TreeTaggerSpec extends BaseTestClass {
 
     "tags a sequence of words" should {
 
-      "return the posTag for each word" in {
-
-        val results = words.map(treeTagger.tag)
-
-        results.foreach(
-          _.posTag shouldBe a [Some[String]]
-        )
+      words.foreach {
+        w =>
+          s"return the corrent posTag for '${w._1}'" in {
+            treeTagger.tag(w._1).posTag.get should be(w._2)
+          }
       }
+
     }
+
   }
 
 }

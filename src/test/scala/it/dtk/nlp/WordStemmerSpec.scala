@@ -1,9 +1,23 @@
 package it.dtk.nlp
 
+object WordStemmerSpec {
+
+  val words = Vector(
+    ("rapinare", "rapin"),
+    ("rubare", "rub"),
+    ("aggredire", "aggred"),
+    ("assassinare", "assassin"),
+    ("stuprare", "stupr")
+  )
+
+}
+
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
 class WordStemmerSpec extends BaseTestClass {
+
+  import WordStemmerSpec._
 
   "A WordStemmer" when {
 
@@ -11,10 +25,11 @@ class WordStemmerSpec extends BaseTestClass {
 
     "stems a token" should {
 
-      "return the stemmed token" in {
-        val rapin = stemmer.stem("rapinare")
-
-        assert(rapin === "rapin")
+      words.foreach {
+        w =>
+          s"return the corrent token for '${w._1}'" in {
+            stemmer.stem(w._1) should be(w._2)
+          }
       }
 
     }
