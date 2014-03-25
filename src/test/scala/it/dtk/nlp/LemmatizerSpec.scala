@@ -1,9 +1,17 @@
 package it.dtk.nlp
 
+object LemmatizerSpec {
+
+  val words = Array("finisce", "scampati", "rivisto", "mangiato", "dormito")
+
+}
+
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
 class LemmatizerSpec extends BaseTestClass {
+
+  import LemmatizerSpec._
 
   "A Lemmatizer" when {
 
@@ -12,7 +20,6 @@ class LemmatizerSpec extends BaseTestClass {
     "lemmatize a word" should {
 
       "return the lemma for each word" in {
-        val words = Array("finisce", "scampati", "rivisto", "mangiato", "dormito")
 
         val results = words.map(lemmatizer.lemma)
 
