@@ -16,7 +16,11 @@ class TreeTaggerSpec extends BaseTestClass {
           "in", "manette", "finisce", "anche", "la", "convivente", "dello", "zio", "dei", "due", "fratellini",
           "scampati", "all'agguato", ".")
 
-        words.map(treeTagger.tag)
+        val results = words.map(treeTagger.tag)
+
+        results.foreach(
+          _.posTag shouldBe a [Some[String]]
+        )
       }
     }
   }
