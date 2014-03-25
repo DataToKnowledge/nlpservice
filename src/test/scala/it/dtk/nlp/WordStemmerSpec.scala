@@ -27,7 +27,7 @@ class WordStemmerSpec extends BaseTestClass {
 
       words.foreach {
         w =>
-          s"return the corrent token for '${w._1}'" in {
+          s"return the corrent stem for '${w._1}'" in {
             stemmer.stem(w._1) should be(w._2)
           }
       }
