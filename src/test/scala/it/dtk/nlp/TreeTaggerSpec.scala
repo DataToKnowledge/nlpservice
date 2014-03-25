@@ -1,8 +1,5 @@
 package it.dtk.nlp
 
-import scala.util.{Failure, Success}
-import scala.concurrent.ExecutionContext.Implicits.global
-
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
@@ -19,13 +16,7 @@ class TreeTaggerSpec extends BaseTestClass {
           "in", "manette", "finisce", "anche", "la", "convivente", "dello", "zio", "dei", "due", "fratellini",
           "scampati", "all'agguato", ".")
 
-        val f = treeTagger.tag(words)
-
-        f onComplete {
-          case Success(results) =>
-            results.foreach(_.posTag shouldBe a [Some[String]])
-          case Failure(ex) => throw ex
-        }
+        words.map(treeTagger.tag)
       }
     }
   }
