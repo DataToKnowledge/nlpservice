@@ -41,8 +41,8 @@ class TreeTagger {
     val tags: mutable.Buffer[Word] = mutable.ArrayBuffer()
 
     treeTagger.setHandler(new TokenHandler[String] {
-      override def token(token: String, pos: String, lemma: String): Unit = {
-        tags += new Word(token, Some(pos), Some(lemma))
+      override def token(tok: String, pos: String, lemm: String): Unit = {
+        tags += new Word(token = tok, posTag = Option(pos), lemma = Option(lemm))
       }
     })
 

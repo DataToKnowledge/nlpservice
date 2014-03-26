@@ -54,8 +54,10 @@ object TextPreprocessor {
    * @param document
    * @return given a document as text return its representation as sequence of sentences of words
    */
-  def apply(document: String): Document = 
-    Document(getSentences(document).map(removeHtmlTags(_)).map(s => Sentence(getTokens(s))))
+  def apply(text: String): Seq[Sentence] =
+    getSentences(text).map(removeHtmlTags(_)).map(s => Sentence(getTokens(s)))
+ 
+    
   
     
 }

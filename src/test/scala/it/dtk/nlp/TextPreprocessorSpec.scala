@@ -77,9 +77,9 @@ class TextPreprocessorSpec extends BaseTestClass {
     
     "is called the method TextPreprocessing" should {
       "return a document with sentences and words" in {
-        val res = TextPreprocessor(expectedDocNoHtml)
-        res.sentences.size should be > 0
-        for (sentence <- res.sentences){
+        val sentences = TextPreprocessor(expectedDocNoHtml)
+        sentences.size should be > 0
+        for (sentence <- sentences){
           sentence.words.size should be > 0
           for (word <- sentence.words){
             word.token.size should be > 0
