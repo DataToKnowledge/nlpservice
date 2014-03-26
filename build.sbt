@@ -23,5 +23,8 @@ libraryDependencies ++= Seq(
   "org.reactivemongo" %% "reactivemongo" % "0.10.0",
   "ch.qos.logback" % "logback-classic" % "1.1.1",
   "org.scalatest" % "scalatest_2.10" % "2.1.2" % "test",
-  "org.scalacheck" %% "scalacheck" % "1.11.3" % "test"
+  "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
+  "com.typesafe.slick" %% "slick" % "2.0.1",
+  "org.slf4j" % "slf4j-nop" % "1.6.4",
+  "com.jolbox" % "bonecp" % "0.8.0.RELEASE"
 )
