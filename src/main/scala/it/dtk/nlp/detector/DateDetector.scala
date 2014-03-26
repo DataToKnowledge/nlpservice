@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
  * @author Michele Damiano Torelli <daniele@datatoknowledge.it>
  *
  */
-object DateDetector {
+object DateDetector extends Detector {
 
   /* Maximum number of tokens for a date */
   val OFFSET = 6
@@ -41,7 +41,7 @@ object DateDetector {
 
   val log = LoggerFactory.getLogger("DateDetector")
 
-  def detect(words: Seq[Word]): Vector[String] = {
+  override def detect(words: Seq[Word]): Vector[String] = {
     // TODO: Set token type to Date (Will we have a token type, right?)
     var w = words
     var results = Vector.empty[String]
