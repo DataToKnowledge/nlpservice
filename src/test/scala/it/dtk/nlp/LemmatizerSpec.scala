@@ -1,11 +1,23 @@
 package it.dtk.nlp
 
-import scala.concurrent.ExecutionContext.Implicits.global
+object LemmatizerSpec {
+
+  val words = Vector(
+    ("finisce", "finire"),
+    ("scampati", "scampare"),
+    ("rivisto", "rivisto"),
+    ("mangiato", "mangiare"),
+    ("dormito", "dormire")
+  )
+
+}
 
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
 class LemmatizerSpec extends BaseTestClass {
+
+  import LemmatizerSpec._
 
   "A Lemmatizer" when {
 
@@ -13,14 +25,11 @@ class LemmatizerSpec extends BaseTestClass {
 
     "lemmatize a word" should {
 
-      "return the lemma for each word" in {
-        val words = Array("Maxi", "blitz", "contro", "i", "trafficanti", "di", "droga", "nel", "Tarantino",
-          "in", "manette", "finisce", "anche", "la", "convivente", "dello", "zio", "dei", "due", "fratellini",
-          "scampati", "all'agguato", ".")
-
-        words.foreach(
-          x => lemmatizer.getLemma(x).map(_ shouldBe a [Some[String]])
-        )
+      words.foreach {
+        w =>
+          s"return the corrent lemma for '${w._1}'" in {
+            lemmatizer.lemma(w._1) should be(w._2)
+          }
       }
     }
   }

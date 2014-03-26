@@ -1,0 +1,341 @@
+word,type
+corte d'appello,SS SP SN SPN
+atto d'accusa,SS SP SN SPN
+caccia all'uomo,SS SP SN SPN
+sospensione dell'esecuzione della condanna,SS SP SN SPN
+illecito,AS AP AN
+illegale,AS AP AN
+indebito,AS AP AN
+fuorilegge,AS AP AN
+illegittimo,AS AP AN
+criminoso,AS AP AN
+delittuoso,AS AP AN
+penale,AS AP AN
+inadempienza di contratto,SS SP SN SPN
+confisca,SS SP SN SPN
+ritiro,SS SP SN SPN
+sequestro,SS SP SN SPN
+pignoramento,SS SP SN SPN
+arresto,SS SP SN SPN
+fermo,SS SP SN SPN
+pornografia,SS SP SN SPN
+crimine,SS SP SN SPN
+delitto,SS SP SN SPN
+illecito,SS SP SN SPN
+reato,SS SP SN SPN
+aggressione,SS SP SN SPN
+adulteramento,SS SP SN SPN
+adulterazione,SS SP SN SPN
+contraffazione,SS SP SN SPN
+falsificamento,SS SP SN SPN
+falsificazione,SS SP SN SPN
+falso,SS SP SN SPN
+sevizia,SS SP SN SPN
+disturbo della quite pubblica,SS SP SN SPN
+esibizionismo,SS SP SN SPN
+spergiuro,SS SP SN SPN
+attentato,SS SP SN SPN
+cattura,SS SP SN SPN
+rapimento,SS SP SN SPN
+sequestro di persona,SS SP SN SPN
+corruzione,SS SP SN SPN
+appropriazione indebita,SS SP SN SPN
+truffa,SS SP SN SPN
+raggiro,SS SP SN SPN
+turlupinatura,SS SP SN SPN
+furto,SS SP SN SPN
+ruba,SS SP SN SPN
+rubamento,SS SP SN SPN
+ruberia,SS SP SN SPN
+taccheggio,SS SP SN SPN
+rapina,SS SP SN SPN
+grassazione,SS SP SN SPN
+rapina a mano armata,SS SP SN SPN
+alto tradimento,SS SP SN SPN
+pirateria,SS SP SN SPN
+estorsione,SS SP SN SPN
+ricatto,SS SP SN SPN
+scasso,SS SP SN SPN
+violazione di domicilio con scasso,SS SP SN SPN
+giudizio,SS SP SN SPN
+abigeato,SS SP SN SPN
+detenzione,SS SP SN SPN
+carcerazione,SS SP SN SPN
+carcere,SS SP SN SPN
+imprigionamento,SS SP SN SPN
+incarceramento,SS SP SN SPN
+reclusione,SS SP SN SPN
+arresti domiciliari,SS SP SN SPN
+pena,SS SP SN SPN
+esecuzione,SS SP SN SPN
+esecuzione capitale,SS SP SN SPN
+pena capitale,SS SP SN SPN
+pena di morte,SS SP SN SPN
+impiccagione,SS SP SN SPN
+impiccatura,SS SP SN SPN
+decapitazione,SS SP SN SPN
+carceramento,SS SP SN SPN
+incarcerazione,SS SP SN SPN
+contravvenzione,SS SP SN SPN
+vilipendio,SS SP SN SPN
+contumacia,SS SP SN SPN
+lite,SS SP SN SPN
+querela,SS SP SN SPN
+contenzioso,SS SP SN SPN
+controversia,SS SP SN SPN
+vertenza,SS SP SN SPN
+azione giudiziaria,SS SP SN SPN
+procedimento,SS SP SN SPN
+processo,SS SP SN SPN
+bancarotta,SS SP SN SPN
+fallimento,SS SP SN SPN
+contestazione,SS SP SN SPN
+condanna,SS SP SN SPN
+archiviazione,SS SP SN SPN
+assoluzione,SS SP SN SPN
+proscioglimento,SS SP SN SPN
+sfratto,SS SP SN SPN
+comparizione,SS SP SN SPN
+campo di concentramento,SS SP SN SPN
+lager,SS SP SN SPN
+banco degli imputati,SS SP SN SPN
+sedia elettrica,SS SP SN SPN
+identikit,SS SP SN SPN
+ergastolo,SS SP SN SPN
+galera,SS SP SN SPN
+gattabuia,SS SP SN SPN
+prigione,SS SP SN SPN
+penitenziario,SS SP SN SPN
+giuridicità,SS SP SN SPN
+legalità,SS SP SN SPN
+illegalità,SS SP SN SPN
+giurisdizione,SS SP SN SPN
+attenuante,SS SP SN SPN
+art.,SS SP SN SPN
+fedina,SS SP SN SPN
+precedenti penali,SS SP SN SPN
+procura,SS SP SN SPN
+delega,SS SP SN SPN
+permesso di lavoro,SS SP SN SPN
+atto,SS SP SN SPN
+legge,SS SP SN SPN
+P. L.,SS SP SN SPN
+intimazione,SS SP SN SPN
+ordinanza,SS SP SN SPN
+coprifuoco,SS SP SN SPN
+proibizione,SS SP SN SPN
+veto,SS SP SN SPN
+ingiunzione,SS SP SN SPN
+mandato di cattura,SS SP SN SPN
+mandato di perquisizione,SS SP SN SPN
+sentenza di morte,SS SP SN SPN
+amnistia,SS SP SN SPN
+citazione,SS SP SN SPN
+citazione testimoniale,SS SP SN SPN
+multa per sosta vietata,SS SP SN SPN
+accusa,SS SP SN SPN
+patteggiamento,SS SP SN SPN
+emendamento,SS SP SN SPN
+reperto,SS SP SN SPN
+deposizione,SS SP SN SPN
+prova indiziaria,SS SP SN SPN
+alibi,SS SP SN SPN
+inquisizione,SS SP SN SPN
+addebito,SS SP SN SPN
+recriminazione,SS SP SN SPN
+incriminazione,SS SP SN SPN
+imputazione,SS SP SN SPN
+banda,SS SP SN SPN
+clan,SS SP SN SPN
+cricca,SS SP SN SPN
+gang,SS SP SN SPN
+ganga,SS SP SN SPN
+genia,SS SP SN SPN
+ghenga,SS SP SN SPN
+corte,SS SP SN SPN
+tribunale,SS SP SN SPN
+tribunale dei minori,SS SP SN SPN
+giuria,SS SP SN SPN
+diritto marittimo,SS SP SN SPN
+legge marziale,SS SP SN SPN
+malfattore,SS SP SN SPN
+reo,SS SP SN SPN
+trasgreditore,SS SP SN SPN
+trasgressore,SS SP SN SPN
+complice,SS SP SN SPN
+correo,SS SP SN SPN
+corresponsabile,SS SP SN SPN
+favoreggiatore,SS SP SN SPN
+accusato,SS SP SN SPN
+giudicabile,SS SP SN SPN
+imputato,SS SP SN SPN
+incriminato,SS SP SN SPN
+prevenuto,SS SP SN SPN
+querelato,SS SP SN SPN
+appellante,SS SP SN SPN
+incendiario,SS SP SN SPN
+piromane,SS SP SN SPN
+assassino,SS SP SN SPN
+sicario,SS SP SN SPN
+aggressore,SS SP SN SPN
+assalitore,SS SP SN SPN
+assaltatore,SS SP SN SPN
+pestatore,SS SP SN SPN
+vendicatore,SS SP SN SPN
+bandito,SS SP SN SPN
+brigante,SS SP SN SPN
+ladrone,SS SP SN SPN
+malandrino,SS SP SN SPN
+ricattatore,SS SP SN SPN
+taglieggiatore,SS SP SN SPN
+bluffatore,SS SP SN SPN
+taccheggiatore,SS SP SN SPN
+contrabbandiere di alcolici,SS SP SN SPN
+corrompitore,SS SP SN SPN
+corruttore,SS SP SN SPN
+mandante,SS SP SN SPN
+bullo,SS SP SN SPN
+teppista,SS SP SN SPN
+svaligiatore,SS SP SN SPN
+massacratore,SS SP SN SPN
+abbindolatore,SS SP SN SPN
+aggiratore,SS SP SN SPN
+baro,SS SP SN SPN
+camorrista,SS SP SN SPN
+frodatore,SS SP SN SPN
+imbroglione,SS SP SN SPN
+impostore,SS SP SN SPN
+lestofante,SS SP SN SPN
+mistificatore,SS SP SN SPN
+raggiratore,SS SP SN SPN
+truffaldino,SS SP SN SPN
+truffatore,SS SP SN SPN
+turlupinatore,SS SP SN SPN
+congiurato,SS SP SN SPN
+congiuratore,SS SP SN SPN
+cospiratore,SS SP SN SPN
+carcerato,SS SP SN SPN
+galeotto,SS SP SN SPN
+condannato,SS SP SN SPN
+recluso,SS SP SN SPN
+criminale,SS SP SN SPN
+delinquente,SS SP SN SPN
+fuorilegge,SS SP SN SPN
+malvivente,SS SP SN SPN
+contumace,SS SP SN SPN
+delinquente minorenne,SS SP SN SPN
+disertore,SS SP SN SPN
+traditore,SS SP SN SPN
+renitente alla leva,SS SP SN SPN
+concussionario,SS SP SN SPN
+carnefice,SS SP SN SPN
+giustiziere,SS SP SN SPN
+falsificatore,SS SP SN SPN
+spia,SS SP SN SPN
+contraffattore,SS SP SN SPN
+falsario,SS SP SN SPN
+fratricida,SS SP SN SPN
+prestanome,SS SP SN SPN
+latitante,SS SP SN SPN
+evaso,SS SP SN SPN
+gangster,SS SP SN SPN
+malavitoso,SS SP SN SPN
+sciacallo,SS SP SN SPN
+tombarolo,SS SP SN SPN
+killer,SS SP SN SPN
+pistolero,SS SP SN SPN
+dirottatore,SS SP SN SPN
+ostaggio,SS SP SN SPN
+infanticida,SS SP SN SPN
+internato,SS SP SN SPN
+fedifrago,SS SP SN SPN
+rapitore,SS SP SN SPN
+sequestratore,SS SP SN SPN
+assassinatore,SS SP SN SPN
+omicida,SS SP SN SPN
+uccisore,SS SP SN SPN
+cleptomane,SS SP SN SPN
+ergastolano,SS SP SN SPN
+depredatore,SS SP SN SPN
+devastatore,SS SP SN SPN
+predatore,SS SP SN SPN
+razziatore,SS SP SN SPN
+matricida,SS SP SN SPN
+molestatore,SS SP SN SPN
+rapinatore,SS SP SN SPN
+assassina,SS SP SN SPN
+parricida,SS SP SN SPN
+pederasta,SS SP SN SPN
+degenerato,SS SP SN SPN
+depravato,SS SP SN SPN
+pervertito,SS SP SN SPN
+borseggiatore,SS SP SN SPN
+scippatore,SS SP SN SPN
+tagliaborse,SS SP SN SPN
+querelante,SS SP SN SPN
+saccheggiatore,SS SP SN SPN
+bracconiere,SS SP SN SPN
+avvelenatore,SS SP SN SPN
+coatto,SS SP SN SPN
+detenuto,SS SP SN SPN
+persona sottoposta a libertà vigilata,SS SP SN SPN
+narcotrafficante,SS SP SN SPN
+stupratore,SS SP SN SPN
+violentatore,SS SP SN SPN
+recidivo,SS SP SN SPN
+ladro di bestiame,SS SP SN SPN
+serial killer,SS SP SN SPN
+naziskin,SS SP SN SPN
+skinhead,SS SP SN SPN
+mercante di schiavi,SS SP SN SPN
+negriere,SS SP SN SPN
+negriero,SS SP SN SPN
+schiavista,SS SP SN SPN
+contrabbandiere,SS SP SN SPN
+accoltellatore,SS SP SN SPN
+pugnalatore,SS SP SN SPN
+suicida,SS SP SN SPN
+indiziato,SS SP SN SPN
+sospetto,SS SP SN SPN
+ladra,SS SP SN SPN
+ladro,SS SP SN SPN
+bottino,SS SP SN SPN
+malloppo,SS SP SN SPN
+maltolto,SS SP SN SPN
+refurtiva,SS SP SN SPN
+cauzione,SS SP SN SPN
+libertà,SS SP SN SPN
+prigionia,SS SP SN SPN
+custodia,SS SP SN SPN
+custodia cautelare,SS SP SN SPN
+impunità,SS SP SN SPN
+registro degli indagati,SS SP SN SPN
+ipotesi di reato,SS SP SN SPN
+abusivamente,B
+illegalmente,B
+complottare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+tramare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+congiurare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+cospirare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+discolpare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+scagionare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+rinviare a giudizio,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+deporre,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+arrestare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+catturare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+trarre in arresto,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+corrompere,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+depredare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+saccheggiare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+rimettere in libertà,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+criminalizzare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+censurare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+carcerare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+imprigionare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+incarcerare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+trattenere,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+incriminare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+violare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+intentare azione contro,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+perseguire,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY
+perpetrare,VI VIY VF VFY VSP VSPY VPP VPPY VG VGY VM VMY

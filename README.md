@@ -1,2 +1,1 @@
-# Link to [Wiki](https://bitbucket.org/datatoknowledge/nlpservice/wiki/Home)
-
+See [Wiki](https://bitbucket.org/datatoknowledge/nlpservice/wiki)
