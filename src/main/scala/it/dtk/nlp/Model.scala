@@ -26,7 +26,4 @@ case class News(id: Option[String] = None, urlWebSite: Option[String], urlNews: 
                 canonicalUrl: Option[String] = None, topImage: Option[String] = None, 
                 nlpTitle: Option[NLPTitle] = None, nlpSummary: Option[NLPSummary] = None, nlpText: Option[NLPText] = None,
                 crime: Option[Seq[String]], address: Option[Seq[String]],  person: Option[Seq[String]],  
-                location: Option[Seq[String]], date: Option[Seq[String]], organization: Option[Seq[String]]) {
-
-  val extractionDate: Date = (new DateTime).toDate
-}
+                location: Option[Seq[String]], date: Option[Seq[String]], organization: Option[Seq[String]])

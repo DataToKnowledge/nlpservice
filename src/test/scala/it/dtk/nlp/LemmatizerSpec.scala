@@ -3,11 +3,11 @@ package it.dtk.nlp
 object LemmatizerSpec {
 
   val words = Vector(
-    ("finisce", "finire"),
-    ("scampati", "scampare"),
-    ("rivisto", "rivisto"),
-    ("mangiato", "mangiare"),
-    ("dormito", "dormire")
+    ("finisce", Option("finire")),
+    ("scampati", Option("scampare")),
+    ("rivisto", Option("rivisto")),
+    ("mangiato", Option("mangiare")),
+    ("dormito", Option("dormire"))
   )
 
 }
