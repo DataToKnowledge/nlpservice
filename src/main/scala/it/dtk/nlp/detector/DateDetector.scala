@@ -41,25 +41,33 @@ object DateDetector extends Detector {
 
   val log = LoggerFactory.getLogger("DateDetector")
 
-  override def detect(words: Seq[Word]): Vector[String] = {
+  override def detect(words: Seq[Word]): Seq[Word] = {
     // TODO: Set token type to Date (Will we have a token type, right?)
-    var w = words
-    var results = Vector.empty[String]
+    var nextIndex = 0
+    var result = Vector.empty[Word]
 
-    while (!w.isEmpty) {
-      val dateR = getNextDate(w)
+    while (nextIndex < words.size) {
+      val dateR = getNextDate(words, nextIndex)
 
       if (dateR.isDefined) {
-        val date = w.slice(dateR.get.head, dateR.get.last + 1).map(word => word.token).mkString(sep = " ")
+        if (nextIndex < dateR.get.head)
+          result ++= words.slice(nextIndex, dateR.get.head)
+
+        words.slice(dateR.get.head, dateR.get.last + 1).foreach { w =>
+          val prevIOB = w.iobEntity.getOrElse(Vector.empty[String])
+          val newIOB = if (w == words.apply(dateR.get.head)) prevIOB :+ "B-DATE" else prevIOB :+ "I-DATE"
+          result :+= w.copy(iobEntity = Some(newIOB))
+        }
+        val date = words.slice(dateR.get.head, dateR.get.last + 1).map(word => word.token).mkString(sep = " ")
         log.info(s"Found date: $date")
-        results :+= date
-        w = w.drop(dateR.get.last + 1)
+        nextIndex = dateR.get.last + 1
       } else {
-        w = w.drop(1)
+        result :+= words.apply(nextIndex)
+        nextIndex += 1
       }
     }
 
-    results
+    result
   }
 
   def toDate(dateToken: String): Option[DateTime] = {
@@ -228,13 +236,13 @@ object DateDetector extends Detector {
    * @param words sequence of words
    * @return the range of first matching date if exists; none otherwise
    */
-  private def getNextDate(words: Seq[Word]): Option[Range] = {
-    val startIndex = words.indexWhere(word => isValidDateToken(word.token))
-    val endIndex = if ((startIndex + OFFSET) > words.size) words.size else startIndex + OFFSET
+  private def getNextDate(words: Seq[Word], startIndex: Int = 0): Option[Range] = {
+    val sIndex = words.drop(startIndex).indexWhere(word => isValidDateToken(word.token))
+    val eIndex = if ((sIndex + OFFSET) > words.size) words.size else sIndex + OFFSET
 
-    val dates = for (i <- endIndex until startIndex by -1;
-                     dateCandidate = words.slice(startIndex, i).map(word => word.token).mkString(sep = " ")
-                     if isValidDate(dateCandidate)) yield Range(startIndex, i)
+    val dates = for (i <- eIndex until sIndex by -1;
+                     dateCandidate = words.slice(startIndex + sIndex, startIndex + i).map(_.token).mkString(sep = " ")
+                     if isValidDate(dateCandidate)) yield Range(startIndex + sIndex, startIndex + i)
 
     if (!dates.isEmpty) Some(dates.head)
     else None

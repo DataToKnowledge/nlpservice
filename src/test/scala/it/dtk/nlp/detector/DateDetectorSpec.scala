@@ -11,7 +11,7 @@ import java.net.URL
  */
 class DateDetectorSpec extends FlatSpec with Matchers {
 
-  "A DateDetector" should "detect all dates in a sentence" in {
+  "A DateDetector" should "tag all detected dates in a sentence" in {
     val sentence = "a b 28 Gennaio 2013 A B " +
       "c 28 Febbraio 2014 b 12/10/2015 " +
       "a Febbraio a b Lunedì 34 Gennaio 2016 " +
@@ -20,15 +20,18 @@ class DateDetectorSpec extends FlatSpec with Matchers {
     val words = TextPreprocessor.getTokens(sentence)
     val results = DateDetector.detect(words)
 
-    results.size should be(4)
+    results.size should be(words.size)
+    results.count(w => w.iobEntity.getOrElse(Vector.empty).contains("B-DATE")) should be(4)
+    results.count(w => w.iobEntity.getOrElse(Vector.empty).contains("I-DATE")) should be(11)
   }
 
-  it should "return an empty vector if no dates are detected" in {
+  it should "return the same vector if no dates are detected" in {
     val sentence = "a b A B c b a Febbraio a b Lunedì 34 Gennaio 2016 d E"
     val words = TextPreprocessor.getTokens(sentence)
     val results = DateDetector.detect(words)
 
-    results.size should be(0)
+    results.size should be(words.size)
+    results.count(w => w.iobEntity.isDefined) should be(0)
   }
 
   it should "return datetime object of a given date" in {
@@ -62,7 +65,7 @@ class DateDetectorSpec extends FlatSpec with Matchers {
     }
 
     val url = new URL("http://www.baritoday.it/cronaca/spaccio-scuola-locali-triggiano-arresti-24-marzo-201.html")
-    DateDetector getDateFromURL url should be (None)
+    DateDetector getDateFromURL url should be(None)
   }
 
 }

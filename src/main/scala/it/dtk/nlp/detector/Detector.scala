@@ -10,6 +10,6 @@ import it.dtk.nlp.Word
  */
 trait Detector {
 
-  def detect(words: Seq[Word]): Vector[String]
+  def detect(words: Seq[Word]): Seq[Word]
 
 }
