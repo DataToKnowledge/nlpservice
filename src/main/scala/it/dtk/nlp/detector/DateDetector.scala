@@ -42,7 +42,6 @@ object DateDetector extends Detector {
   val log = LoggerFactory.getLogger("DateDetector")
 
   override def detect(words: Seq[Word]): Seq[Word] = {
-    // TODO: Set token type to Date (Will we have a token type, right?)
     var nextIndex = 0
     var result = Vector.empty[Word]
 
