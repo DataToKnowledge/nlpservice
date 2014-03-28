@@ -10,7 +10,7 @@ class Lemmatizer(host: String, database: String) {
 
   val mongoClient = MongoClient(host, 27017)
   val db = mongoClient(database)
-  val lemmas = db("lemmas")
+  val lemmas = db("morph-it")
 
   /**
    * Lemmatiza a given token using morph-it
