@@ -20,8 +20,8 @@ class Lemmatizer(host: String, database: String) {
    */
   def lemma(word: String): Option[String] = {
     lemmas.findOne(MongoDBObject( "word" -> word )) match {
-      case Some(res) =>
-        Option(res.get("lemma").asInstanceOf[String])
+      case Some(res: MongoDBObject) =>
+        MongoDBMapper.dBOtoLemma(res).lemma
       case None =>
         None
     }
