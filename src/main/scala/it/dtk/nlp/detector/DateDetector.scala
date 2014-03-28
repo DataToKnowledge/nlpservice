@@ -1,10 +1,10 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.Word
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.net.URL
 import org.slf4j.LoggerFactory
+import it.dtk.nlp.db.Word
 
 /**
  * Implements recognition of date entities

@@ -1,4 +1,4 @@
-package it.dtk.nlp
+package it.dtk.nlp.db
 
 import org.joda.time.DateTime
 

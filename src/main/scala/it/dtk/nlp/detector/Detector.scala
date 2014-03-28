@@ -1,6 +1,6 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.Word
+import it.dtk.nlp.db.Word
 
 /**
  * Entry point for detector classes

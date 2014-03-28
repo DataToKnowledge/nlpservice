@@ -1,4 +1,4 @@
-package it.dtk.nlp
+package it.dtk.nlp.db
 
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.conversions.scala._
@@ -6,8 +6,8 @@ import org.joda.time.DateTime
 
 object MongoDBMapper {
 
-  def wordToDBO(word: Word): MongoDBObject = {
-    MongoDBObject(
+  def wordToDBO(word: Word): DBObject = {
+    DBObject(
       "token" -> word.token,
       "tokenId" -> word.tokenId,
       "tokenStart" -> word.tokenStart,
@@ -22,7 +22,7 @@ object MongoDBMapper {
     )
   }
 
-  def dBOToWord(dbo: MongoDBObject): Word = {
+  def dBOToWord(dbo: DBObject): Word = {
     Word(
       dbo.getAs[String]("token").get,
       dbo.getAs[Int]("tokenId"),
@@ -37,59 +37,59 @@ object MongoDBMapper {
       dbo.getAs[String]("chunk"))
   }
 
-  def sentenceToDBO(sentence: Sentence): MongoDBObject = {
-    MongoDBObject(
+  def sentenceToDBO(sentence: Sentence): DBObject = {
+    DBObject(
       "words" -> sentence.words.map(wordToDBO)
     )
   }
 
-  def dBOToSentence(dbo: MongoDBObject): Sentence = {
-    val seqDBO = dbo.getAs[Seq[MongoDBObject]]("words")
+  def dBOToSentence(dbo: DBObject): Sentence = {
+    val seqDBO = dbo.getAs[Seq[DBObject]]("words")
     //convert to words
     val seqWords = seqDBO.map(s => s.map(dBOToWord))
     Sentence(seqWords.getOrElse(Vector.empty))
   }
 
-  def nlpTitleToDBO(title: NLPTitle): MongoDBObject = {
-    MongoDBObject(
+  def nlpTitleToDBO(title: NLPTitle): DBObject = {
+    DBObject(
       "sentences" -> title.sentences.map(s => sentenceToDBO(s))
     )
   }
 
-  def dBOtoNlpTitle(dbo: MongoDBObject): NLPTitle = {
-    val seqDBO = dbo.getAs[Seq[MongoDBObject]]("sentences")
+  def dBOtoNlpTitle(dbo: DBObject): NLPTitle = {
+    val seqDBO = dbo.getAs[Seq[DBObject]]("sentences")
     //convert to sentences
     val seqSentences = seqDBO.map(s => s.map(dBOToSentence))
     NLPTitle(seqSentences.getOrElse(Vector.empty))
   }
 
-  def nlpSummaryToDBO(summary: NLPSummary): MongoDBObject = {
-    MongoDBObject(
+  def nlpSummaryToDBO(summary: NLPSummary): DBObject = {
+    DBObject(
       "sentences" -> summary.sentences.map(s => sentenceToDBO(s))
     )
   }
 
-  def dBOtoNlpSummary(dbo: MongoDBObject): NLPSummary = {
-    val seqDBO = dbo.getAs[Seq[MongoDBObject]]("sentences")
+  def dBOtoNlpSummary(dbo: DBObject): NLPSummary = {
+    val seqDBO = dbo.getAs[Seq[DBObject]]("sentences")
     //convert to sentences
     val seqSentences = seqDBO.map(s => s.map(dBOToSentence))
     NLPSummary(seqSentences.getOrElse(Vector.empty))
   }
 
-  def nlpTextToDBO(text: NLPText): MongoDBObject = {
-    MongoDBObject(
+  def nlpTextToDBO(text: NLPText): DBObject = {
+    DBObject(
       "sentences" -> text.sentences.map(s => sentenceToDBO(s))
     )
   }
 
-  def dBOtoNlpText(dbo: MongoDBObject): NLPText = {
-    val seqDBO = dbo.getAs[Seq[MongoDBObject]]("sentences")
+  def dBOtoNlpText(dbo: DBObject): NLPText = {
+    val seqDBO = dbo.getAs[Seq[DBObject]]("sentences")
     //convert to sentences
     val seqSentences = seqDBO.map(s => s.map(dBOToSentence))
     NLPText(seqSentences.getOrElse(Vector.empty))
   }
 
-  def dBOToNews(dbo: MongoDBObject): News = {
+  def dBOToNews(dbo: DBObject): News = {
     RegisterJodaTimeConversionHelpers()
     News(
       dbo._id.map(_.toString).get,
@@ -107,8 +107,8 @@ object MongoDBMapper {
     )
   }
 
-  def NewsToDBO(news: News): MongoDBObject = {
-    MongoDBObject(
+  def NewsToDBO(news: News): DBObject = {
+    DBObject(
       "urlWebSite" -> news.urlWebSite,
       "urlNews" -> news.urlNews,
       "title" -> news.title,
@@ -123,7 +123,7 @@ object MongoDBMapper {
     )
   }
 
-  def dBOtoLemma(dbo: MongoDBObject): Lemma = {
+  def dBOtoLemma(dbo: DBObject): Lemma = {
     Lemma(
       dbo._id.map(_.toString).get,
       dbo.getAs[String]("word").get,
@@ -132,15 +132,15 @@ object MongoDBMapper {
     )
   }
 
-  def lemmaToDBO(lemma: Lemma): MongoDBObject = {
-    MongoDBObject(
+  def lemmaToDBO(lemma: Lemma): DBObject = {
+    DBObject(
       "word" -> lemma.word,
       "lemma" -> lemma.lemma,
       "features" -> lemma.features
     )
   }
 
-  def dBOtoCity(dbo: MongoDBObject): City = {
+  def dBOtoCity(dbo: DBObject): City = {
     City(
       dbo._id.map(_.toString).get,
       dbo.getAs[String]("city_name").get,
@@ -153,8 +153,8 @@ object MongoDBMapper {
     )
   }
 
-  def cityToDBO(city: City): MongoDBObject = {
-    MongoDBObject(
+  def cityToDBO(city: City): DBObject = {
+    DBObject(
       "city_name" -> city.city_name,
       "cap" -> city.cap,
       "province" -> city.province,
@@ -165,7 +165,7 @@ object MongoDBMapper {
     )
   }
 
-  def dBOtoCrime(dbo: MongoDBObject): Crime = {
+  def dBOtoCrime(dbo: DBObject): Crime = {
     Crime(
       dbo._id.map(_.toString).get,
       dbo.getAs[String]("word").get,
@@ -175,8 +175,8 @@ object MongoDBMapper {
     )
   }
 
-  def crimeToDBO(crime: Crime): MongoDBObject = {
-    MongoDBObject(
+  def crimeToDBO(crime: Crime): DBObject = {
+    DBObject(
       "word" -> crime.word,
       "lemma" -> crime.lemma,
       "stem" -> crime.stem,
@@ -184,7 +184,7 @@ object MongoDBMapper {
     )
   }
 
-  def dBOtoAddress(dbo: MongoDBObject): Address = {
+  def dBOtoAddress(dbo: DBObject): Address = {
     Address(
       dbo._id.map(_.toString).get,
       dbo.getAs[String]("street").get,

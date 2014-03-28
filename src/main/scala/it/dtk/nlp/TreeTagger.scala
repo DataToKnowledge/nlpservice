@@ -2,6 +2,7 @@ package it.dtk.nlp
 
 import org.annolab.tt4j.{TokenHandler, TreeTaggerWrapper}
 import scala.collection.mutable
+import it.dtk.nlp.db.Word
 
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
