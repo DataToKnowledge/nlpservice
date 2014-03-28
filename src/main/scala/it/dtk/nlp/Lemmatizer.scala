@@ -10,7 +10,7 @@ class Lemmatizer(host: String, database: String) {
 
   val mongoClient = MongoClient(host, 27017)
   val db = mongoClient(database)
-  val lemmas = db("lemmas")
+  val lemmas = db("morphit")
 
   /**
    * Lemmatiza a given token using morph-it
@@ -20,9 +20,9 @@ class Lemmatizer(host: String, database: String) {
    */
   def lemma(word: String): Option[String] = {
     lemmas.findOne(MongoDBObject( "word" -> word )) match {
-      case Some(res) => 
-        Some(res.get("lemma").asInstanceOf[String])
-      case None => 
+      case Some(res) =>
+        Option(res.get("lemma").asInstanceOf[String])
+      case None =>
         None
     }
   }

@@ -21,7 +21,7 @@ class LemmatizerSpec extends BaseTestClass {
 
   "A Lemmatizer" when {
 
-    val lemmatizer = new Lemmatizer("10.1.0.62", "morph")
+    val lemmatizer = new Lemmatizer("10.1.0.62", "wheretolive")
 
     "lemmatize a word" should {
 

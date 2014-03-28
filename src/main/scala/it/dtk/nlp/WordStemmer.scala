@@ -35,7 +35,7 @@ class WordStemmer {
    * @return
    */
   def stem(word: Word): Word = {
-    word.copy(stem = Some(stem(word.token)))
+    word.copy(stem = Option(stem(word.token)))
   }
 
 }
