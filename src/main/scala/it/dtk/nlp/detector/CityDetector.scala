@@ -1,6 +1,6 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.db.{City, DBManager, Word}
+import it.dtk.nlp.db.{Sentence, City, DBManager, Word}
 import org.slf4j.LoggerFactory
 
 /**
@@ -20,16 +20,16 @@ object CityDetector extends Detector {
 
   private val log = LoggerFactory.getLogger("CityDetector")
 
-  override def detect(words: Seq[Word]): Seq[Word] = {
+  override def detect(sentence: Sentence): Sentence = {
     var result = Vector.empty[Word]
 
-    def bumpEndIndex(offset: Int) = if (offset + RANGE >= words.length) words.length - 1 else offset + RANGE
+    def bumpEndIndex(offset: Int) = if (offset + RANGE >= sentence.words.length) sentence.words.length - 1 else offset + RANGE
 
     var startIndex: Int = 0
     var endIndex = bumpEndIndex(startIndex)
 
-    while (startIndex < words.length) {
-      val city = words.slice(startIndex, endIndex + 1).map(word => word.token).mkString(sep = " ")
+    while (startIndex < sentence.words.length) {
+      val city = sentence.words.slice(startIndex, endIndex + 1).map(word => word.token).mkString(sep = " ")
 
       // verifico se questa sequenze di word matcha l'espressione regolare
       if (city.matches(CITIES_R)) {
@@ -40,12 +40,12 @@ object CityDetector extends Detector {
           case Some(res: City) =>
             log.info(s"Found city: $res.city_name")
 
-            val currentWord = words.apply(startIndex)
+            val currentWord = sentence.words.apply(startIndex)
             result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "B-CITY")
 
             while (startIndex < endIndex) {
               startIndex += 1
-              val nextWord = words.apply(startIndex)
+              val nextWord = sentence.words.apply(startIndex)
               result :+= nextWord.copy(iobEntity = nextWord.iobEntity :+ "I-CITY")
             }
 
@@ -59,7 +59,7 @@ object CityDetector extends Detector {
             if (startIndex < endIndex) {
               endIndex -= 1
             } else {
-              result :+= words.apply(startIndex)
+              result :+= sentence.words.apply(startIndex)
 
               startIndex += 1
               endIndex = bumpEndIndex(startIndex)
@@ -67,7 +67,7 @@ object CityDetector extends Detector {
         }
       } else {
         // non matcha l'espressione regolare, muovo la finestra di 1 posizione
-        result :+= words.apply(startIndex)
+        result :+= sentence.words.apply(startIndex)
 
         startIndex += 1
         endIndex += 1
@@ -75,7 +75,7 @@ object CityDetector extends Detector {
 
     }
 
-    result
+    Sentence(result)
   }
 
 }

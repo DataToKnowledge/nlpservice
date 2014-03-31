@@ -4,7 +4,7 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.net.URL
 import org.slf4j.LoggerFactory
-import it.dtk.nlp.db.Word
+import it.dtk.nlp.db.{Sentence, Word}
 
 /**
  * Implements recognition of date entities
@@ -41,32 +41,32 @@ object DateDetector extends Detector {
 
   val log = LoggerFactory.getLogger("DateDetector")
 
-  override def detect(words: Seq[Word]): Seq[Word] = {
+  override def detect(sentence: Sentence): Sentence = {
     var nextIndex = 0
     var result = Vector.empty[Word]
 
-    while (nextIndex < words.size) {
-      val dateR = getNextDate(words, nextIndex)
+    while (nextIndex < sentence.words.size) {
+      val dateR = getNextDate(sentence.words, nextIndex)
 
       if (dateR.isDefined) {
         if (nextIndex < dateR.get.head)
-          result ++= words.slice(nextIndex, dateR.get.head)
+          result ++= sentence.words.slice(nextIndex, dateR.get.head)
 
-        words.slice(dateR.get.head, dateR.get.last + 1).foreach { w =>
+        sentence.words.slice(dateR.get.head, dateR.get.last + 1).foreach { w =>
           val prevIOB = w.iobEntity
-          val newIOB = if (w == words.apply(dateR.get.head)) prevIOB :+ "B-DATE" else prevIOB :+ "I-DATE"
+          val newIOB = if (w == sentence.words.apply(dateR.get.head)) prevIOB :+ "B-DATE" else prevIOB :+ "I-DATE"
           result :+= w.copy(iobEntity = newIOB)
         }
-        val date = words.slice(dateR.get.head, dateR.get.last + 1).map(word => word.token).mkString(sep = " ")
+        val date = sentence.words.slice(dateR.get.head, dateR.get.last + 1).map(word => word.token).mkString(sep = " ")
         log.info(s"Found date: $date")
         nextIndex = dateR.get.last + 1
       } else {
-        result :+= words.apply(nextIndex)
+        result :+= sentence.words.apply(nextIndex)
         nextIndex += 1
       }
     }
 
-    result
+    Sentence(result)
   }
 
   def toDate(dateToken: String): Option[DateTime] = {
