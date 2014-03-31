@@ -26,14 +26,12 @@ class TreeTaggerSpec extends BaseTestClass {
 
   "A TreeTagger" when {
 
-    val treeTagger = new TreeTagger()
-
     "tags a sequence of words" should {
 
       words.foreach {
         w =>
           s"return the corrent posTag for '${w._1}'" in {
-            treeTagger.tag(w._1).posTag.get should be(w._2)
+            TreeTagger.tag(w._1).posTag.get should be(w._2)
           }
       }
 
