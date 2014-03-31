@@ -18,6 +18,7 @@ object DBManager {
   private val city = db("city")
   private val address = db("address")
   private val crime = db("crime")
+  private val news = mongoClient("dbNews")("geoNews")
 
   def findLemma(word: String): Option[Lemma] = {
     lemma.findOne(MongoDBObject("word" -> word)) match {
@@ -52,6 +53,14 @@ object DBManager {
         Option(MongoDBMapper.dBOtoCity(res))
       case None =>
         None
+    }
+  }
+
+  def getNews(limit: Int = 0): List[News] = {
+    if (limit == 0) {
+      news.find().map(n => MongoDBMapper.dBOToNews(n)).toList
+    } else {
+      news.find().limit(limit).map(n => MongoDBMapper.dBOToNews(n)).toList
     }
   }
 
