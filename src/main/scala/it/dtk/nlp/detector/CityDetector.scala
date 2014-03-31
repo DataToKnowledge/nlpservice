@@ -38,7 +38,7 @@ object CityDetector extends Detector {
           // ho trovato una corrispondenza nel DB, flaggo le word come City e sposto la finestra
           // di N posizioni, dove N e` il numero di word che ho flaggato
           case Some(res: City) =>
-            log.info(s"Found city: $res.city_name")
+            log.info(s"Found city: " + res.city_name)
 
             val currentWord = sentence.words.apply(startIndex)
             result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "B-CITY")
