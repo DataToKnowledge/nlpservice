@@ -2,7 +2,7 @@ package it.dtk.nlp
 
 import org.annolab.tt4j.{TokenHandler, TreeTaggerWrapper}
 import scala.collection.mutable
-import it.dtk.nlp.db.Word
+import it.dtk.nlp.db.{Sentence, Word}
 
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
@@ -58,6 +58,16 @@ object TreeTagger {
    */
   def tag(word: Word): Word = {
     tag(word.token)
+  }
+
+  /**
+   * Convenience method to tag every word in a Sentence
+   *
+   * @param sentence
+   * @return
+   */
+  def apply(sentence: Sentence): Sentence = {
+    Sentence(sentence.words.map(tag))
   }
 
 }
