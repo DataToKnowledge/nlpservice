@@ -9,7 +9,7 @@ import it.dtk.nlp.db.{Sentence, Word}
  */
 object TreeTagger {
 
-  val treeTaggerPath = {
+  private val treeTaggerPath = {
     val os = System.getProperty("os.name").toLowerCase
 
     if (os.contains("mac")) {
@@ -24,7 +24,7 @@ object TreeTagger {
 
   System.setProperty("treetagger.home", treeTaggerPath)
 
-  val treeTagger: TreeTaggerWrapper[String] = new TreeTaggerWrapper()
+  private val treeTagger: TreeTaggerWrapper[String] = new TreeTaggerWrapper()
   treeTagger.setModel("italian-par-linux-3.2-utf8.bin:utf-8")
 
   /**
