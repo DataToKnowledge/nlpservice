@@ -1,6 +1,6 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.TextPreprocessor
+import it.dtk.nlp.{TreeTagger, TextPreprocessor}
 import org.scalatest.{Matchers, FlatSpec}
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
@@ -17,20 +17,20 @@ class DateDetectorSpec extends FlatSpec with Matchers {
       "a Febbraio a b Lunedì 34 Gennaio 2016 " +
       "Lunedì 12 Marzo 2018 d E 3 Aprile '12"
 
-    val words = TextPreprocessor.getTokens(sentence)
-    val results = DateDetector.detect(words)
+    val words = TreeTagger.apply(TextPreprocessor.apply(sentence).head)
+    val results = DateDetector.detect(words).words
 
-    results.size should be(words.size)
+    results.size should be(words.words.size)
     results.count(w => w.iobEntity.contains("B-DATE")) should be(4)
     results.count(w => w.iobEntity.contains("I-DATE")) should be(11)
   }
 
   it should "return the same vector if no dates are detected" in {
     val sentence = "a b A B c b a Febbraio a b Lunedì 34 Gennaio 2016 d E"
-    val words = TextPreprocessor.getTokens(sentence)
-    val results = DateDetector.detect(words)
+    val words = TreeTagger.apply(TextPreprocessor.apply(sentence).head)
+    val results = DateDetector.detect(words).words
 
-    results.size should be(words.size)
+    results.size should be(words.words.size)
     results.count(w => w.iobEntity.nonEmpty) should be(0)
   }
 

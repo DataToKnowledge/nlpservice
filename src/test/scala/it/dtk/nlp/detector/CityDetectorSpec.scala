@@ -1,6 +1,6 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.{TextPreprocessor, BaseTestClass}
+import it.dtk.nlp.{TreeTagger, TextPreprocessor, BaseTestClass}
 
 object CityDetectorSpec {
 
@@ -25,7 +25,7 @@ class CityDetectorSpec extends BaseTestClass {
 
       "tag a compound-city" in {
 
-        val result = detector.detect(TextPreprocessor.getTokens(sentence))
+        val result = detector.detect(TreeTagger.apply(TextPreprocessor.apply(sentence).head)).words
 
         result.count(_.iobEntity.contains("B-CITY")) should be (1)
         result.count(_.iobEntity.contains("I-CITY")) should be (2)
@@ -33,7 +33,7 @@ class CityDetectorSpec extends BaseTestClass {
 
       "tag a city" in {
 
-        val result = detector.detect(TextPreprocessor.getTokens(city))
+        val result = detector.detect(TreeTagger.apply(TextPreprocessor.apply(city).head)).words
 
         result.count(_.iobEntity.contains("B-CITY")) should be (1)
         result.count(_.iobEntity.contains("I-CITY")) should be (0)
