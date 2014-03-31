@@ -32,7 +32,7 @@ class TextPreprocessorSpec extends BaseTestClass {
   import TextPreprocessorSpec._
 
   "The TextPreprocessing" when {
-    "is called the method removeHtmlTasg" should {
+    "is called the method removeHtmlTags" should {
       "correctly remove html tags" in {
         val result = TextPreprocessor.removeHtmlTags(docWithHtml)
         result should be(expectedDocNoHtml)
