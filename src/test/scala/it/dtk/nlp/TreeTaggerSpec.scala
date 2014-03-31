@@ -31,7 +31,7 @@ class TreeTaggerSpec extends BaseTestClass {
       words.foreach {
         w =>
           s"return the corrent posTag for '${w._1}'" in {
-            TreeTagger.tag(w._1).posTag.get should be(w._2)
+            TreeTagger.tag(w._1).get should be(w._2)
           }
       }
 

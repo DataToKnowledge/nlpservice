@@ -1,7 +1,6 @@
 package it.dtk.nlp
 
 import org.annolab.tt4j.{TokenHandler, TreeTaggerWrapper}
-import scala.collection.mutable
 import it.dtk.nlp.db.{Sentence, Word}
 
 /**
@@ -30,34 +29,34 @@ object TreeTagger {
   /**
    * Returns a list of tokens with their relative pos-tag
    *
-   * @param token a token
-   * @return token with pos-tag and lemma
+   * @param tokens a list of tokens
+   * @return tokens with pos-tag and lemma
    */
-  def tag(token: String): Word = {
-    val tags: mutable.Buffer[Word] = mutable.ArrayBuffer()
+  def tag(tokens: Seq[Word]): Seq[Word] = {
+    var tags = Vector.empty[Word]
 
     treeTagger.setHandler(new TokenHandler[String] {
       override def token(tok: String, pos: String, lemm: String): Unit = {
-        tags += new Word(token = tok, posTag = Option(pos), lemma = Option(lemm))
+        tags :+= new Word(token = tok, posTag = Option(pos), lemma = Option(lemm))
       }
     })
 
     try {
-      treeTagger.process(Array(token))
-      tags.head
+      treeTagger.process(tokens.map(_.token).toArray)
+      tags
     } catch {
-      case _: Throwable => new Word(token, None, None)
+      case _: Throwable => tokens
     }
   }
 
   /**
-   * Convenience method to tag a Word
+   * Convenience method to tag a string
    *
-   * @param word a Word with a non-empty token
-   *@return the Word with pos-tag and lemma
+   * @param token a word
+   *@return the pos-tag
    */
-  def tag(word: Word): Word = {
-    tag(word.token)
+  def tag(token: String): Option[String] = {
+    tag(Array(new Word(token))).head.posTag
   }
 
   /**
@@ -67,7 +66,7 @@ object TreeTagger {
    * @return
    */
   def apply(sentence: Sentence): Sentence = {
-    Sentence(sentence.words.map(tag))
+    Sentence(tag(sentence.words))
   }
 
 }
