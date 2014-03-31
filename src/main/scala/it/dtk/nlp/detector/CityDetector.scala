@@ -1,0 +1,75 @@
+package it.dtk.nlp.detector
+
+import it.dtk.nlp.db.{City, DBManager, Word}
+
+/**
+ * @author Andrea Scarpino <andrea@datatoknowledge.it>
+ */
+object CityDetector extends Detector {
+
+  /**
+   * Maximum number of tokens for an address
+   */
+  private val RANGE = 3
+
+  /**
+   *
+   */
+  private val CITIES_R = "^[A-Z](\\w+|\\')[\\w\\s\\']*"
+
+  override def detect(words: Seq[Word]): Seq[Word] = {
+    var result = Vector.empty[Word]
+
+    def bumpEndIndex(offset: Int) = if (offset + RANGE >= words.length) words.length - 1 else offset + RANGE
+
+    var startIndex: Int = 0
+    var endIndex = bumpEndIndex(startIndex)
+
+    while (startIndex < words.length) {
+      val city = words.slice(startIndex, endIndex + 1).map(word => word.token).mkString(sep = " ")
+
+      // verifico se questa sequenze di word matcha l'espressione regolare
+      if (city.matches(CITIES_R)) {
+        DBManager.findCity(city) match {
+
+          // ho trovato una corrispondenza nel DB, flaggo le word come City e sposto la finestra
+          // di N posizioni, dove N e` il numero di word che ho flaggato
+          case Some(res: City) =>
+            val currentWord = words.apply(startIndex)
+            result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "B-CITY")
+
+            while (startIndex < endIndex) {
+              startIndex += 1
+              val nextWord = words.apply(startIndex)
+              result :+= nextWord.copy(iobEntity = nextWord.iobEntity :+ "I-CITY")
+            }
+
+            startIndex += 1
+            endIndex = bumpEndIndex(startIndex)
+
+          // nessuna corrispondenza nel DB
+          case None =>
+            // stringo la finestra di 1 posizione oppure la ri-calibro
+            if (startIndex < endIndex) {
+              endIndex -= 1
+            } else {
+              result :+= words.apply(startIndex)
+
+              startIndex += 1
+              endIndex = bumpEndIndex(startIndex)
+            }
+        }
+      } else {
+        // non matcha l'espressione regolare, muovo la finestra di 1 posizione
+        result :+= words.apply(startIndex)
+
+        startIndex += 1
+        endIndex += 1
+      }
+
+    }
+
+    result
+  }
+
+}
