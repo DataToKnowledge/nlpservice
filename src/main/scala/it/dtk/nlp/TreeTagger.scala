@@ -26,11 +26,6 @@ object TreeTagger {
 
   val treeTagger: TreeTaggerWrapper[String] = new TreeTaggerWrapper()
   treeTagger.setModel("italian-par-linux-3.2-utf8.bin:utf-8")
-}
-
-class TreeTagger {
-
-  import TreeTagger._
 
   /**
    * Returns a list of tokens with their relative pos-tag
@@ -53,6 +48,16 @@ class TreeTagger {
     } catch {
       case _: Throwable => new Word(token, None, None)
     }
+  }
+
+  /**
+   * Convenience method to tag a Word
+   *
+   * @param word a Word with a non-empty token
+   *@return the Word with pos-tag and lemma
+   */
+  def tag(word: Word): Word = {
+    tag(word.token)
   }
 
 }
