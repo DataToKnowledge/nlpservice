@@ -1,6 +1,7 @@
 package it.dtk.nlp.detector
 
 import it.dtk.nlp.db.{City, DBManager, Word}
+import org.slf4j.LoggerFactory
 
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
@@ -16,6 +17,8 @@ object CityDetector extends Detector {
    *
    */
   private val CITIES_R = "^[A-Z](\\w+|\\')[\\w\\s\\']*"
+
+  private val log = LoggerFactory.getLogger("CityDetector")
 
   override def detect(words: Seq[Word]): Seq[Word] = {
     var result = Vector.empty[Word]
@@ -35,6 +38,8 @@ object CityDetector extends Detector {
           // ho trovato una corrispondenza nel DB, flaggo le word come City e sposto la finestra
           // di N posizioni, dove N e` il numero di word che ho flaggato
           case Some(res: City) =>
+            log.info(s"Found city: $res.city_name")
+
             val currentWord = words.apply(startIndex)
             result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "B-CITY")
 
@@ -49,6 +54,7 @@ object CityDetector extends Detector {
 
           // nessuna corrispondenza nel DB
           case None =>
+            log.debug(s"Cannot find a city named: $city")
             // stringo la finestra di 1 posizione oppure la ri-calibro
             if (startIndex < endIndex) {
               endIndex -= 1
