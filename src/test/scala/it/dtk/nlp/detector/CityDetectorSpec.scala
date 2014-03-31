@@ -11,7 +11,7 @@ object CityDetectorSpec {
 }
 
 /**
- * @author Andrea Scarpino <me@andreascarpino.it>
+ * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
 class CityDetectorSpec extends BaseTestClass {
 
