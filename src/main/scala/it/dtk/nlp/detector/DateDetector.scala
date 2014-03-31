@@ -53,9 +53,9 @@ object DateDetector extends Detector {
           result ++= words.slice(nextIndex, dateR.get.head)
 
         words.slice(dateR.get.head, dateR.get.last + 1).foreach { w =>
-          val prevIOB = w.iobEntity.getOrElse(Vector.empty[String])
+          val prevIOB = w.iobEntity
           val newIOB = if (w == words.apply(dateR.get.head)) prevIOB :+ "B-DATE" else prevIOB :+ "I-DATE"
-          result :+= w.copy(iobEntity = Some(newIOB))
+          result :+= w.copy(iobEntity = newIOB)
         }
         val date = words.slice(dateR.get.head, dateR.get.last + 1).map(word => word.token).mkString(sep = " ")
         log.info(s"Found date: $date")

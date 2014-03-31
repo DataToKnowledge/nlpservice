@@ -17,7 +17,7 @@ object MongoDBMapper {
       "lemma" -> word.lemma,
       "com    Morpho" -> word.compMorpho,
       "stem" -> word.stem,
-      "iobEntity" -> word.iobEntity.getOrElse(Vector.empty),
+      "iobEntity" -> word.iobEntity,
       "chunk" -> word.chunk
     )
   }
@@ -33,7 +33,7 @@ object MongoDBMapper {
       dbo.getAs[String]("lemma"),
       dbo.getAs[String]("comMorpho"),
       dbo.getAs[String]("stem"),
-      dbo.getAs[Seq[String]]("iobEntity"),
+      dbo.getAs[Seq[String]]("iobEntity").get,
       dbo.getAs[String]("chunk"))
   }
 

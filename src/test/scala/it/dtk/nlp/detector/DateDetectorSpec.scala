@@ -21,8 +21,8 @@ class DateDetectorSpec extends FlatSpec with Matchers {
     val results = DateDetector.detect(words)
 
     results.size should be(words.size)
-    results.count(w => w.iobEntity.getOrElse(Vector.empty).contains("B-DATE")) should be(4)
-    results.count(w => w.iobEntity.getOrElse(Vector.empty).contains("I-DATE")) should be(11)
+    results.count(w => w.iobEntity.contains("B-DATE")) should be(4)
+    results.count(w => w.iobEntity.contains("I-DATE")) should be(11)
   }
 
   it should "return the same vector if no dates are detected" in {
@@ -31,7 +31,7 @@ class DateDetectorSpec extends FlatSpec with Matchers {
     val results = DateDetector.detect(words)
 
     results.size should be(words.size)
-    results.count(w => w.iobEntity.isDefined) should be(0)
+    results.count(w => w.iobEntity.nonEmpty) should be(0)
   }
 
   it should "return datetime object of a given date" in {
