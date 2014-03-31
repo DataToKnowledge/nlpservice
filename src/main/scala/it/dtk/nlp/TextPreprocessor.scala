@@ -2,6 +2,7 @@ package it.dtk.nlp
 
 import java.util.Locale
 import java.text.BreakIterator
+import it.dtk.nlp.db.{Sentence, Word}
 
 object TextPreprocessor {
 

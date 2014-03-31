@@ -25,9 +25,8 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.1.1",
   "org.scalatest" % "scalatest_2.10" % "2.1.2" % "test",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
-  "com.typesafe.slick" %% "slick" % "2.0.1",
   "com.jolbox" % "bonecp" % "0.8.0.RELEASE",
   "com.github.nscala-time" %% "nscala-time" % "0.8.0",
   "io.argonaut" %% "argonaut" % "6.0.3" ,
-  "com.ning" % "async-http-client" % "1.8.4"    
+  "com.ning" % "async-http-client" % "1.8.4"
 )

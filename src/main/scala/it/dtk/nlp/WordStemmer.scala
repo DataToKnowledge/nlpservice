@@ -2,6 +2,7 @@ package it.dtk.nlp
 
 import org.tartarus.snowball.ext.italianStemmer
 import org.tartarus.snowball.SnowballStemmer
+import it.dtk.nlp.db.Word
 
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
