@@ -20,8 +20,14 @@ object DBManager {
   private val crime = db("crime")
   private val news = mongoClient("dbNews")("geoNews")
 
+  /**
+   * Search for a lemma in the DB. Case-insensitive search.
+   *
+   * @param word
+   * @return
+   */
   def findLemma(word: String): Option[Lemma] = {
-    lemma.findOne(MongoDBObject("word" -> word)) match {
+    lemma.findOne(MongoDBObject("word" -> word, "$options" -> 'i')) match {
       case Some(res: DBObject) =>
         Option(MongoDBMapper.dBOtoLemma(res))
       case None =>
@@ -29,8 +35,14 @@ object DBManager {
     }
   }
 
+  /**
+   * Search for a crime in the DB. Case-insensitive search.
+   *
+   * @param word
+   * @return
+   */
   def findCrime(word: String): Option[Crime] = {
-    crime.findOne(MongoDBObject("word" -> word)) match {
+    crime.findOne(MongoDBObject("word" -> word, "$options" -> 'i')) match {
       case Some(res: DBObject) =>
         Option(MongoDBMapper.dBOtoCrime(res))
       case None =>
@@ -38,8 +50,14 @@ object DBManager {
     }
   }
 
+  /**
+   * Search for an address in the DB. Case-insensitive search.
+   *
+   * @param street
+   * @return
+   */
   def findAddress(street: String): Option[Address] = {
-    address.findOne(MongoDBObject("street" -> street)) match {
+    address.findOne(MongoDBObject("street" -> street, "$options" -> 'i')) match {
       case Some(res: DBObject) =>
         Option(MongoDBMapper.dBOtoAddress(res))
       case None =>
@@ -47,8 +65,14 @@ object DBManager {
     }
   }
 
+  /**
+   * Search for a city in the DB. Case-insensitive search.
+   *
+   * @param city_name
+   * @return
+   */
   def findCity(city_name: String): Option[City] = {
-    city.findOne(MongoDBObject("city_name" -> city_name)) match {
+    city.findOne(MongoDBObject("city_name" -> city_name, "$options" -> 'i')) match {
       case Some(res: DBObject) =>
         Option(MongoDBMapper.dBOtoCity(res))
       case None =>
