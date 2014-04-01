@@ -8,6 +8,7 @@ import java.util.concurrent.Executors
 import scala.util.Success
 import scala.util.Failure
 import scala.annotation.tailrec
+import it.dtk.nlp.db._
 
 class TextProClient {
 
@@ -76,12 +77,12 @@ class TextProClient {
         case split10 if (split10.size == 10) =>
           Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
             Option(split(3).toInt), Option(split(4)), Option(split(5)),
-            Option(split(6)), Option(split(7)), None, Option(Vector(split(8))), Option(split(9)))
+            Option(split(6)), Option(split(7)), None, Vector(split(8)), Option(split(9)))
             
         case split8 if (split8.size == 8) =>
            Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
             Option(split(3).toInt), Option(split(4)), Option(split(5)),
-            Option(split(6)), Option(split(7)), None, None,None)
+            Option(split(6)), Option(split(7)), None, Vector.empty[String],None)
             
         case _ =>
           Word("")
