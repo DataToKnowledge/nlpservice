@@ -1,10 +1,10 @@
 package it.dtk.nlp
 
-import org.annolab.tt4j.{TokenHandler, TreeTaggerWrapper}
-import it.dtk.nlp.db.{Sentence, Word}
-import scala.concurrent.{Promise, ExecutionContext, Future}
+import org.annolab.tt4j.{ TokenHandler, TreeTaggerWrapper }
+import it.dtk.nlp.db.{ Sentence, Word }
+import scala.concurrent.{ Promise, ExecutionContext, Future }
 import java.util.concurrent.Executors
-import scala.util.{Success, Failure}
+import scala.util.{ Success, Failure }
 
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
@@ -29,8 +29,12 @@ object TreeTagger {
 
   System.setProperty("treetagger.home", treeTaggerPath)
 
-  private val treeTagger: TreeTaggerWrapper[String] = new TreeTaggerWrapper()
-  treeTagger.setModel("italian-par-linux-3.2-utf8.bin:utf-8")
+  private val treeTagger: TreeTaggerWrapper[String] = {
+    val tagger = new TreeTaggerWrapper[String]()
+    tagger.setModel("italian-par-linux-3.2-utf8.bin:utf-8")
+    tagger
+  }
+  
 
   /**
    * Returns a list of tokens with their relative pos-tag
@@ -63,7 +67,7 @@ object TreeTagger {
    * Convenience method to tag a string
    *
    * @param token a word
-   *@return the pos-tag
+   * @return the pos-tag
    */
   def tag(token: String): Future[Option[String]] = {
     val p = Promise[Option[String]]()
