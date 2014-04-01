@@ -2,27 +2,25 @@ package it.dtk.nlp
 
 import java.util.concurrent._
 import scala.concurrent.ExecutionContext
-import scala.util.Success
-import scala.util.Failure
 import it.dtk.nlp.db._
 
 object TextProClientSpec {
 
   val title = "Ricercato per traffico di droga, latitante albanese arrestato a Cassano"
 
-  val firstWordResult = Word("Ricercato", Some(1), Some(0), Some(9), Some("-"), Some("VSP"), Some("ricercare"), Some("ricercare+v+part+pass+m+nil+sing"), None, Vector("O"), Some("B-VX"))
+  val firstWordResult = Word("Ricercato", Some(1), Some(0), Some(9), Some("-"), Some("VSP"), Some("ricercare"), Some("ricercare+v+part+pass+m+nil+sing"), None, Vector.empty[String], Some("B-VX"))
 
   val summary = "L'uomo, che nel frattempo aveva 'cambiato identità' dotandosi di un nuovo passaporto," +
     " risiedeva da qualche tempo nel Comune dell'hinterland barese. E' stato arrestato dai finanzieri"
 
-  val firstWordSummary = Word("L'", Some(1), Some(0), Some(2), Some("-"), Some("RS"), Some("det"), Some("det+art+_+sing"), None, Vector("O"), Some("B-NP"))
+  val firstWordSummary = Word("L'", Some(1), Some(0), Some(2), Some("-"), Some("RS"), Some("det"), Some("det+art+_+sing"), None, Vector.empty[String], Some("B-NP"))
 
   val text = """Era ricercato per una condanna definitiva a quattro anni di reclusione emessa dal Tribunale di Firenze per traffico internazionale di sostanze stupefacenti. Da mesi si era reso irreperibile, dopo essersi allontanato dall’ultima residenza di San Giovanni Valdarno, in provincia di Arezzo.
 Nel frattempo per il latitante - Julian Binaj, classe 1989, albanese - aveva 'cambiato identità' procurandosi un falso passaporto e si era trasferito a Cassano.
 A scoprirlo ed arrestarlo sono stati i finanzieri del G.I.C.O. di Bari, che dopo una serie di attività investigative hanno accertato che il narcotrafficante si trovava proprio nel Comune dell'hinterland barese. L'uomo, tra l'altro, è stato bloccato dai militari proprio nelle piazza centrale del paese. Nel tentativo di sfuggire all'arresto ha tentato di far credere che si trattasse di uno scambio di persona, mostrando il falso passaporto e addirittura un falso tesserino per far credere di essere un agente sotto copertura di un’agenzia governativa della Repubblica albanese, la C.B.I. (Central Bureau of Investigation).
 Il latitante è stato arrestato e condotto in carcere."""
     
-    val firstTextWord = Word("Era",Some(1),Some(0),Some(3),Some("-"),Some("VI"),Some("essere"),Some("essere+v+indic+imperf+nil+3+sing"),None,Vector("O"),Some("B-VX"))
+    val firstTextWord = Word("Era",Some(1),Some(0),Some(3),Some("-"),Some("VI"),Some("essere"),Some("essere+v+indic+imperf+nil+3+sing"),None,Vector.empty[String],Some("B-VX"))
 
   val news = News("id", "http://www.baritoday.it/cronaca/", "http://www.baritoday.it/cronaca/narcotrafficante-albanese-latitante-arrestato-a-cassano.html",
     Option(title), Option(summary), None)
