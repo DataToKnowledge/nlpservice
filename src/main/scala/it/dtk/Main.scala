@@ -23,7 +23,7 @@ object Main {
 
   def main(args: Array[String]) {
 
-    val news = DBManager.getNews(5)
+    val news = DBManager.getNews(10)
 
     val textProClient = new TextProClient
 
@@ -56,6 +56,7 @@ object Main {
           val strEntities = entities.map(w => w.token + " " + w.iobEntity)
           println(strEntities.mkString("\n"))
         case Failure(ex) =>
+          println("\n" + n.title.get)
           ex.printStackTrace()
       }
     }
