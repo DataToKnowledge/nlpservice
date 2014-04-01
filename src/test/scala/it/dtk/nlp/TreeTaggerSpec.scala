@@ -1,6 +1,13 @@
 package it.dtk.nlp
 
+import java.util.concurrent.Executors
+import scala.concurrent.ExecutionContext
+
 object TreeTaggerSpec {
+
+  val executorService = Executors.newSingleThreadExecutor()
+
+  implicit val executionContext = ExecutionContext.fromExecutorService(executorService)
 
   val words = Vector(
     ("Maxi", "NOM"),
@@ -31,7 +38,9 @@ class TreeTaggerSpec extends BaseTestClass {
       words.foreach {
         w =>
           s"return the corrent posTag for '${w._1}'" in {
-            TreeTagger.tag(w._1).get should be(w._2)
+            whenReady(TreeTagger.tag(w._1)) {
+              _.get should be(w._2)
+            }
           }
       }
 

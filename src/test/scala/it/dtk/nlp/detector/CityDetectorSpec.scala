@@ -19,24 +19,28 @@ class CityDetectorSpec extends BaseTestClass {
 
   "A CityDetector" when {
 
-    val detector = CityDetector
-
     "finds cities" should {
 
       "tag a compound-city" in {
 
-        val result = detector.detect(TreeTagger.apply(TextPreprocessor.apply(sentence).head)).words
+        whenReady(TreeTagger.apply(TextPreprocessor.apply(sentence).head)) {
+          sentence =>
+            val result = CityDetector.detect(sentence).words
 
-        result.count(_.iobEntity.contains("B-CITY")) should be (1)
-        result.count(_.iobEntity.contains("I-CITY")) should be (2)
+            result.count(_.iobEntity.contains("B-CITY")) should be(1)
+            result.count(_.iobEntity.contains("I-CITY")) should be(2)
+        }
       }
 
       "tag a city" in {
 
-        val result = detector.detect(TreeTagger.apply(TextPreprocessor.apply(city).head)).words
+        whenReady(TreeTagger.apply(TextPreprocessor.apply(city).head)) {
+          sentence =>
+            val result = CityDetector.detect(sentence).words
 
-        result.count(_.iobEntity.contains("B-CITY")) should be (1)
-        result.count(_.iobEntity.contains("I-CITY")) should be (0)
+            result.count(_.iobEntity.contains("B-CITY")) should be(1)
+            result.count(_.iobEntity.contains("I-CITY")) should be(0)
+        }
       }
 
     }

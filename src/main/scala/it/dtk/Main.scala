@@ -22,9 +22,11 @@ object Main {
 
     val news = DBManager.getNews(5)
 
+    /*
+    Using TreeTagger
     val sentences = news.map(n => TextPreprocessor.apply(n.text.get)).map(_.map(TreeTagger.apply))
-
     sentences.map(_.map(s => CityDetector.detect(DateDetector.detect(s))))
+    */
 
     val textProClient = new TextProClient
 

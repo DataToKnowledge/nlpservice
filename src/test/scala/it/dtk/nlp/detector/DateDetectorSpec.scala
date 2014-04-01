@@ -5,11 +5,12 @@ import org.scalatest.{Matchers, FlatSpec}
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.net.URL
+import org.scalatest.concurrent.{Futures, ScalaFutures}
 
 /**
  * @author Michele Damiano Torelli <daniele@datatoknowledge.it>
  */
-class DateDetectorSpec extends FlatSpec with Matchers {
+class DateDetectorSpec extends FlatSpec with Matchers with Futures with ScalaFutures {
 
   "A DateDetector" should "tag all detected dates in a sentence" in {
     val sentence = "a b 28 Gennaio 2013 A B " +
@@ -17,21 +18,25 @@ class DateDetectorSpec extends FlatSpec with Matchers {
       "a Febbraio a b Lunedì 34 Gennaio 2016 " +
       "Lunedì 12 Marzo 2018 d E 3 Aprile '12"
 
-    val words = TreeTagger.apply(TextPreprocessor.apply(sentence).head)
-    val results = DateDetector.detect(words).words
+    whenReady(TreeTagger.apply(TextPreprocessor.apply(sentence).head)) {
+      words =>
+        val results = DateDetector.detect(words).words
 
-    results.size should be(words.words.size)
-    results.count(w => w.iobEntity.contains("B-DATE")) should be(4)
-    results.count(w => w.iobEntity.contains("I-DATE")) should be(11)
+        results.size should be(words.words.size)
+        results.count(w => w.iobEntity.contains("B-DATE")) should be(4)
+        results.count(w => w.iobEntity.contains("I-DATE")) should be(11)
+    }
   }
 
   it should "return the same vector if no dates are detected" in {
     val sentence = "a b A B c b a Febbraio a b Lunedì 34 Gennaio 2016 d E"
-    val words = TreeTagger.apply(TextPreprocessor.apply(sentence).head)
-    val results = DateDetector.detect(words).words
+    whenReady(TreeTagger.apply(TextPreprocessor.apply(sentence).head)) {
+      words =>
+        val results = DateDetector.detect(words).words
 
-    results.size should be(words.words.size)
-    results.count(w => w.iobEntity.nonEmpty) should be(0)
+        results.size should be(words.words.size)
+        results.count(w => w.iobEntity.nonEmpty) should be(0)
+    }
   }
 
   it should "return datetime object of a given date" in {

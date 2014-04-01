@@ -2,11 +2,17 @@ package it.dtk.nlp
 
 import org.annolab.tt4j.{TokenHandler, TreeTaggerWrapper}
 import it.dtk.nlp.db.{Sentence, Word}
+import scala.concurrent.{Promise, ExecutionContext, Future}
+import java.util.concurrent.Executors
+import scala.util.{Success, Failure}
 
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
 object TreeTagger {
+
+  private val executorService = Executors.newCachedThreadPool()
+  private implicit val executionContext = ExecutionContext.fromExecutorService(executorService)
 
   private val treeTaggerPath = {
     val os = System.getProperty("os.name").toLowerCase
@@ -32,7 +38,9 @@ object TreeTagger {
    * @param tokens a list of tokens
    * @return tokens with pos-tag and lemma
    */
-  def tag(tokens: Seq[Word]): Seq[Word] = {
+  def tag(tokens: Seq[Word]): Future[Seq[Word]] = {
+    val p = Promise[Seq[Word]]()
+
     var tags = Vector.empty[Word]
 
     treeTagger.setHandler(new TokenHandler[String] {
@@ -43,10 +51,12 @@ object TreeTagger {
 
     try {
       treeTagger.process(tokens.map(_.token).toArray)
-      tags
+      p success tags
     } catch {
-      case _: Throwable => tokens
+      case ex: Throwable => p failure ex
     }
+
+    p.future
   }
 
   /**
@@ -55,8 +65,17 @@ object TreeTagger {
    * @param token a word
    *@return the pos-tag
    */
-  def tag(token: String): Option[String] = {
-    tag(Array(new Word(token))).head.posTag
+  def tag(token: String): Future[Option[String]] = {
+    val p = Promise[Option[String]]()
+
+    tag(Array(new Word(token))) onComplete {
+      case Success(s) =>
+        p success s.head.posTag
+      case Failure(ex) =>
+        p failure ex
+    }
+
+    p.future
   }
 
   /**
@@ -65,8 +84,17 @@ object TreeTagger {
    * @param sentence
    * @return
    */
-  def apply(sentence: Sentence): Sentence = {
-    Sentence(tag(sentence.words))
+  def apply(sentence: Sentence): Future[Sentence] = {
+    val p = Promise[Sentence]()
+
+    tag(sentence.words) onComplete {
+      case Success(s) =>
+        p success Sentence(s)
+      case Failure(ex) =>
+        p failure ex
+    }
+
+    p.future
   }
 
 }
