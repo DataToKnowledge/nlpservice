@@ -27,7 +27,8 @@ object DBManager {
    * @return
    */
   def findLemma(word: String): Option[Lemma] = {
-    lemma.findOne(MongoDBObject("word" -> word, "$options" -> 'i')) match {
+    val regex = "(?i)^" + word + "$"
+    lemma.findOne(MongoDBObject("word" -> regex.r)) match {
       case Some(res: DBObject) =>
         Option(MongoDBMapper.dBOtoLemma(res))
       case None =>
@@ -42,7 +43,8 @@ object DBManager {
    * @return
    */
   def findCrime(word: String): Option[Crime] = {
-    crime.findOne(MongoDBObject("word" -> word, "$options" -> 'i')) match {
+    val regex = "(?i)^" + word + "$"
+    crime.findOne(MongoDBObject("word" -> regex.r)) match {
       case Some(res: DBObject) =>
         Option(MongoDBMapper.dBOtoCrime(res))
       case None =>
@@ -57,7 +59,8 @@ object DBManager {
    * @return
    */
   def findAddress(street: String): Option[Address] = {
-    address.findOne(MongoDBObject("street" -> street, "$options" -> 'i')) match {
+    val regex = "(?i)^" + street + "$"
+    address.findOne(MongoDBObject("street" -> regex.r)) match {
       case Some(res: DBObject) =>
         Option(MongoDBMapper.dBOtoAddress(res))
       case None =>
@@ -72,7 +75,8 @@ object DBManager {
    * @return
    */
   def findCity(city_name: String): Option[City] = {
-    city.findOne(MongoDBObject("city_name" -> city_name, "$options" -> 'i')) match {
+    val regex = "(?i)^" + city_name + "$"
+    city.findOne(MongoDBObject("city_name" -> regex.r)) match {
       case Some(res: DBObject) =>
         Option(MongoDBMapper.dBOtoCity(res))
       case None =>

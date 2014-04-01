@@ -6,7 +6,7 @@ object CityDetectorSpec {
 
   val sentence = "Si tratta di un 57enne di Grumello Del Monte arrestato dai carabinieri con l’accusa di detenzione illegale di arma da sparo."
 
-  val city = "Bari"
+  val city = "BARI"
 
 }
 
