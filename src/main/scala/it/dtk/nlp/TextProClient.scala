@@ -73,23 +73,24 @@ class TextProClient {
           var iobEntity = Vector.empty[String]
           if (!split(8).equals("O"))
             iobEntity = Vector(split(8))
-          Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
+            Option(Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
             Option(split(3).toInt), Option(split(4)), Option(split(5)),
-            Option(split(6)), Option(split(7)), None, iobEntity, Option(split(9)))
+            Option(split(6)), Option(split(7)), None, iobEntity, Option(split(9))))
             
         case split8 if split8.size == 8 =>
-           Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
-            Option(split(3).toInt), Option(split(4)), Option(split(5)),
-            Option(split(6)), Option(split(7)), None, Vector.empty[String],None)
+          Option(Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
+          Option(split(3).toInt), Option(split(4)), Option(split(5)),
+          Option(split(6)), Option(split(7)), None, Vector.empty[String],None))
             
         case _ =>
-          Word("")
+          None
       }
 
-      val pair = if (word.sentence.getOrElse("") == "<eos>") {
-        (acc :+ Sentence(curr :+ word), Vector.empty[Word])
+      //FIXME: this adds empty words
+      val pair = if (word.getOrElse(Word("")).sentence.getOrElse("") == "<eos>") {
+        (acc :+ Sentence(curr :+ word.getOrElse(Word(""))), Vector.empty[Word])
       } else {
-        (acc, curr :+ word)
+        (acc, curr :+ word.getOrElse(Word("")))
       }
       if (tail == Nil)
         pair._1
