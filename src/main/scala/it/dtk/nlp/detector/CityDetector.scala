@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory
 object CityDetector extends Detector {
 
   /**
-   * Maximum number of tokens for an address
+   * Maximum number of tokens for a city
    */
   private val RANGE = 3
 
   /**
-   *
+   * City name regular expression
    */
   private val CITIES_R = "^[A-Z](\\w+|\\')[\\w\\s\\']*"
 
@@ -23,7 +23,10 @@ object CityDetector extends Detector {
   override def detect(sentence: Sentence): Sentence = {
     var result = Vector.empty[Word]
 
-    def bumpEndIndex(offset: Int) = if (offset + RANGE >= sentence.words.length) sentence.words.length - 1 else offset + RANGE
+    def bumpEndIndex(offset: Int) = {
+      if (offset + RANGE >= sentence.words.length) sentence.words.length - 1
+      else offset + RANGE
+    }
 
     var startIndex: Int = 0
     var endIndex = bumpEndIndex(startIndex)
@@ -38,7 +41,7 @@ object CityDetector extends Detector {
           // ho trovato una corrispondenza nel DB, flaggo le word come City e sposto la finestra
           // di N posizioni, dove N e` il numero di word che ho flaggato
           case Some(res: City) =>
-            log.info(s"Found city: " + res.city_name)
+            log.info(s"Found city: ${res.city_name}")
 
             val currentWord = sentence.words.apply(startIndex)
             result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "B-CITY")
