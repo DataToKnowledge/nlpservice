@@ -243,7 +243,7 @@ object DateDetector extends Detector {
                      dateCandidate = words.slice(startIndex + sIndex, startIndex + i).map(_.token).mkString(sep = " ")
                      if isValidDate(dateCandidate)) yield Range(startIndex + sIndex, startIndex + i)
 
-    if (!dates.isEmpty) Some(dates.head)
+    if (dates.nonEmpty) Some(dates.head)
     else None
   }
 
