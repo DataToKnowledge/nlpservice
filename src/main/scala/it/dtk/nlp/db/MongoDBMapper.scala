@@ -3,6 +3,7 @@ package it.dtk.nlp.db
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.conversions.scala._
 import org.joda.time.DateTime
+import scala.language.implicitConversions
 
 object MongoDBMapper {
 
