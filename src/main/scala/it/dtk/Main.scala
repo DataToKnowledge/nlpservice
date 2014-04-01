@@ -35,14 +35,13 @@ object Main {
       futureResult.onComplete {
         case Success((tags, sents)) =>
           println(tags)
-          val values = sents.get
           val entities = for {
-            s <- values
+            s <- sents
             w <- s.words
             if w.iobEntity.nonEmpty
-          } yield Option(w)
+          } yield w
           
-          entities.foreach(optWord => println(optWord.get))
+          entities.foreach(println)
         case Failure(ex) =>
           ex.printStackTrace()
       }

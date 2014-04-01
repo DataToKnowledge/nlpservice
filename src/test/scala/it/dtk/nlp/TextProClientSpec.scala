@@ -48,7 +48,7 @@ class TextProClientSpec extends BaseTestClass {
         }
 
         "should have 7 tags" in {
-          tags.value.size should be(7)
+          tags.size should be(7)
         }
 
         "should have a sentence" in {
@@ -56,11 +56,11 @@ class TextProClientSpec extends BaseTestClass {
         }
 
         "the sentence should be composed of 1 sentence" in {
-          sentences.value.size should be(1)
+          sentences.size should be(1)
         }
 
         "the first word in the sentence is " + firstWordResult in {
-          val firstSentenceWord = sentences.value.head.words(0)
+          val firstSentenceWord = sentences.head.words(0)
           firstSentenceWord shouldBe firstWordResult
         }
       }
@@ -78,7 +78,7 @@ class TextProClientSpec extends BaseTestClass {
         }
 
         "should have 10 tags" in {
-          tags.value.size should be(10)
+          tags.size should be(10)
         }
 
         "should have a sentence" in {
@@ -86,11 +86,11 @@ class TextProClientSpec extends BaseTestClass {
         }
 
         "the sentence should be composed of 2 sentence" in {
-          sentences.value.size should be(2)
+          sentences.size should be(2)
         }
 
         "the first word in the sentence is " + firstWordSummary in {
-          val firstSentenceWord = sentences.value.head.words(0)
+          val firstSentenceWord = sentences.head.words(0)
           firstSentenceWord shouldBe firstWordSummary
         }
 
@@ -109,7 +109,7 @@ class TextProClientSpec extends BaseTestClass {
         }
 
         "should have 15 tags" in {
-          tags.value.size should be(15)
+          tags.size should be(15)
         }
 
         "should have a sentence" in {
@@ -117,12 +117,12 @@ class TextProClientSpec extends BaseTestClass {
         }
 
         "the sentence should be composed of 7 sentence" in {
-          sentences.value.size should be(7)
+          sentences.size should be(7)
           //println(sentences.value.length)
         }
 
         "the first word in the sentence is " + firstTextWord in {
-          val firstSentenceWord = sentences.value.head.words(0)
+          val firstSentenceWord = sentences.head.words(0)
           firstSentenceWord shouldBe firstTextWord
         }
 

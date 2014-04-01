@@ -21,7 +21,7 @@ class TextProClient {
    * @param text
    * @return a tuple of tags and sequence of sentences
    */
-  def process(text: String): Future[(Option[Map[String, Double]], Option[Seq[Sentence]])] = {
+  def process(text: String): Future[(Map[String, Double], Seq[Sentence])] = {
     val params = Map("text" -> text)
     val res = client.post(urlPost, params).map { response =>
       val body = response.getResponseBody
@@ -30,7 +30,7 @@ class TextProClient {
     res
   }
 
-  private def parseText(text: String): (Option[Map[String, Double]], Option[Seq[Sentence]]) = {
+  private def parseText(text: String): (Map[String, Double], Seq[Sentence]) = {
 
     //remove the first line that represents the header # FILE: input/prova.in
     val lines = text.split("\n")
@@ -43,11 +43,11 @@ class TextProClient {
         val seqSentences = extractSentences(fields)
         (keywords, seqSentences)
       case _ =>
-        (None, None)
+        (Map.empty[String, Double], Vector.empty[Sentence])
     }
   }
 
-  private def extractKeywords(text: String): Option[Map[String, Double]] = {
+  private def extractKeywords(text: String): Map[String, Double] = {
 
     val clean = text.split(":")(1).trim
 
@@ -57,17 +57,14 @@ class TextProClient {
       val elemArray = array(1).trim.split(" ")
       key -> elemArray(0).toDouble
     }
-    val mapKeywords = keyValuePair.foldLeft(Map.empty[String, Double])((map, elem) => map + elem)
 
-    if (mapKeywords.isEmpty) None
-    else
-      Option(mapKeywords)
+    keyValuePair.foldLeft(Map.empty[String, Double])((map, elem) => map + elem)
   }
 
-  private def extractSentences(lines: List[String]): Option[Seq[Sentence]] = {
+  private def extractSentences(lines: List[String]): Seq[Sentence] = {
 
     @tailrec
-    def extractSentencesTail(acc: Seq[Sentence], curr: Seq[Word], head: String, tail: List[String]): Option[Seq[Sentence]] = {
+    def extractSentencesTail(acc: Seq[Sentence], curr: Seq[Word], head: String, tail: List[String]): Seq[Sentence] = {
       //extract the word
       val split = head.split("\t")
 
@@ -95,7 +92,7 @@ class TextProClient {
         (acc, curr :+ word)
       }
       if (tail == Nil)
-        Option(pair._1)
+        pair._1
       else
         extractSentencesTail(pair._1, pair._2, tail.head, tail.tail)
     }
