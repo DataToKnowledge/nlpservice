@@ -5,8 +5,6 @@ import java.util.concurrent.Executor
 import scala.concurrent._
 import scala.concurrent.duration._
 import java.util.concurrent.Executors
-import scala.util.Success
-import scala.util.Failure
 import scala.annotation.tailrec
 import it.dtk.nlp.db._
 
@@ -26,7 +24,7 @@ class TextProClient {
   def process(text: String): Future[(Option[Map[String, Double]], Option[Seq[Sentence]])] = {
     val params = Map("text" -> text)
     val res = client.post(urlPost, params).map { response =>
-      val body = response.getResponseBody()
+      val body = response.getResponseBody
       parseText(body)
     }
     res
@@ -74,7 +72,7 @@ class TextProClient {
       val split = head.split("\t")
 
       val word = split match {
-        case split10 if (split10.size == 10) =>
+        case split10 if split10.size == 10 =>
           var iobEntity = Vector.empty[String]
           if (!split(8).equals("O"))
             iobEntity = Vector(split(8))
@@ -82,7 +80,7 @@ class TextProClient {
             Option(split(3).toInt), Option(split(4)), Option(split(5)),
             Option(split(6)), Option(split(7)), None, iobEntity, Option(split(9)))
             
-        case split8 if (split8.size == 8) =>
+        case split8 if split8.size == 8 =>
            Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
             Option(split(3).toInt), Option(split(4)), Option(split(5)),
             Option(split(6)), Option(split(7)), None, Vector.empty[String],None)
@@ -103,8 +101,6 @@ class TextProClient {
     }
     extractSentencesTail(Vector.empty[Sentence], Vector.empty[Word], lines.head, lines.tail)
   }
-
-  def process(news: News): News = ???
 
 }
 
@@ -127,12 +123,12 @@ object AsyncWebClient {
     val f = client.prepareGet(url).execute()
     val p = Promise[Response]()
     f.addListener(new Runnable {
-      def run = {
+      def run() = {
         try {
           val response = f.get()
-          if (response.getStatusCode() / 100 < 4)
+          if (response.getStatusCode < 400)
             p.success(response)
-          else p.failure(BadStatus(u, response.getStatusCode()))
+          else p.failure(BadStatus(u, response.getStatusCode))
         } catch {
           case t: Throwable =>
             p.failure(GetException(u, t))
@@ -151,12 +147,12 @@ object AsyncWebClient {
     val post = f.execute()
     val p = Promise[Response]()
     post.addListener(new Runnable {
-      def run = {
+      def run() = {
         try {
           val response = post.get()
-          if (response.getStatusCode() < 400)
+          if (response.getStatusCode < 400)
             p.success(response)
-          else p.failure(BadStatus(u, response.getStatusCode()))
+          else p.failure(BadStatus(u, response.getStatusCode))
         } catch {
           case t: Throwable =>
             p.failure(t)
@@ -167,26 +163,4 @@ object AsyncWebClient {
   }
 
   def shutdown(): Unit = client.close()
-}
-
-import ExecutionContext.Implicits.global
-
-object Main extends App {
-  val client = new TextProClient
-  //val text = "Ricercato per traffico di droga, latitante albanese arrestato a Cassano"
-  val text = """Era ricercato per una condanna definitiva a quattro anni di reclusione emessa dal Tribunale di Firenze per traffico internazionale di sostanze stupefacenti. Da mesi si era reso irreperibile, dopo essersi allontanato dall’ultima residenza di San Giovanni Valdarno, in provincia di Arezzo.
-Nel frattempo per il latitante - Julian Binaj, classe 1989, albanese - aveva 'cambiato identità' procurandosi un falso passaporto e si era trasferito a Cassano.
-A scoprirlo ed arrestarlo sono stati i finanzieri del G.I.C.O. di Bari, che dopo una serie di attività investigative hanno accertato che il narcotrafficante si trovava proprio nel Comune dell'hinterland barese. L'uomo, tra l'altro, è stato bloccato dai militari proprio nelle piazza centrale del paese. Nel tentativo di sfuggire all'arresto ha tentato di far credere che si trattasse di uno scambio di persona, mostrando il falso passaporto e addirittura un falso tesserino per far credere di essere un agente sotto copertura di un’agenzia governativa della Repubblica albanese, la C.B.I. (Central Bureau of Investigation).
-Il latitante è stato arrestato e condotto in carcere."""
-  val result = client.process(text)
-
-  result.onComplete {
-    case Success((tags, sentences)) =>
-      println(tags)
-      println(sentences)
-
-    case Failure(ex) =>
-      println(ex)
-      ex.printStackTrace()
-  }
 }
