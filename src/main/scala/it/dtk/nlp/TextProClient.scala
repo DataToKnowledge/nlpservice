@@ -7,6 +7,7 @@ import scala.concurrent.duration._
 import java.util.concurrent.Executors
 import scala.annotation.tailrec
 import it.dtk.nlp.db._
+import scala.io.Codec
 
 class TextProClient {
 
@@ -24,7 +25,8 @@ class TextProClient {
   def process(text: String): Future[(Map[String, Double], Seq[Sentence])] = {
     val params = Map("text" -> text)
     val res = client.post(urlPost, params).map { response =>
-      val body = response.getResponseBody
+      val body = new String(Codec.fromUTF8(response.getResponseBodyAsBytes()))
+      println(body)
       parseText(body)
     }
     res
@@ -108,11 +110,11 @@ case class GetException(url: String, innerException: Throwable) extends Throwabl
 object AsyncWebClient {
   val builder = new AsyncHttpClientConfig.Builder()
   builder.setFollowRedirects(true)
-  builder.setCompressionEnabled(false)
   builder.setConnectionTimeoutInMs(240.seconds.toMillis.toInt)
   builder.setRequestTimeoutInMs(240.seconds.toMillis.toInt)
   builder.setMaximumConnectionsPerHost(2)
   builder.setAllowPoolingConnection(true)
+  builder.setCompressionEnabled(true)
 
   private val client = new AsyncHttpClient(builder.build())
 
@@ -139,7 +141,7 @@ object AsyncWebClient {
 
   def post(url: String, params: Map[String, String])(implicit exec: Executor): Future[Response] = {
     val u = url
-    val f = client.preparePost(url).addHeader("Content-Type", "application/x-www-form-urlencoded ")
+    val f = client.preparePost(url).addHeader("Content-Type", "application/x-www-form-urlencoded ").addHeader("charset", "utf-8")
     //add post parameters
     params.foreach(pair => f.addParameter(pair._1, pair._2))
     val post = f.execute()

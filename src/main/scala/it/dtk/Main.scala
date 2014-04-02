@@ -10,6 +10,8 @@ import scala.concurrent.ExecutionContext
 import it.dtk.nlp.db.News
 import scala.concurrent.Future
 import it.dtk.nlp.detector.CrimeDetectorGVE
+import it.dtk.nlp.detector.AddressDetectorGVE
+import scala.concurrent.Await
 
 /**
  * Author: DataToKnowledge S.r.l.s.
@@ -40,7 +42,12 @@ object Main {
         val citySentences = sentences.map(CityDetector.detect)
         val crimeSentences = citySentences.map(CrimeDetectorGVE.detect)
         val dateSentences = crimeSentences.map(DateDetector.detect)
-        keysSents._1 -> dateSentences
+        val addressSentences = dateSentences.map(AddressDetectorGVE.detect)
+        keysSents._1 -> addressSentences
+      }
+      
+      for (i <- 1 to 4000){
+        
       }
 
       pipeline.onComplete {
@@ -53,11 +60,15 @@ object Main {
 
           println("\n" + n.text.get)
           println(tags)
-          val strEntities = entities.map(w => w.token + " " + w.iobEntity)
-          println(strEntities.mkString("\n"))
+          val strEntities = entities.map{w => 
+            if (w.iobEntity.nonEmpty)
+            	w.token + " / " + w.iobEntity.mkString(" ")
+            else w.token	
+          }
+          println(strEntities.mkString(" "))
         case Failure(ex) =>
-          println("\n" + n.title.get)
-          ex.printStackTrace()
+          println("\n" + n.nlpText.getOrElse("No Text!!!"))
+          //ex.printStackTrace()
       }
     }
 
