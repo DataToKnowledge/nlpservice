@@ -7,7 +7,7 @@ import scala.language.implicitConversions
 
 object MongoDBMapper {
 
-  def wordToDBO(word: Word): DBObject = {
+  implicit def wordToDBO(word: Word): DBObject = {
     DBObject(
       "token" -> word.token,
       "tokenId" -> word.tokenId,
@@ -23,7 +23,7 @@ object MongoDBMapper {
     )
   }
 
-  def dBOToWord(dbo: DBObject): Word = {
+  implicit def dBOToWord(dbo: DBObject): Word = {
     Word(
       dbo.getAs[String]("token").get,
       dbo.getAs[Int]("tokenId"),
@@ -38,59 +38,59 @@ object MongoDBMapper {
       dbo.getAs[String]("chunk"))
   }
 
-  def sentenceToDBO(sentence: Sentence): DBObject = {
+  implicit def sentenceToDBO(sentence: Sentence): DBObject = {
     DBObject(
       "words" -> sentence.words.map(wordToDBO)
     )
   }
 
-  def dBOToSentence(dbo: DBObject): Sentence = {
+  implicit def dBOToSentence(dbo: DBObject): Sentence = {
     val seqDBO = dbo.getAs[Seq[DBObject]]("words")
     //convert to words
     val seqWords = seqDBO.map(s => s.map(dBOToWord))
     Sentence(seqWords.getOrElse(Vector.empty))
   }
 
-  def nlpTitleToDBO(title: NLPTitle): DBObject = {
+  implicit def nlpTitleToDBO(title: NLPTitle): DBObject = {
     DBObject(
       "sentences" -> title.sentences.map(s => sentenceToDBO(s))
     )
   }
 
-  def dBOtoNlpTitle(dbo: DBObject): NLPTitle = {
+  implicit def dBOtoNlpTitle(dbo: DBObject): NLPTitle = {
     val seqDBO = dbo.getAs[Seq[DBObject]]("sentences")
     //convert to sentences
     val seqSentences = seqDBO.map(s => s.map(dBOToSentence))
     NLPTitle(seqSentences.getOrElse(Vector.empty))
   }
 
-  def nlpSummaryToDBO(summary: NLPSummary): DBObject = {
+  implicit def nlpSummaryToDBO(summary: NLPSummary): DBObject = {
     DBObject(
       "sentences" -> summary.sentences.map(s => sentenceToDBO(s))
     )
   }
 
-  def dBOtoNlpSummary(dbo: DBObject): NLPSummary = {
+  implicit def dBOtoNlpSummary(dbo: DBObject): NLPSummary = {
     val seqDBO = dbo.getAs[Seq[DBObject]]("sentences")
     //convert to sentences
     val seqSentences = seqDBO.map(s => s.map(dBOToSentence))
     NLPSummary(seqSentences.getOrElse(Vector.empty))
   }
 
-  def nlpTextToDBO(text: NLPText): DBObject = {
+  implicit def nlpTextToDBO(text: NLPText): DBObject = {
     DBObject(
       "sentences" -> text.sentences.map(s => sentenceToDBO(s))
     )
   }
 
-  def dBOtoNlpText(dbo: DBObject): NLPText = {
+  implicit def dBOtoNlpText(dbo: DBObject): NLPText = {
     val seqDBO = dbo.getAs[Seq[DBObject]]("sentences")
     //convert to sentences
     val seqSentences = seqDBO.map(s => s.map(dBOToSentence))
     NLPText(seqSentences.getOrElse(Vector.empty))
   }
 
-  def dBOToNews(dbo: DBObject): News = {
+  implicit def dBOToNews(dbo: DBObject): News = {
     RegisterJodaTimeConversionHelpers()
     News(
       dbo._id.map(_.toString).get,
@@ -108,7 +108,7 @@ object MongoDBMapper {
     )
   }
 
-  def NewsToDBO(news: News): DBObject = {
+  implicit def NewsToDBO(news: News): DBObject = {
     DBObject(
       "urlWebSite" -> news.urlWebSite,
       "urlNews" -> news.urlNews,
@@ -124,7 +124,7 @@ object MongoDBMapper {
     )
   }
 
-  def dBOtoLemma(dbo: DBObject): Lemma = {
+  implicit def dBOtoLemma(dbo: DBObject): Lemma = {
     Lemma(
       dbo._id.map(_.toString).get,
       dbo.getAs[String]("word").get,
@@ -133,7 +133,7 @@ object MongoDBMapper {
     )
   }
 
-  def lemmaToDBO(lemma: Lemma): DBObject = {
+  implicit  def lemmaToDBO(lemma: Lemma): DBObject = {
     DBObject(
       "word" -> lemma.word,
       "lemma" -> lemma.lemma,
@@ -141,7 +141,7 @@ object MongoDBMapper {
     )
   }
 
-  def dBOtoCity(dbo: DBObject): City = {
+  implicit def dBOtoCity(dbo: DBObject): City = {
     City(
       dbo._id.map(_.toString).get,
       dbo.getAs[String]("city_name").get,
@@ -154,7 +154,7 @@ object MongoDBMapper {
     )
   }
 
-  def cityToDBO(city: City): DBObject = {
+  implicit def cityToDBO(city: City): DBObject = {
     DBObject(
       "city_name" -> city.city_name,
       "cap" -> city.cap,
@@ -166,7 +166,7 @@ object MongoDBMapper {
     )
   }
 
-  def dBOtoCrime(dbo: DBObject): Crime = {
+  implicit def dBOtoCrime(dbo: DBObject): Crime = {
     Crime(
       dbo._id.map(_.toString).get,
       dbo.getAs[String]("word").get,
@@ -176,7 +176,7 @@ object MongoDBMapper {
     )
   }
 
-  def crimeToDBO(crime: Crime): DBObject = {
+  implicit def crimeToDBO(crime: Crime): DBObject = {
     DBObject(
       "word" -> crime.word,
       "lemma" -> crime.lemma,
@@ -185,7 +185,7 @@ object MongoDBMapper {
     )
   }
 
-  def dBOtoAddress(dbo: DBObject): Address = {
+  implicit def dBOtoAddress(dbo: DBObject): Address = {
     Address(
       dbo._id.map(_.toString).get,
       dbo.getAs[String]("street").get,

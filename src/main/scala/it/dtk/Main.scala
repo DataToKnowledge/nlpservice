@@ -23,7 +23,7 @@ object Main {
 
   def main(args: Array[String]) {
 
-    val news = DBManager.getNews(10)
+    val news = DBManager.getNews(5)
 
     val textProClient = new TextProClient
 
@@ -35,7 +35,7 @@ object Main {
       val nlpText = textProClient.process(n.text.get)
 
       //call city, date and crime detector
-      val pipeline = nlpTitle.map { keysSents =>
+      val pipeline = nlpText.map { keysSents =>
         val sentences = keysSents._2
         val citySentences = sentences.map(CityDetector.detect)
         val crimeSentences = citySentences.map(CrimeDetectorGVE.detect)
@@ -51,7 +51,7 @@ object Main {
 //            if w.iobEntity.nonEmpty
           } yield w
 
-          println("\n" + n.title.get)
+          println("\n" + n.text.get)
           println(tags)
           val strEntities = entities.map(w => w.token + " " + w.iobEntity)
           println(strEntities.mkString("\n"))

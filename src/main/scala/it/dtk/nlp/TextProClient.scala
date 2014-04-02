@@ -111,7 +111,7 @@ object AsyncWebClient {
   builder.setCompressionEnabled(false)
   builder.setConnectionTimeoutInMs(240.seconds.toMillis.toInt)
   builder.setRequestTimeoutInMs(240.seconds.toMillis.toInt)
-  //builder.setMaximumConnectionsPerHost(2)
+  builder.setMaximumConnectionsPerHost(2)
   builder.setAllowPoolingConnection(true)
 
   private val client = new AsyncHttpClient(builder.build())

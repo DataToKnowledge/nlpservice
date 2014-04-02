@@ -3,6 +3,8 @@ package it.dtk.nlp.db
 import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.DBObject
+import com.mongodb.casbah.Imports._
+import MongoDBMapper._
 
 /**
  *
@@ -30,7 +32,7 @@ object DBManager {
     val regex = "(?i)^" + word + "$"
     lemma.findOne(MongoDBObject("word" -> regex.r)) match {
       case Some(res: DBObject) =>
-        Option(MongoDBMapper.dBOtoLemma(res))
+        Option(res)
       case None =>
         None
     }
@@ -46,7 +48,7 @@ object DBManager {
     val regex = "(?i)^" + word + "$"
     crime.findOne(MongoDBObject("word" -> regex.r)) match {
       case Some(res: DBObject) =>
-        Option(MongoDBMapper.dBOtoCrime(res))
+        Option(res)
       case None =>
         None
     }
@@ -68,7 +70,7 @@ object DBManager {
 
     address.findOne(query) match {
       case Some(res: DBObject) =>
-        Option(MongoDBMapper.dBOtoAddress(res))
+        Option(res)
       case None =>
         None
     }
@@ -84,7 +86,7 @@ object DBManager {
     val regex = "(?i)^" + city_name + "$"
     city.findOne(MongoDBObject("city_name" -> regex.r)) match {
       case Some(res: DBObject) =>
-        Option(MongoDBMapper.dBOtoCity(res))
+        Option(res)
       case None =>
         None
     }
