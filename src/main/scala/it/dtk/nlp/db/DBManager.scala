@@ -22,6 +22,8 @@ object DBManager {
   private val crime = db("crime")
   private val news = mongoClient("dbNews")("geoNews")
 
+  private val nlpNews = mongoClient("dbNews")("nlpNews")
+
   /**
    * Search for a lemma in the DB. Case-insensitive search.
    *
@@ -30,12 +32,7 @@ object DBManager {
    */
   def findLemma(word: String): Option[Lemma] = {
     val regex = "(?i)^" + word + "$"
-    lemma.findOne(MongoDBObject("word" -> regex.r)) match {
-      case Some(res: DBObject) =>
-        Option(res)
-      case None =>
-        None
-    }
+    lemma.findOne(MongoDBObject("word" -> regex.r)).map(r => r)
   }
 
   /**
@@ -46,12 +43,7 @@ object DBManager {
    */
   def findCrime(word: String): Option[Crime] = {
     val regex = "(?i)^" + word + "$"
-    crime.findOne(MongoDBObject("word" -> regex.r)) match {
-      case Some(res: DBObject) =>
-        Option(res)
-      case None =>
-        None
-    }
+    crime.findOne(MongoDBObject("word" -> regex.r)).map(r => r)
   }
 
   /**
@@ -68,12 +60,7 @@ object DBManager {
       else MongoDBObject("street" -> regexAddr.r)
     }
 
-    address.findOne(query) match {
-      case Some(res: DBObject) =>
-        Option(res)
-      case None =>
-        None
-    }
+    address.findOne(query).map(r => r)
   }
 
   /**
@@ -84,12 +71,7 @@ object DBManager {
    */
   def findCity(city_name: String): Option[City] = {
     val regex = "(?i)^" + city_name + "$"
-    city.findOne(MongoDBObject("city_name" -> regex.r)) match {
-      case Some(res: DBObject) =>
-        Option(res)
-      case None =>
-        None
-    }
+    city.findOne(MongoDBObject("city_name" -> regex.r)).map(r => r)
   }
 
   def getNews(limit: Int = 0): List[News] = {
@@ -98,6 +80,14 @@ object DBManager {
     } else {
       news.find().limit(limit).map(n => MongoDBMapper.dBOToNews(n)).toList
     }
+  }
+
+  /**
+   * @param news
+   * this method should be used to save the nlp processed News into a new collection
+   */
+  def saveNlpNews(news: News): Unit = {
+    val result = nlpNews.save[DBObject](news)
   }
 
 }
