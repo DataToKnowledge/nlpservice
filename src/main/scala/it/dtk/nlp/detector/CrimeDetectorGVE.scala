@@ -6,46 +6,25 @@ import it.dtk.nlp.db.Crime
 import it.dtk.nlp.db.Sentence
 import scala.util.control.Breaks._
 
-
 object CrimeDetectorGVE extends Detector {
   import CrimeDetectorGVE._
 
-//  var crimeWords: List[String] = List()
-//  var result = Vector.empty[Word]
+  //  var crimeWords: List[String] = List()
+  //  var result = Vector.empty[Word]
   val offset = 3
-
-  //TODO remove if it not needed
-  //  /**
-  //   * load crime dictionary from file
-  //   */
-  //  private def downloadCrimeDictionary(): Unit = {
-  //    val dictionary = getClass().getResource("/CrimeDictionary").getPath()
-  //    val lines = scala.io.Source.fromFile(dictionary).getLines.drop(0).map(_.split(","))
-  //
-  //    lines.foreach { a =>
-  //      (a(0).trim() :: crimeWords)
-  //    }
-  //
-  //  }
-
-  private def getString(list: Seq[Word]): String = {
-    list.map(elem => elem.token.toLowerCase()).mkString(" ")
-  }
-
-  private def setEntity(sentence: Sentence, start: Int, end: Int): Unit = {
-    var result = Vector.empty[Word]
-    var currentWord = sentence.words.apply(start)
-    result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "B-CRIME")
-    for (i <- (start + 1) to end) {
-      currentWord = sentence.words.apply(i)
-      result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "I-CRIME")
-    }
-  }
-
   override def detect(sentence: Sentence): Sentence = {
     var candidates = Seq()
     var result = Vector.empty[Word]
     var i = 0
+    def setEntity(sentence: Sentence, start: Int, end: Int): Unit = {
+      var currentWord = sentence.words.apply(start)
+      result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "B-CRIME")
+      for (i <- (start + 1) to end) {
+        currentWord = sentence.words.apply(i)
+        result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "I-CRIME")
+      }
+    }
+
     while (i < sentence.words.size) {
       val subSeq = sentence.words.slice(i, i + offset)
       var entityBool = false
@@ -74,4 +53,22 @@ object CrimeDetectorGVE extends Detector {
     }
     Sentence(result)
   }
+  //TODO remove if it not needed
+  //  /**
+  //   * load crime dictionary from file
+  //   */
+  //  private def downloadCrimeDictionary(): Unit = {
+  //    val dictionary = getClass().getResource("/CrimeDictionary").getPath()
+  //    val lines = scala.io.Source.fromFile(dictionary).getLines.drop(0).map(_.split(","))
+  //
+  //    lines.foreach { a =>
+  //      (a(0).trim() :: crimeWords)
+  //    }
+  //
+  //  }
+
+  private def getString(list: Seq[Word]): String = {
+    list.map(elem => elem.token.toLowerCase()).mkString(" ")
+  }
+
 }
