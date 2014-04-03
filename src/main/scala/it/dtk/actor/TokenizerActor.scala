@@ -1,5 +1,9 @@
 package it.dtk.actor
 
-class TokenizerActor {
+import akka.actor.{Actor, ActorLogging}
 
+class TokenizerActor extends Actor with ActorLogging {
+
+  def receive = ???
+  
 }

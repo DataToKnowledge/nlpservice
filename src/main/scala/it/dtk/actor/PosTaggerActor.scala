@@ -1,5 +1,9 @@
 package it.dtk.actor
 
-class PosTaggerActor {
+import akka.actor.{Actor, ActorLogging}
 
+class PosTaggerActor extends Actor with ActorLogging {
+
+  def receive = ???
+  
 }

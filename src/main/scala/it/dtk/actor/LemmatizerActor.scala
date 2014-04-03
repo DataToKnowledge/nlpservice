@@ -1,5 +1,9 @@
 package it.dtk.actor
 
-class LemmatizerActor {
+import akka.actor.{Actor, ActorLogging}
 
+class LemmatizerActor extends Actor with ActorLogging {
+
+  def receive = ???
+  
 }

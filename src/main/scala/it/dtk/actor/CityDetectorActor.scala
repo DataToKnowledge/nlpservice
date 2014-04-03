@@ -1,5 +1,9 @@
 package it.dtk.actor
 
-class CityDetectorActor {
+import akka.actor.{Actor, ActorLogging}
 
+class CityDetectorActor extends Actor with ActorLogging {
+
+  def receive = ???
+  
 }

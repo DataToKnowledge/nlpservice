@@ -122,6 +122,7 @@ object MongoDBMapper {
       "canonicalUrl" -> news.canonicalUrl,
       "topImage" -> news.topImage
     )
+
   }
 
   implicit def dBOtoLemma(dbo: DBObject): Lemma = {

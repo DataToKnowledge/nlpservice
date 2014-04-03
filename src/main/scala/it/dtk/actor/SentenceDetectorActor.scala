@@ -1,5 +1,9 @@
 package it.dtk.actor
 
-class SentenceDetectorActor {
+import akka.actor.{Actor, ActorLogging}
 
+class SentenceDetectorActor extends Actor with ActorLogging {
+
+  def receive = ???
+  
 }
