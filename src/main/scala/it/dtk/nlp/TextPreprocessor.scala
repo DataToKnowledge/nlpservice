@@ -31,7 +31,7 @@ object TextPreprocessor {
     sentences
   }
 
-  def getTokens(sentence: String): Seq[Word] = {
+  def getTokens(sentence: String): Sentence = {
 
     val boundary = BreakIterator.getWordInstance(Locale.ITALIAN)
     boundary.setText(sentence)
@@ -47,7 +47,8 @@ object TextPreprocessor {
       start = end
       end = boundary.next()
     }
-    tokens
+
+    Sentence(tokens)
   }
 
   /**
@@ -56,7 +57,7 @@ object TextPreprocessor {
    * @return given a document as text return its representation as sequence of sentences of words
    */
   def apply(text: String): Seq[Sentence] =
-    getSentences(text).map(removeHtmlTags).map(s => Sentence(getTokens(s)))
+    getSentences(text).map(removeHtmlTags).map(getTokens)
  
     
   
