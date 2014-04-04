@@ -23,7 +23,7 @@ class AddressDetectorSpec extends BaseTestClass {
     "tag an address" in {
       whenReady(TreeTagger.apply(TextPreprocessor.apply(address).head)) {
         sentence =>
-          val result = AddressDetectorGVE.detect(sentence).words
+          val result = AddressDetector.detect(sentence).words
 
           result.count(_.iobEntity.contains("B-ADDRESS")) should be(1)
           result.count(_.iobEntity.contains("I-ADDRESS")) should be(2)
@@ -33,7 +33,7 @@ class AddressDetectorSpec extends BaseTestClass {
     "tag an address of a defined city" in {
       whenReady(TreeTagger.apply(TextPreprocessor.apply(address).head)) {
         sentence =>
-          val result = AddressDetectorGVE.detect(sentence, city).words
+          val result = AddressDetector.detect(sentence, city).words
 
           result.count(_.iobEntity.contains("B-ADDRESS")) should be(1)
           result.count(_.iobEntity.contains("I-ADDRESS")) should be(2)

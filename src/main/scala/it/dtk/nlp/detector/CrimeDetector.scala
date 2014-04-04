@@ -6,8 +6,8 @@ import it.dtk.nlp.db.Crime
 import it.dtk.nlp.db.Sentence
 import scala.util.control.Breaks._
 
-object CrimeDetectorGVE extends Detector {
-  import CrimeDetectorGVE._
+object CrimeDetector extends Detector {
+  import CrimeDetector._
 
   //  var crimeWords: List[String] = List()
   //  var result = Vector.empty[Word]
