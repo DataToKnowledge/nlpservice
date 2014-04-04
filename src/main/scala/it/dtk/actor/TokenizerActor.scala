@@ -1,13 +1,24 @@
 package it.dtk.actor
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.{ Actor, ActorLogging }
 import it.dtk.actor.NewsPart._
 import it.dtk.nlp.TextPreprocessor
 import it.dtk.nlp.db.Sentence
+import akka.actor.Props
+import akka.routing.RoundRobinPool
 
 object TokenizerActor {
   case class Process(newsId: String, text: String, value: NewsPart)
   case class Result(newsId: String, sentence: Sentence, value: NewsPart)
+
+  def props = Props(classOf[TokenizerActor])
+
+  /**
+   * @param nrOfInstances
+   * @return the props for a router with a defined number of instances
+   */
+  def routerProps(nrOfInstances: Int = 5) =
+    RoundRobinPool(nrOfInstances).props(props)
 }
 
 /**
@@ -30,5 +41,5 @@ class TokenizerActor extends Actor with ActorLogging {
       sender() ! Result(newsId, TextPreprocessor.getTokens(text), Corpus)
 
   }
-  
+
 }

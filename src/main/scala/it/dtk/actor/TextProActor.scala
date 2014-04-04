@@ -9,13 +9,25 @@ import scala.util.Success
 import scala.util.Failure
 import java.util.concurrent.Executor
 import scala.concurrent.ExecutionContext
+import akka.routing.RoundRobinPool
+import akka.routing.RoundRobinPool
+import it.dtk.nlp.db.News
 
 object TextProActor {
-  case class Parse(newsId: String, text: String, value: NewsPart)
-  case class Result(newsId: String, sentences: Seq[Sentence], keywords: Map[String, Double], newsPart: NewsPart)
+  case class Parse(newsId: String, news: News)
+  case class Result(newsId: String, news: Seq[Sentence], keywords: Map[String, Double], newsPart: NewsPart)
   case class Fail(newsId: String, text: String, value: NewsPart)
-  
-  def props = Props(classOf[TextProActor])
+
+  def props =
+    Props(classOf[TextProActor])
+
+  /**
+   * @param nrOfInstances
+   * @return the props for a router with a defined number of instances
+   */
+  def routerProps(nrOfInstances: Int = 3) =
+    RoundRobinPool(nrOfInstances).props(props)
+
 }
 
 class TextProActor extends Actor with ActorLogging {
