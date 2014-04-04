@@ -9,8 +9,8 @@ import java.util.concurrent.Executors
 import scala.concurrent.ExecutionContext
 import it.dtk.nlp.db.News
 import scala.concurrent.Future
-import it.dtk.nlp.detector.CrimeDetectorGVE
-import it.dtk.nlp.detector.AddressDetectorGVE
+import it.dtk.nlp.detector.CrimeDetector
+import it.dtk.nlp.detector.AddressDetector
 import scala.concurrent.Await
 
 /**
@@ -40,9 +40,9 @@ object Main {
       val pipeline = nlpText.map { keysSents =>
         val sentences = keysSents._2
         val citySentences = sentences.map(CityDetector.detect)
-        val crimeSentences = citySentences.map(CrimeDetectorGVE.detect)
+        val crimeSentences = citySentences.map(CrimeDetector.detect)
         val dateSentences = crimeSentences.map(DateDetector.detect)
-        val addressSentences = dateSentences.map(AddressDetectorGVE.detect)
+        val addressSentences = dateSentences.map(AddressDetector.detect)
         keysSents._1 -> addressSentences
       }
       

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 /**
  * @author Michele Damiano Torelli <daniele@datatoknowledge.it>
  */
-object AddressDetectorGVE extends Detector {
+object AddressDetector extends Detector {
 
   /**
    * Maximum number of tokens for an address

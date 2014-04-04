@@ -18,14 +18,14 @@ class CrimeDetectorSpec extends BaseTestClass {
 
       "tag a compound-compound" in {
 
-        val result = CrimeDetectorGVE.detect(Sentence(sentence2Crimes)).words
+        val result = CrimeDetector.detect(Sentence(sentence2Crimes)).words
 
         result.count(_.iobEntity.contains("B-CRIME")) should be(2)
         result.count(_.iobEntity.contains("I-CRIME")) should be(2)
 
       }
       "be case insensitive" in {
-        val result = CrimeDetectorGVE.detect(Sentence(sentenceCaseInsensitive)).words
+        val result = CrimeDetector.detect(Sentence(sentenceCaseInsensitive)).words
         result.count(_.iobEntity.contains("B-CRIME")) should be(1)
       }
     }

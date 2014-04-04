@@ -66,12 +66,12 @@ class TextPreprocessorSpec extends BaseTestClass {
     "is called the method get Words" should {
       "for a sentence with 9 words should return 9 words" in {
         val res = TextPreprocessor.getTokens(nineWordsSentence)
-        res should have size 9
+        res.words should have size 9
       }
 
       "for a sentence with 9 words and tabs should return 9 words" in {
         val res = TextPreprocessor.getTokens(nineWordsSentence)
-        res should have size 9
+        res.words should have size 9
       }
     }
     
