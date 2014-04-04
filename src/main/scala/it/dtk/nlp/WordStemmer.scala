@@ -9,13 +9,7 @@ import it.dtk.nlp.db.Word
  */
 object WordStemmer {
 
-  val stemmer: SnowballStemmer = new italianStemmer
-
-}
-
-class WordStemmer {
-
-  import WordStemmer._
+  private val stemmer: SnowballStemmer = new italianStemmer
 
   /**
    * Returns the stem of the single token given in input
