@@ -37,7 +37,7 @@ class TextProClientSpec extends BaseTestClass {
     val client = new TextProClient
 
     "process the title of a news" should {
-      val result = client.process(title)
+      val result = client.process(Option(title))
 
       whenReady(result) { res =>
         val tags = res._1
@@ -67,7 +67,7 @@ class TextProClientSpec extends BaseTestClass {
     }
 
     "process the summary of a news" should {
-      val result = client.process(summary)
+      val result = client.process(Option(summary))
 
       whenReady(result) { res =>
         val tags = res._1
@@ -98,7 +98,7 @@ class TextProClientSpec extends BaseTestClass {
     }
 
     "process the text of a news" should {
-      val result = client.process(text)
+      val result = client.process(Option(text))
 
       whenReady(result) { res =>
         val tags = res._1

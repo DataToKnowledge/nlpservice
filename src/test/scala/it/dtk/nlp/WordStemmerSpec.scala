@@ -21,7 +21,7 @@ class WordStemmerSpec extends BaseTestClass {
 
   "A WordStemmer" when {
 
-    val stemmer = new WordStemmer
+    val stemmer = WordStemmer
 
     "stems a token" should {
 

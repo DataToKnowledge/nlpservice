@@ -10,13 +10,12 @@ import scala.util.Failure
 import java.util.concurrent.Executor
 import scala.concurrent.ExecutionContext
 import akka.routing.RoundRobinPool
-import akka.routing.RoundRobinPool
-import it.dtk.nlp.db.News
+import it.dtk.nlp.db._
 
 object TextProActor {
-  case class Parse(newsId: String, news: News)
-  case class Result(newsId: String, news: Seq[Sentence], keywords: Map[String, Double], newsPart: NewsPart)
-  case class Fail(newsId: String, text: String, value: NewsPart)
+  case class Parse(news: News)
+  case class Result(news: News)
+  case class Fail(news: News, ex: Throwable)
 
   def props =
     Props(classOf[TextProActor])
@@ -39,13 +38,23 @@ class TextProActor extends Actor with ActorLogging {
 
   def receive = {
 
-    case Parse(newsId, text, newsPart) =>
+    case Parse(news) =>
       val send = sender
-      textProClient.process(text).onComplete {
-        case Success((keywords, sentences)) =>
-          send ! Result(newsId, sentences, keywords, newsPart)
+      
+      val res = for {
+        (titleKeywords, titleSentences) <- textProClient.process(news.title)
+        (summKeywords, summSentences) <- textProClient.process(news.summary)
+        (corpKeywords, corpSentences) <- textProClient.process(news.text)
+      } yield (titleSentences, summSentences, corpSentences, corpKeywords)
+      
+      
+      res.onComplete {
+        case Success((titleSentences, summSentences, corpSentences, corpKeywords)) =>
+          val modNews = news.copy(nlpTitle = Option(NLPTitle(titleSentences)), nlpSummary = Option(NLPSummary(summSentences)),
+              nlpText = Option(NLPText(corpSentences)), nlpTags = Option(corpKeywords))
+          send ! Result(modNews)
         case Failure(ex) =>
-          send ! Fail(newsId, text, newsPart)
+          send ! Fail(news,ex)
       }
   }
 }

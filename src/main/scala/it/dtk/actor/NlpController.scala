@@ -9,16 +9,12 @@ import java.util.concurrent.Executor
 import scala.concurrent.ExecutionContext
 import akka.actor.Props
 import akka.actor.PoisonPill
-import it.dtk.nlp.db.NLPTitle
-import it.dtk.nlp.db.NLPSummary
-import it.dtk.nlp.db.NLPSummary
-import it.dtk.nlp.db.NLPText
 
 object NlpController {
 
   case class Process(news: Seq[News])
   case class Processed(news: Seq[News])
-  case class FailedProcess(news: News)
+  case class FailedProcess(news: News, ex: Throwable)
 
   def props = Props(classOf[NlpController])
 }
@@ -36,6 +32,9 @@ class NlpController extends Actor with ActorLogging {
   import NewsPart._
   import TextProActor._
 
+  /*
+   * These are all the routers 
+   */
   val addressRouter = context.actorOf(AddressDetectorActor.routerProps(), "addressRouter")
   val cityRouter = context.actorOf(CityDetectorActor.routerProps(), "cityRouter")
   val crimeRouter = context.actorOf(CrimeDetectorActor.routerProps(), "crimeRouter")
@@ -47,7 +46,7 @@ class NlpController extends Actor with ActorLogging {
   val textProRouter = context.actorOf(TextProActor.routerProps(), "textProRouter")
   val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
-  val callInterval = 10 seconds
+  val callInterval = 20 seconds
 
   def receive = waiting
 
@@ -58,72 +57,51 @@ class NlpController extends Actor with ActorLogging {
   }
 
   def runNext(newsSeq: Seq[News], send: ActorRef): Receive = {
-    val setIds = newsSeq.map(_.id).toSet
+    val mapNewsProcessed = newsSeq.map(_.id).map(_ -> false).toMap
     val mapNews = newsSeq.foldLeft(Map.empty[String, News])((map, news) => map + (news.id -> news))
     val send = sender
-    //start pipeline
-    //TODO now we use the sceduler, but we can define also a consumer policy
+
     newsSeq.foreach { n =>
       var interval = callInterval
-      n.title.map { title =>
-        context.system.scheduler.scheduleOnce(interval, textProRouter, Parse(n.id, title, Title))
-        interval += callInterval
-      }
-      n.summary.map { summary =>
-        context.system.scheduler.scheduleOnce(interval, textProRouter, Parse(n.id, summary, Summary))
-        interval += callInterval
-      }
-
-      n.summary.map { text =>
-        context.system.scheduler.scheduleOnce(interval, textProRouter, Parse(n.id, text, Corpus))
-        interval += callInterval
-      }
+      context.system.scheduler.scheduleOnce(interval, textProRouter, Parse(n))
+      interval += callInterval
     }
-    running(setIds, mapNews, send)
+    running(mapNewsProcessed, mapNews, newsSeq.length, send)
   }
 
-  def running(setIds: Set[String], mapNews: Map[String, News], send: ActorRef): Receive = {
+  def running(mapProcessed: Map[String, Boolean], mapNews: Map[String, News], counter: Int, send: ActorRef): Receive = {
 
-    case TextProActor.Result(newsId, sentences, keywords, Title) =>
+    case TextProActor.Result(news) =>
 
-      val news = mapNews(newsId)
-      //add the tags
-      val modTags = news.nlpTags.map(_ ++ keywords)
-      //create the mod news with nlpTitle and updatedTags
-      val modNews = news.copy(nlpTitle = Option(NLPTitle(sentences)), nlpTags = modTags)
-      //update the map
-      val modMap = mapNews + (modNews.id -> modNews)
-      context.become(running(setIds, modMap, send))
+      //update the maps
+      val modMap = mapNews + (news.id -> news)
+      val modNewsProcessed = mapProcessed + (news.id -> true)
 
-    case TextProActor.Result(newsId, sentences, keywords, Summary) =>
-      val news = mapNews(newsId)
-      //add the tags
-      val modTags = news.nlpTags.map(_ ++ keywords)
-      //create the mod news with nlpTitle and updatedTags
-      val modNews = news.copy(nlpSummary = Option(NLPSummary(sentences)), nlpTags = modTags)
-      //update the map
-      val modMap = mapNews + (modNews.id -> modNews)
-      context.become(running(setIds, modMap, send))
+      val count = counter - 1
 
-    case TextProActor.Result(newsId, sentences, keywords, Corpus) =>
-      val news = mapNews(newsId)
-      //add the tags
-      val modTags = news.nlpTags.map(_ ++ keywords)
-      //create the mod news with nlpTitle and updatedTags
-      val modNews = news.copy(nlpText = Option(NLPText(sentences)), nlpTags = modTags)
-      //update the map
-      val modMap = mapNews + (modNews.id -> modNews)
-      val modSetIds = setIds - modNews.id
-      
-      
-      context.become(running(modSetIds, modMap, send))
+      val nextStatus = if (count == 0) {
+        send ! Processed(mapNews.values.toSeq)
+        waiting
+      } else {
+        running(modNewsProcessed, modMap, count, send)
+      }
 
-    case TextProActor.Fail(newsId, text, newsPart) =>
-    //TODO reschedule the message
+      context.become(nextStatus)
 
+    case TextProActor.Fail(news, ex) =>
+      //TODO reschedule the message
+      val count = counter - 1
+      send ! FailedProcess(news, ex)
+
+      val nextStatus = if (count == 0) {
+        send ! Processed(mapNews.values.toSeq)
+        waiting
+      } else {
+        running(mapProcessed, mapNews, count, send)
+      }
   }
 
-  def postStop: Unit = {
+  override def postStop: Unit = {
     textProRouter ! PoisonPill
   }
 

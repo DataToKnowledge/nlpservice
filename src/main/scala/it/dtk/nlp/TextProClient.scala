@@ -22,14 +22,21 @@ class TextProClient {
    * @param text
    * @return a tuple of tags and sequence of sentences
    */
-  def process(text: String): Future[(Map[String, Double], Seq[Sentence])] = {
-    val params = Map("text" -> text)
-    val res = client.post(urlPost, params).map { response =>
-      val body = new String(Codec.fromUTF8(response.getResponseBodyAsBytes()))
-      println(body)
-      parseText(body)
+  def process(text: Option[String]): Future[(Map[String, Double], Seq[Sentence])] = {
+
+    if (text.isDefined) {
+      val params = Map("text" -> text.get)
+      val res = client.post(urlPost, params).map { response =>
+        val body = new String(Codec.fromUTF8(response.getResponseBodyAsBytes()))
+        println(body)
+        parseText(body)
+      }
+      res
+    } else {
+      future {
+        (Map.empty[String,Double],Seq.empty[Sentence])
+      }
     }
-    res
   }
 
   private def parseText(text: String): (Map[String, Double], Seq[Sentence]) = {
@@ -75,15 +82,15 @@ class TextProClient {
           var iobEntity = Vector.empty[String]
           if (!split(8).equals("O"))
             iobEntity = Vector(split(8))
-            Option(Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
+          Option(Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
             Option(split(3).toInt), Option(split(4)), Option(split(5)),
             Option(split(6)), Option(split(7)), None, iobEntity, Option(split(9))))
-            
+
         case split8 if split8.size == 8 =>
           Option(Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
-          Option(split(3).toInt), Option(split(4)), Option(split(5)),
-          Option(split(6)), Option(split(7)), None, Vector.empty[String],None))
-            
+            Option(split(3).toInt), Option(split(4)), Option(split(5)),
+            Option(split(6)), Option(split(7)), None, Vector.empty[String], None))
+
         case _ =>
           None
       }

@@ -32,9 +32,9 @@ object Main {
     for (n <- news) {
 
       //title summary text
-      val nlpTitle = textProClient.process(n.title.get)
-      val nlpSummary = textProClient.process(n.summary.get)
-      val nlpText = textProClient.process(n.text.get)
+      val nlpTitle = textProClient.process(n.title)
+      val nlpSummary = textProClient.process(n.summary)
+      val nlpText = textProClient.process(n.text)
 
       //call city, date and crime detector
       val pipeline = nlpText.map { keysSents =>
