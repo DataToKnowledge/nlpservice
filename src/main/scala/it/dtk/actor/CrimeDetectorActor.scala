@@ -4,7 +4,7 @@ import akka.actor.{ Actor, ActorLogging }
 import it.dtk.actor.NewsPart._
 import it.dtk.nlp.detector.CrimeDetector
 import akka.actor.Props
-import akka.routing.RoundRobinPool
+import akka.routing.RoundRobinRouter
 
 object CrimeDetectorActor {
   def props = Props(classOf[CrimeDetectorActor])
@@ -14,7 +14,9 @@ object CrimeDetectorActor {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 5) =
-    RoundRobinPool(nrOfInstances).props(props)
+    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
+  //TODO akka 2.3.2
+  //RoundRobinPool(nrOfInstances).props(props)
 }
 
 /**
@@ -28,13 +30,13 @@ class CrimeDetectorActor extends Actor with ActorLogging {
   def receive = {
 
     case DetectorProcess(newsId, sentences, Title) =>
-      sender() ! DetectorResult(newsId, CrimeDetector.detect(sentences), Title)
+      sender ! DetectorResult(newsId, CrimeDetector.detect(sentences), Title)
 
     case DetectorProcess(newsId, sentences, Summary) =>
-      sender() ! DetectorResult(newsId, CrimeDetector.detect(sentences), Summary)
+      sender ! DetectorResult(newsId, CrimeDetector.detect(sentences), Summary)
 
     case DetectorProcess(newsId, sentences, Corpus) =>
-      sender() ! DetectorResult(newsId, CrimeDetector.detect(sentences), Corpus)
+      sender ! DetectorResult(newsId, CrimeDetector.detect(sentences), Corpus)
 
   }
 

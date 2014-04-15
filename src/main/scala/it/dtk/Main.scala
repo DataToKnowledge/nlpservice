@@ -78,10 +78,13 @@ class NlpReceptionist extends Actor with ActorLogging {
  */
 object Main {
 
-  private val executorService = Executors.newCachedThreadPool()
-  private implicit val executionContext = ExecutionContext.fromExecutorService(executorService)
+//  private val executorService = Executors.newCachedThreadPool()
+//  private implicit val executionContext = ExecutionContext.fromExecutorService(executorService)
 
   def main(args: Array[String]) {
+    
+    //Use the system's dispatcher as ExecutionContext
+    import system.dispatcher
 
     val system = ActorSystem("NewsExtractor")
     val receptionist = system.actorOf(NlpReceptionist.props, "NLPReceptionist")

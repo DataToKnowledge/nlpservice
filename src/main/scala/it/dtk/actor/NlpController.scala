@@ -56,13 +56,13 @@ class NlpController extends Actor with ActorLogging {
   val waiting: Receive = {
     case Process(newsSeq) =>
       log.debug("start processing {} news", newsSeq.length)
-      context.become(runNext(newsSeq, sender()))
+      context.become(runNext(newsSeq, sender))
   }
 
   def runNext(newsSeq: Seq[News], send: ActorRef): Receive = {
     val mapNewsProcessed = newsSeq.map(_.id).map(_ -> false).toMap
     val mapNews = newsSeq.foldLeft(Map.empty[String, News])((map, news) => map + (news.id -> news))
-    val send = sender()
+    val send = sender
 
     newsSeq.foreach { n =>
       var interval = callInterval

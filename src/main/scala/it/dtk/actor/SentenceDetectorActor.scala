@@ -4,7 +4,7 @@ import akka.actor.{ Actor, ActorLogging }
 import it.dtk.actor.NewsPart._
 import it.dtk.nlp.TextPreprocessor
 import akka.actor.Props
-import akka.routing.RoundRobinPool
+import akka.routing.RoundRobinRouter
 
 object SentenceDetectorActor {
   case class Process(newsId: String, text: String, value: NewsPart)
@@ -17,7 +17,9 @@ object SentenceDetectorActor {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 10) =
-    RoundRobinPool(nrOfInstances).props(props)
+    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
+  //TODO akka 2.3.2
+  //RoundRobinPool(nrOfInstances).props(props)
 }
 
 /**
@@ -31,13 +33,13 @@ class SentenceDetectorActor extends Actor with ActorLogging {
   def receive = {
 
     case Process(newsId, text, Title) =>
-      sender() ! Result(newsId, TextPreprocessor.getSentences(text), Title)
+      sender ! Result(newsId, TextPreprocessor.getSentences(text), Title)
 
     case Process(newsId, text, Summary) =>
-      sender() ! Result(newsId, TextPreprocessor.getSentences(text), Summary)
+      sender ! Result(newsId, TextPreprocessor.getSentences(text), Summary)
 
     case Process(newsId, text, Corpus) =>
-      sender() ! Result(newsId, TextPreprocessor.getSentences(text), Corpus)
+      sender ! Result(newsId, TextPreprocessor.getSentences(text), Corpus)
 
   }
 

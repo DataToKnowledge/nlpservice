@@ -7,8 +7,8 @@ import scala.util.Success
 import scala.util.Failure
 import java.util.concurrent.Executor
 import scala.concurrent.ExecutionContext
-import akka.routing.RoundRobinPool
 import it.dtk.nlp.db._
+import akka.routing.RoundRobinRouter
 
 object TextProActor {
   case class Parse(news: News)
@@ -22,7 +22,9 @@ object TextProActor {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 3) =
-    RoundRobinPool(nrOfInstances).props(props)
+    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
+  //TODO akka 2.3.2
+  //RoundRobinPool(nrOfInstances).props(props)
 
 }
 
@@ -36,22 +38,21 @@ class TextProActor extends Actor with ActorLogging {
   def receive = {
 
     case Parse(news) =>
-      val send = sender()
-      
+      val send = sender
+
       val res = for {
         (titleKeywords, titleSentences) <- textProClient.process(news.title)
         (summKeywords, summSentences) <- textProClient.process(news.summary)
         (corpKeywords, corpSentences) <- textProClient.process(news.corpus)
       } yield (titleSentences, summSentences, corpSentences, corpKeywords)
-      
-      
+
       res.onComplete {
         case Success((titleSentences, summSentences, corpSentences, corpKeywords)) =>
           val modNews = news.copy(nlpTitle = Option(titleSentences), nlpSummary = Option(summSentences),
-              nlpCorpus = Option(corpSentences), nlpTags = Option(corpKeywords))
+            nlpCorpus = Option(corpSentences), nlpTags = Option(corpKeywords))
           send ! Result(modNews)
         case Failure(ex) =>
-          send ! Fail(news,ex)
+          send ! Fail(news, ex)
       }
   }
 }

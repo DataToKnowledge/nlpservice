@@ -4,8 +4,8 @@ import akka.actor.{ Actor, ActorLogging }
 import it.dtk.actor.NewsPart._
 import it.dtk.nlp.TextPreprocessor
 import akka.actor.Props
-import akka.routing.RoundRobinPool
 import it.dtk.nlp.db.Word
+import akka.routing.RoundRobinRouter
 
 object TokenizerActor {
   case class Process(newsId: String, text: String, value: NewsPart)
@@ -18,7 +18,9 @@ object TokenizerActor {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 5) =
-    RoundRobinPool(nrOfInstances).props(props)
+    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
+  //TODO akka 2.3.2
+  //RoundRobinPool(nrOfInstances).props(props)
 }
 
 /**
@@ -32,13 +34,13 @@ class TokenizerActor extends Actor with ActorLogging {
   def receive = {
 
     case Process(newsId, text, Title) =>
-      sender() ! Result(newsId, TextPreprocessor.getTokens(text), Title)
+      sender ! Result(newsId, TextPreprocessor.getTokens(text), Title)
 
     case Process(newsId, text, Summary) =>
-      sender() ! Result(newsId, TextPreprocessor.getTokens(text), Summary)
+      sender ! Result(newsId, TextPreprocessor.getTokens(text), Summary)
 
     case Process(newsId, text, Corpus) =>
-      sender() ! Result(newsId, TextPreprocessor.getTokens(text), Corpus)
+      sender ! Result(newsId, TextPreprocessor.getTokens(text), Corpus)
 
   }
 

@@ -4,8 +4,8 @@ import akka.actor.{ Actor, ActorLogging }
 import it.dtk.actor.NewsPart._
 import it.dtk.nlp.Lemmatizer
 import akka.actor.Props
-import akka.routing.RoundRobinPool
 import it.dtk.nlp.db.Word
+import akka.routing.RoundRobinRouter
 
 object LemmatizerActor {
   case class Process(newsId: String, sentences: Seq[Word], value: NewsPart)
@@ -18,7 +18,9 @@ object LemmatizerActor {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 5) =
-    RoundRobinPool(nrOfInstances).props(props)
+    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
+  //TODO akka 2.3.2
+  //RoundRobinPool(nrOfInstances).props(props)
 }
 
 /**
@@ -31,13 +33,13 @@ class LemmatizerActor extends Actor with ActorLogging {
 
   def receive = {
     case Process(newsId, sentences, Title) =>
-      sender() ! Result(newsId, sentences.map(Lemmatizer.lemma), Title)
+      sender ! Result(newsId, sentences.map(Lemmatizer.lemma), Title)
 
     case Process(newsId, sentences, Summary) =>
-      sender() ! Result(newsId, sentences.map(Lemmatizer.lemma), Summary)
+      sender ! Result(newsId, sentences.map(Lemmatizer.lemma), Summary)
 
     case Process(newsId, sentences, Corpus) =>
-      sender() ! Result(newsId, sentences.map(Lemmatizer.lemma), Corpus)
+      sender ! Result(newsId, sentences.map(Lemmatizer.lemma), Corpus)
   }
 
 }
