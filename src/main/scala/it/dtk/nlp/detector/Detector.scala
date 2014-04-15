@@ -1,6 +1,6 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.db.Sentence
+import it.dtk.nlp.db.Word
 
 /**
  * Entry point for detector classes
@@ -10,6 +10,6 @@ import it.dtk.nlp.db.Sentence
  */
 trait Detector {
 
-  def detect(sentence: Sentence): Sentence
+  def detect(sentence: Seq[Word]): Seq[Word]
 
 }

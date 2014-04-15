@@ -1,7 +1,7 @@
 package it.dtk.nlp
 
 import org.annolab.tt4j.{ TokenHandler, TreeTaggerWrapper }
-import it.dtk.nlp.db.{ Sentence, Word }
+import it.dtk.nlp.db.Word
 import scala.concurrent.{ Promise, ExecutionContext, Future }
 import java.util.concurrent.Executors
 import scala.util.{ Success, Failure }
@@ -75,25 +75,6 @@ object TreeTagger {
     tag(Array(new Word(token))) onComplete {
       case Success(s) =>
         p success s.head.posTag
-      case Failure(ex) =>
-        p failure ex
-    }
-
-    p.future
-  }
-
-  /**
-   * Convenience method to tag every word in a Sentence
-   *
-   * @param sentence
-   * @return
-   */
-  def apply(sentence: Sentence): Future[Sentence] = {
-    val p = Promise[Sentence]()
-
-    tag(sentence.words) onComplete {
-      case Success(s) =>
-        p success Sentence(s)
       case Failure(ex) =>
         p failure ex
     }

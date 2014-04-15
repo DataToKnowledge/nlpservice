@@ -18,11 +18,11 @@ class DateDetectorSpec extends FlatSpec with Matchers with Futures with ScalaFut
       "a Febbraio a b Lunedì 34 Gennaio 2016 " +
       "Lunedì 12 Marzo 2018 d E 3 Aprile '12"
 
-    whenReady(TreeTagger.apply(TextPreprocessor.apply(sentence).head)) {
+    whenReady(TreeTagger.tag(TextPreprocessor.apply(sentence))) {
       words =>
-        val results = DateDetector.detect(words).words
+        val results = DateDetector.detect(words)
 
-        results.size should be(words.words.size)
+        results.size should be(words.size)
         results.count(w => w.iobEntity.contains("B-DATE")) should be(4)
         results.count(w => w.iobEntity.contains("I-DATE")) should be(11)
     }
@@ -30,11 +30,11 @@ class DateDetectorSpec extends FlatSpec with Matchers with Futures with ScalaFut
 
   it should "return the same vector if no dates are detected" in {
     val sentence = "a b A B c b a Febbraio a b Lunedì 34 Gennaio 2016 d E"
-    whenReady(TreeTagger.apply(TextPreprocessor.apply(sentence).head)) {
+    whenReady(TreeTagger.tag(TextPreprocessor.apply(sentence))) {
       words =>
-        val results = DateDetector.detect(words).words
+        val results = DateDetector.detect(words)
 
-        results.size should be(words.words.size)
+        results.size should be(words.size)
         results.count(w => w.iobEntity.nonEmpty) should be(0)
     }
   }

@@ -8,15 +8,13 @@ import org.joda.time.DateTime
 
 case class Word(token: String, tokenId: Option[Int] = None, tokenStart: Option[Int] = None, tokenEnd: Option[Int] = None,
                 sentence: Option[String] = None, posTag: Option[String] = None, lemma: Option[String] = None, compMorpho: Option[String] = None,
-                stem: Option[String] = None, iobEntity: Seq[String] = Vector.empty, chunk: Option[String] = None)
-
-case class Sentence(words: Seq[Word] = Vector.empty)
+                stem: Option[String] = None, iobEntity: Seq[String] = Vector.empty[String], chunk: Option[String] = None)
 
 case class News(id: String, urlWebSite: String, urlNews: String, title: Option[String], summary: Option[String],
-                newsDate: Option[DateTime], text: Option[String] = None, tags: Option[Set[String]] = None,
+                newsDate: Option[DateTime], corpus: Option[String] = None, tags: Option[Set[String]] = None,
                 metaDescription: Option[String] = None, metaKeyword: Option[String] = None, canonicalUrl: Option[String] = None,
-                topImage: Option[String] = None, nlpTitle: Option[Seq[Sentence]] = None, nlpSummary: Option[Seq[Sentence]] = None,
-                nlpText: Option[Seq[Sentence]] = None, crime: Option[Seq[String]] = None, address: Option[Seq[String]] = None,
+                topImage: Option[String] = None, nlpTitle: Option[Seq[Word]] = None, nlpSummary: Option[Seq[Word]] = None,
+                nlpCorpus: Option[Seq[Word]] = None, crime: Option[Seq[String]] = None, address: Option[Seq[String]] = None,
                 person: Option[Seq[String]] = None, location: Option[Seq[String]] = None, date: Option[Seq[String]] = None,
                 organization: Option[Seq[String]] = None, nlpTags: Option[Map[String, Double]] = None)
 

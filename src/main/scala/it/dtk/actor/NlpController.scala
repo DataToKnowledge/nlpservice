@@ -1,7 +1,7 @@
 package it.dtk.actor
 
 import akka.actor.{ Actor, ActorLogging }
-import it.dtk.nlp.db.News
+import it.dtk.nlp.db.{Word, News}
 import akka.actor.ActorRef
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -9,12 +9,16 @@ import java.util.concurrent.Executor
 import scala.concurrent.ExecutionContext
 import akka.actor.Props
 import akka.actor.PoisonPill
+import it.dtk.actor.NewsPart.NewsPart
 
 object NlpController {
 
   case class Process(news: Seq[News])
   case class Processed(news: Seq[News])
   case class FailedProcess(news: News, ex: Throwable)
+
+  case class DetectorProcess(newsId: String, sentences: Seq[Word], value: NewsPart)
+  case class DetectorResult(newsId: String, sentences: Seq[Word], value: NewsPart)
 
   def props = Props(classOf[NlpController])
 }
@@ -45,61 +49,94 @@ class NlpController extends Actor with ActorLogging {
   val textProRouter = context.actorOf(TextProActor.routerProps(), "textProRouter")
   val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
-  val callInterval = 20 seconds
+  val callInterval = 20.seconds
 
   def receive = waiting
 
   val waiting: Receive = {
     case Process(newsSeq) =>
       log.debug("start processing {} news", newsSeq.length)
-      context.become(runNext(newsSeq, sender))
+      context.become(runNext(newsSeq, sender()))
   }
 
   def runNext(newsSeq: Seq[News], send: ActorRef): Receive = {
     val mapNewsProcessed = newsSeq.map(_.id).map(_ -> false).toMap
     val mapNews = newsSeq.foldLeft(Map.empty[String, News])((map, news) => map + (news.id -> news))
-    val send = sender
+    val send = sender()
 
     newsSeq.foreach { n =>
       var interval = callInterval
       context.system.scheduler.scheduleOnce(interval, textProRouter, Parse(n))
       interval += callInterval
     }
+
     running(mapNewsProcessed, mapNews, newsSeq.length, send)
   }
 
-  def running(mapProcessed: Map[String, Boolean], mapNews: Map[String, News], counter: Int, send: ActorRef): Receive = {
+  def running(mapProcessed: Map[String, Boolean], mapNews: Map[String, News], jobs: Int, send: ActorRef): Receive = {
 
     case TextProActor.Result(news) =>
 
-      //update the maps
-      val modMap = mapNews + (news.id -> news)
-      val modNewsProcessed = mapProcessed + (news.id -> true)
+      var j = jobs
 
-      //TODO call the detectors
-      
-      val count = counter - 1
+      cityRouter ! new DetectorProcess(news.id, news.nlpTitle.get, NewsPart.Title)
+      cityRouter ! new DetectorProcess(news.id, news.nlpSummary.get, NewsPart.Summary)
+      cityRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
+      j = j + 3
 
-      val nextStatus = if (count == 0) {
-        send ! Processed(mapNews.values.toSeq)
-        waiting
-      } else {
-        running(modNewsProcessed, modMap, count, send)
-      }
+      crimeRouter ! new DetectorProcess(news.id, news.nlpTitle.get, NewsPart.Title)
+      crimeRouter ! new DetectorProcess(news.id, news.nlpSummary.get, NewsPart.Summary)
+      crimeRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
+      j = j + 3
 
-      context.become(nextStatus)
+      dateRouter ! new DetectorProcess(news.id, news.nlpTitle.get, NewsPart.Title)
+      dateRouter ! new DetectorProcess(news.id, news.nlpSummary.get, NewsPart.Summary)
+      dateRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
+      j = j + 3
+
+      addressRouter ! new DetectorProcess(news.id, news.nlpTitle.get, NewsPart.Title)
+      addressRouter ! new DetectorProcess(news.id, news.nlpSummary.get, NewsPart.Summary)
+      addressRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
+      j = j + 3
 
     case TextProActor.Fail(news, ex) =>
       //TODO reschedule the message
-      val count = counter - 1
       send ! FailedProcess(news, ex)
 
-      val nextStatus = if (count == 0) {
-        send ! Processed(mapNews.values.toSeq)
-        waiting
-      } else {
-        running(mapProcessed, mapNews, count, send)
-      }
+    case DetectorResult(newsId, sentences, NewsPart.Title) =>
+      val merge = mergeIOBEntity(mapNews.get(newsId).get.nlpTitle.get, sentences)
+      val modMap = mapNews + (newsId -> mapNews.get(newsId).get.copy(nlpTitle = Option(merge)))
+      val modNewsProcessed = mapProcessed + (newsId -> true)
+
+      context.become(nextStatus(modNewsProcessed, modMap, jobs - 1, send))
+
+    case DetectorResult(newsId, sentences, NewsPart.Summary) =>
+      val merge = mergeIOBEntity(mapNews.get(newsId).get.nlpSummary.get, sentences)
+      val modMap = mapNews + (newsId -> mapNews.get(newsId).get.copy(nlpSummary = Option(merge)))
+      val modNewsProcessed = mapProcessed + (newsId -> true)
+
+      context.become(nextStatus(modNewsProcessed, modMap, jobs - 1, send))
+
+    case DetectorResult(newsId, sentences, NewsPart.Corpus) =>
+      val merge = mergeIOBEntity(mapNews.get(newsId).get.nlpCorpus.get, sentences)
+      val modMap = mapNews + (newsId -> mapNews.get(newsId).get.copy(nlpCorpus = Option(merge)))
+      val modNewsProcessed = mapProcessed + (newsId -> true)
+
+      context.become(nextStatus(modNewsProcessed, modMap, jobs - 1, send))
+
+  }
+
+  private def nextStatus(mapProcessed: Map[String, Boolean], mapNews: Map[String, News], jobs: Int, send: ActorRef) = {
+    if (jobs == 0) {
+      send ! Processed(mapNews.values.toSeq)
+      waiting
+    } else {
+      running(mapProcessed, mapNews, jobs, send)
+    }
+  }
+
+  private def mergeIOBEntity(sentences: Seq[Word], annotated: Seq[Word]): Seq[Word] = {
+    sentences.zip(annotated).map(w => w._1.copy(iobEntity = w._1.iobEntity ++ w._2.iobEntity))
   }
 
   override def postStop(): Unit = {

@@ -5,13 +5,13 @@ import it.dtk.actor.NewsPart._
 import akka.actor.Props
 import akka.routing.RoundRobinPool
 import it.dtk.nlp.TreeTagger
-import it.dtk.nlp.db.Sentence
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
+import it.dtk.nlp.db.Word
 
 object PosTaggerActor {
-  case class Process(newsId: String, text: Sentence, value: NewsPart)
-  case class Result(newsId: String, sentence: Sentence, value: NewsPart)
+  case class Process(newsId: String, text: Seq[Word], value: NewsPart)
+  case class Result(newsId: String, sentence: Seq[Word], value: NewsPart)
   case class Fail(newsId: String, ex: Throwable, value: NewsPart)
 
   def props = Props(classOf[PosTaggerActor])
@@ -35,7 +35,7 @@ class PosTaggerActor extends Actor with ActorLogging {
   def receive = {
 
     case Process(newsId, text, Title) =>
-      TreeTagger(text) onComplete {
+      TreeTagger.tag(text) onComplete {
         case Success(res) =>
           sender() ! Result(newsId, res, Title)
         case Failure(ex) =>
