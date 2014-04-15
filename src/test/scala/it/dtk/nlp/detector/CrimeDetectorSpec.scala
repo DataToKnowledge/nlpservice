@@ -2,7 +2,7 @@ package it.dtk.nlp.detector
 
 import it.dtk.nlp.BaseTestClass
 import it.dtk.nlp.db.Word
-import it.dtk.nlp.db.Sentence
+
 object CrimeDetectorSpec {
   val sentence2Crimes = Vector(new Word(token = "oggi"), new Word(token = "illegale"), new Word(token = "inadempienza"), new Word(token = "di"), new Word(token = "contratto"))
   val sentenceCaseInsensitive = Vector(new Word(token = "oggi"), new Word(token = "è"), new Word(token = "tutto"), new Word(token = "Illegale"))
@@ -18,14 +18,14 @@ class CrimeDetectorSpec extends BaseTestClass {
 
       "tag a compound-compound" in {
 
-        val result = CrimeDetector.detect(Sentence(sentence2Crimes)).words
+        val result = CrimeDetector.detect(sentence2Crimes)
 
         result.count(_.iobEntity.contains("B-CRIME")) should be(2)
         result.count(_.iobEntity.contains("I-CRIME")) should be(2)
 
       }
       "be case insensitive" in {
-        val result = CrimeDetector.detect(Sentence(sentenceCaseInsensitive)).words
+        val result = CrimeDetector.detect(sentenceCaseInsensitive)
         result.count(_.iobEntity.contains("B-CRIME")) should be(1)
       }
     }

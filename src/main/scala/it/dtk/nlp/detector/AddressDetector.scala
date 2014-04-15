@@ -1,6 +1,6 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.db.{Sentence, Address, DBManager, Word}
+import it.dtk.nlp.db.{Address, DBManager, Word}
 import org.slf4j.LoggerFactory
 
 /**
@@ -43,15 +43,15 @@ object AddressDetector extends Detector {
 
   private val log = LoggerFactory.getLogger("AddressDetector")
 
-  override def detect(sentence: Sentence): Sentence = _detect(sentence, cityName = None)
+  override def detect(sentence: Seq[Word]): Seq[Word] = _detect(sentence, cityName = None)
 
-  def detect(sentence: Sentence, cityName: String): Sentence = _detect(sentence, Option(cityName))
+  def detect(sentence: Seq[Word], cityName: String): Seq[Word] = _detect(sentence, Option(cityName))
 
-  private def _detect(sentence: Sentence, cityName: Option[String]): Sentence = {
+  private def _detect(sentence: Seq[Word], cityName: Option[String]): Seq[Word] = {
     var result = Vector.empty[Word]
 
     def bumpEndIndex(offset: Int) =  {
-      if (offset + RANGE >= sentence.words.length) sentence.words.length - 1
+      if (offset + RANGE >= sentence.length) sentence.length - 1
       else offset + RANGE
     }
 
@@ -63,25 +63,25 @@ object AddressDetector extends Detector {
     var startIndex: Int = 0
     var endIndex = bumpEndIndex(startIndex)
 
-    while (startIndex < sentence.words.length) {
+    while (startIndex < sentence.length) {
       // Sanitize address prefix
-      val sanitizedPrefix = sanitize(sentence.words.apply(startIndex).token)
+      val sanitizedPrefix = sanitize(sentence.apply(startIndex).token)
 
       // If prefix is Via, Corso, Piazza, ...
       if (sanitizedPrefix.matches("(?i)" + PREFIX_R + "$")) {
-        val address = sentence.words.slice(startIndex, endIndex + 1).map(word => word.token).mkString(sep = " ")
+        val address = sentence.slice(startIndex, endIndex + 1).map(word => word.token).mkString(sep = " ")
 
         DBManager.findAddress(address, cityName) match {
           // Address found on DB
           case Some(res: Address) =>
             log.info(s"Found address: ${res.street} (City: ${res.city.getOrElse("None")})")
 
-            val currentWord = sentence.words.apply(startIndex)
+            val currentWord = sentence.apply(startIndex)
             result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "B-ADDRESS")
 
             while (startIndex < endIndex) {
               startIndex += 1
-              val nextWord = sentence.words.apply(startIndex)
+              val nextWord = sentence.apply(startIndex)
               result :+= nextWord.copy(iobEntity = nextWord.iobEntity :+ "I-ADDRESS")
             }
 
@@ -97,7 +97,7 @@ object AddressDetector extends Detector {
             if (startIndex < endIndex) {
               endIndex -= 1
             } else {
-              result :+= sentence.words.apply(startIndex)
+              result :+= sentence.apply(startIndex)
 
               startIndex += 1
               endIndex = bumpEndIndex(startIndex)
@@ -105,7 +105,7 @@ object AddressDetector extends Detector {
         }
       } else {
         // Slide window
-        result :+= sentence.words.apply(startIndex)
+        result :+= sentence.apply(startIndex)
 
         startIndex += 1
         endIndex += 1
@@ -113,7 +113,7 @@ object AddressDetector extends Detector {
 
     }
 
-    Sentence(result)
+    result.toSeq
   }
 
 }

@@ -66,12 +66,12 @@ class TextPreprocessorSpec extends BaseTestClass {
     "is called the method get Words" should {
       "for a sentence with 9 words should return 9 words" in {
         val res = TextPreprocessor.getTokens(nineWordsSentence)
-        res.words should have size 9
+        res should have size 9
       }
 
       "for a sentence with 9 words and tabs should return 9 words" in {
         val res = TextPreprocessor.getTokens(nineWordsSentence)
-        res.words should have size 9
+        res should have size 9
       }
     }
     
@@ -79,12 +79,6 @@ class TextPreprocessorSpec extends BaseTestClass {
       "return a document with sentences and words" in {
         val sentences = TextPreprocessor(expectedDocNoHtml)
         sentences.size should be > 0
-        for (sentence <- sentences){
-          sentence.words.size should be > 0
-          for (word <- sentence.words){
-            word.token.size should be > 0
-          }
-        }
       }
     }
   }

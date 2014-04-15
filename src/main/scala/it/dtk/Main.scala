@@ -39,10 +39,10 @@ object Main {
       //call city, date and crime detector
       val pipeline = nlpText.map { keysSents =>
         val sentences = keysSents._2
-        val citySentences = sentences.map(CityDetector.detect)
-        val crimeSentences = citySentences.map(CrimeDetector.detect)
-        val dateSentences = crimeSentences.map(DateDetector.detect)
-        val addressSentences = dateSentences.map(AddressDetector.detect)
+        val citySentences = CityDetector.detect(sentences)
+        val crimeSentences = CrimeDetector.detect(sentences)
+        val dateSentences = DateDetector.detect(sentences)
+        val addressSentences = AddressDetector.detect(sentences)
         keysSents._1 -> addressSentences
       }
       
@@ -52,15 +52,10 @@ object Main {
 
       pipeline.onComplete {
         case Success((tags, sents)) =>
-          val entities = for {
-            s <- sents
-            w <- s.words
-//            if w.iobEntity.nonEmpty
-          } yield w
 
           println("\n" + n.text.get)
           println(tags)
-          val strEntities = entities.map{w => 
+          val strEntities = sents.map{w =>
             if (w.iobEntity.nonEmpty)
             	w.token + " / " + w.iobEntity.mkString(" ")
             else w.token	

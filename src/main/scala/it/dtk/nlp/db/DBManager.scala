@@ -2,7 +2,6 @@ package it.dtk.nlp.db
 
 import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.commons.MongoDBObject
-import com.mongodb.DBObject
 import com.mongodb.casbah.Imports._
 import MongoDBMapper._
 

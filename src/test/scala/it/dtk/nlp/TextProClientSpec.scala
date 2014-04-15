@@ -60,7 +60,7 @@ class TextProClientSpec extends BaseTestClass {
         }
 
         "the first word in the sentence is " + firstWordResult in {
-          val firstSentenceWord = sentences.head.words(0)
+          val firstSentenceWord = sentences(0)
           firstSentenceWord shouldBe firstWordResult
         }
       }
@@ -90,7 +90,7 @@ class TextProClientSpec extends BaseTestClass {
         }
 
         "the first word in the sentence is " + firstWordSummary in {
-          val firstSentenceWord = sentences.head.words(0)
+          val firstSentenceWord = sentences(0)
           firstSentenceWord shouldBe firstWordSummary
         }
 
@@ -122,7 +122,7 @@ class TextProClientSpec extends BaseTestClass {
         }
 
         "the first word in the sentence is " + firstTextWord in {
-          val firstSentenceWord = sentences.head.words(0)
+          val firstSentenceWord = sentences(0)
           firstSentenceWord shouldBe firstTextWord
         }
 

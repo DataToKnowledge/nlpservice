@@ -2,7 +2,7 @@ package it.dtk.nlp
 
 import java.util.Locale
 import java.text.BreakIterator
-import it.dtk.nlp.db.{Sentence, Word}
+import it.dtk.nlp.db.Word
 
 object TextPreprocessor {
 
@@ -31,7 +31,7 @@ object TextPreprocessor {
     sentences
   }
 
-  def getTokens(sentence: String): Sentence = {
+  def getTokens(sentence: String): Seq[Word] = {
 
     val boundary = BreakIterator.getWordInstance(Locale.ITALIAN)
     boundary.setText(sentence)
@@ -48,7 +48,7 @@ object TextPreprocessor {
       end = boundary.next()
     }
 
-    Sentence(tokens)
+    tokens.toSeq
   }
 
   /**
@@ -56,10 +56,7 @@ object TextPreprocessor {
    * @param text
    * @return given a document as text return its representation as sequence of sentences of words
    */
-  def apply(text: String): Seq[Sentence] =
-    getSentences(text).map(removeHtmlTags).map(getTokens)
- 
-    
-  
-    
+  def apply(text: String): Seq[Word] =
+    getSentences(text).map(removeHtmlTags).flatMap(getTokens)
+
 }

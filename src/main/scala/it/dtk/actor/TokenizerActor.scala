@@ -3,13 +3,13 @@ package it.dtk.actor
 import akka.actor.{ Actor, ActorLogging }
 import it.dtk.actor.NewsPart._
 import it.dtk.nlp.TextPreprocessor
-import it.dtk.nlp.db.Sentence
 import akka.actor.Props
 import akka.routing.RoundRobinPool
+import it.dtk.nlp.db.Word
 
 object TokenizerActor {
   case class Process(newsId: String, text: String, value: NewsPart)
-  case class Result(newsId: String, sentence: Sentence, value: NewsPart)
+  case class Result(newsId: String, sentence: Seq[Word], value: NewsPart)
 
   def props = Props(classOf[TokenizerActor])
 

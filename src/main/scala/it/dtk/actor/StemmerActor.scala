@@ -2,14 +2,14 @@ package it.dtk.actor
 
 import akka.actor.{ Actor, ActorLogging }
 import it.dtk.actor.NewsPart._
-import it.dtk.nlp.db.Sentence
 import it.dtk.nlp.WordStemmer
 import akka.actor.Props
 import akka.routing.RoundRobinPool
+import it.dtk.nlp.db.Word
 
 object StemmerActor {
-  case class Process(newsId: String, sentences: Seq[Sentence], value: NewsPart)
-  case class Result(newsId: String, sentences: Seq[Sentence], value: NewsPart)
+  case class Process(newsId: String, sentences: Seq[Word], value: NewsPart)
+  case class Result(newsId: String, sentences: Seq[Word], value: NewsPart)
 
   def props = Props(classOf[StemmerActor])
   /**
@@ -30,13 +30,13 @@ class StemmerActor extends Actor with ActorLogging {
   def receive = {
 
     case Process(newsId, sentences, Title) =>
-      sender() ! Result(newsId, sentences.map(s => Sentence(s.words.map(WordStemmer.stem))), Title)
+      sender() ! Result(newsId, sentences.map(WordStemmer.stem), Title)
 
     case Process(newsId, sentences, Summary) =>
-      sender() ! Result(newsId, sentences.map(s => Sentence(s.words.map(WordStemmer.stem))), Summary)
+      sender() ! Result(newsId, sentences.map(WordStemmer.stem), Summary)
 
     case Process(newsId, sentences, Corpus) =>
-      sender() ! Result(newsId, sentences.map(s => Sentence(s.words.map(WordStemmer.stem))), Corpus)
+      sender() ! Result(newsId, sentences.map(WordStemmer.stem), Corpus)
 
   }
 

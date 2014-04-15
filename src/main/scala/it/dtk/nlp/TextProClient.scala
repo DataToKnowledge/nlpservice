@@ -22,24 +22,24 @@ class TextProClient {
    * @param text
    * @return a tuple of tags and sequence of sentences
    */
-  def process(text: Option[String]): Future[(Map[String, Double], Seq[Sentence])] = {
+  def process(text: Option[String]): Future[(Map[String, Double], Seq[Word])] = {
 
     if (text.isDefined) {
       val params = Map("text" -> text.get)
       val res = client.post(urlPost, params).map { response =>
-        val body = new String(Codec.fromUTF8(response.getResponseBodyAsBytes()))
+        val body = new String(Codec.fromUTF8(response.getResponseBodyAsBytes))
         println(body)
         parseText(body)
       }
       res
     } else {
       future {
-        (Map.empty[String,Double],Seq.empty[Sentence])
+        (Map.empty[String,Double],Seq.empty[Word])
       }
     }
   }
 
-  private def parseText(text: String): (Map[String, Double], Seq[Sentence]) = {
+  private def parseText(text: String): (Map[String, Double], Seq[Word]) = {
 
     //remove the first line that represents the header # FILE: input/prova.in
     val lines = text.split("\n")
@@ -52,7 +52,7 @@ class TextProClient {
         val seqSentences = extractSentences(fields)
         (keywords, seqSentences)
       case _ =>
-        (Map.empty[String, Double], Vector.empty[Sentence])
+        (Map.empty[String, Double], Vector.empty[Word])
     }
   }
 
@@ -70,10 +70,10 @@ class TextProClient {
     keyValuePair.foldLeft(Map.empty[String, Double])((map, elem) => map + elem)
   }
 
-  private def extractSentences(lines: List[String]): Seq[Sentence] = {
+  private def extractSentences(lines: List[String]): Seq[Word] = {
 
     @tailrec
-    def extractSentencesTail(acc: Seq[Sentence], curr: Seq[Word], head: String, tail: List[String]): Seq[Sentence] = {
+    def extractSentencesTail(acc: Seq[Word], curr: Seq[Word], head: String, tail: List[String]): Seq[Word] = {
       //extract the word
       val split = head.split("\t")
 
@@ -97,7 +97,7 @@ class TextProClient {
 
       //FIXME: this adds empty words
       val pair = if (word.getOrElse(Word("")).sentence.getOrElse("") == "<eos>") {
-        (acc :+ Sentence(curr :+ word.getOrElse(Word(""))), Vector.empty[Word])
+        (acc ++ (curr :+ word.getOrElse(Word(""))), Vector.empty[Word])
       } else {
         (acc, curr :+ word.getOrElse(Word("")))
       }
@@ -106,7 +106,7 @@ class TextProClient {
       else
         extractSentencesTail(pair._1, pair._2, tail.head, tail.tail)
     }
-    extractSentencesTail(Vector.empty[Sentence], Vector.empty[Word], lines.head, lines.tail)
+    extractSentencesTail(Vector.empty[Word], Vector.empty[Word], lines.head, lines.tail)
   }
 
 }
