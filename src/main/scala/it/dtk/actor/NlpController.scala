@@ -81,22 +81,22 @@ class NlpController extends Actor with ActorLogging {
 
       cityRouter ! new DetectorProcess(news.id, news.nlpTitle.get, NewsPart.Title)
       cityRouter ! new DetectorProcess(news.id, news.nlpSummary.get, NewsPart.Summary)
-      cityRouter ! new DetectorProcess(news.id, news.nlpText.get, NewsPart.Corpus)
+      cityRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
       j = j + 3
 
       crimeRouter ! new DetectorProcess(news.id, news.nlpTitle.get, NewsPart.Title)
       crimeRouter ! new DetectorProcess(news.id, news.nlpSummary.get, NewsPart.Summary)
-      crimeRouter ! new DetectorProcess(news.id, news.nlpText.get, NewsPart.Corpus)
+      crimeRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
       j = j + 3
 
       dateRouter ! new DetectorProcess(news.id, news.nlpTitle.get, NewsPart.Title)
       dateRouter ! new DetectorProcess(news.id, news.nlpSummary.get, NewsPart.Summary)
-      dateRouter ! new DetectorProcess(news.id, news.nlpText.get, NewsPart.Corpus)
+      dateRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
       j = j + 3
 
       addressRouter ! new DetectorProcess(news.id, news.nlpTitle.get, NewsPart.Title)
       addressRouter ! new DetectorProcess(news.id, news.nlpSummary.get, NewsPart.Summary)
-      addressRouter ! new DetectorProcess(news.id, news.nlpText.get, NewsPart.Corpus)
+      addressRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
       j = j + 3
 
     case TextProActor.Fail(news, ex) =>
@@ -118,8 +118,8 @@ class NlpController extends Actor with ActorLogging {
       context.become(nextStatus(modNewsProcessed, modMap, jobs - 1, send))
 
     case DetectorResult(newsId, sentences, NewsPart.Corpus) =>
-      val merge = mergeIOBEntity(mapNews.get(newsId).get.nlpText.get, sentences)
-      val modMap = mapNews + (newsId -> mapNews.get(newsId).get.copy(nlpText = Option(merge)))
+      val merge = mergeIOBEntity(mapNews.get(newsId).get.nlpCorpus.get, sentences)
+      val modMap = mapNews + (newsId -> mapNews.get(newsId).get.copy(nlpCorpus = Option(merge)))
       val modNewsProcessed = mapProcessed + (newsId -> true)
 
       context.become(nextStatus(modNewsProcessed, modMap, jobs - 1, send))

@@ -34,10 +34,10 @@ object Main {
       //title summary text
       val nlpTitle = textProClient.process(n.title)
       val nlpSummary = textProClient.process(n.summary)
-      val nlpText = textProClient.process(n.text)
+      val nlpCorpus = textProClient.process(n.corpus)
 
       //call city, date and crime detector
-      val pipeline = nlpText.map { keysSents =>
+      val pipeline = nlpCorpus.map { keysSents =>
         val sentences = keysSents._2
         val citySentences = CityDetector.detect(sentences)
         val crimeSentences = CrimeDetector.detect(sentences)
@@ -53,7 +53,7 @@ object Main {
       pipeline.onComplete {
         case Success((tags, sents)) =>
 
-          println("\n" + n.text.get)
+          println("\n" + n.corpus.get)
           println(tags)
           val strEntities = sents.map{w =>
             if (w.iobEntity.nonEmpty)
@@ -62,7 +62,7 @@ object Main {
           }
           println(strEntities.mkString(" "))
         case Failure(ex) =>
-          println("\n" + n.nlpText.getOrElse("No Text!!!"))
+          println("\n" + n.nlpCorpus.getOrElse("No Text!!!"))
           //ex.printStackTrace()
       }
     }

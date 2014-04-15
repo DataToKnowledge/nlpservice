@@ -76,7 +76,7 @@ object MongoDBMapper {
       "title" -> news.title,
       "summary" -> news.summary,
       "newsDate" -> news.newsDate,
-      "text" -> news.text,
+      "text" -> news.corpus,
       "tags" -> news.tags,
       "metaDescription" -> news.metaDescription,
       "metaKeyword" -> news.metaKeyword,

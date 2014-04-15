@@ -41,14 +41,14 @@ class TextProActor extends Actor with ActorLogging {
       val res = for {
         (titleKeywords, titleSentences) <- textProClient.process(news.title)
         (summKeywords, summSentences) <- textProClient.process(news.summary)
-        (corpKeywords, corpSentences) <- textProClient.process(news.text)
+        (corpKeywords, corpSentences) <- textProClient.process(news.corpus)
       } yield (titleSentences, summSentences, corpSentences, corpKeywords)
       
       
       res.onComplete {
         case Success((titleSentences, summSentences, corpSentences, corpKeywords)) =>
           val modNews = news.copy(nlpTitle = Option(titleSentences), nlpSummary = Option(summSentences),
-              nlpText = Option(corpSentences), nlpTags = Option(corpKeywords))
+              nlpCorpus = Option(corpSentences), nlpTags = Option(corpKeywords))
           send ! Result(modNews)
         case Failure(ex) =>
           send ! Fail(news,ex)
