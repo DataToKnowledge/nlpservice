@@ -71,6 +71,7 @@ object MongoDBMapper {
 
   implicit def newsToDBO(news: News): DBObject = {
     DBObject(
+      "_id" -> news.id,
       "urlWebSite" -> news.urlWebSite,
       "urlNews" -> news.urlNews,
       "title" -> news.title,

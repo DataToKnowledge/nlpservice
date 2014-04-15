@@ -5,6 +5,7 @@ import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.DBObject
 import com.mongodb.casbah.Imports._
 import MongoDBMapper._
+import com.mongodb.casbah.MongoCursor
 
 /**
  *
@@ -20,6 +21,7 @@ object DBManager {
   private val city = db("city")
   private val address = db("address")
   private val crime = db("crime")
+
   private val news = mongoClient("dbNews")("geoNews")
 
   private val nlpNews = mongoClient("dbNews")("nlpNews")
@@ -76,6 +78,7 @@ object DBManager {
 
   def getNews(limit: Int = 0): List[News] = {
     if (limit == 0) {
+      val r = news.find()
       news.find().map(n => MongoDBMapper.dBOToNews(n)).toList
     } else {
       news.find().limit(limit).map(n => MongoDBMapper.dBOToNews(n)).toList
@@ -83,11 +86,36 @@ object DBManager {
   }
 
   /**
+   * @param batchSize
+   * @return an collection iterator which allows to iterate of the news collection
+   */
+  def iterateOverNews(batchSize: Int): CollectionIterator =
+    new CollectionIterator(news.find(), batchSize)
+
+  /**
    * @param news
    * this method should be used to save the nlp processed News into a new collection
    */
   def saveNlpNews(news: News): Unit = {
     val result = nlpNews.save[DBObject](news)
+  }
+
+}
+
+class CollectionIterator(val cursor: MongoCursor, val batchSize: Int) {
+  
+  def hasNext = cursor.hasNext
+
+  def next: IndexedSeq[News] = {
+
+    var i = 0
+    var result = Vector.empty[News]
+
+    while (hasNext && i < batchSize) {
+      result = result :+ MongoDBMapper.dBOToNews(cursor.next)
+      i += 1
+    }
+    result
   }
 
 }
