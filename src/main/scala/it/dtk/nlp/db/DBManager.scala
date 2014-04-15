@@ -95,8 +95,10 @@ object DBManager {
    * @param news
    * this method should be used to save the nlp processed News into a new collection
    */
-  def saveNlpNews(news: News): Unit = {
-    val result = nlpNews.save[DBObject](news)
+  def saveNlpNews(news: News): Int = {
+    val q = MongoDBObject("urlNews" -> news.urlNews)
+    val result = nlpNews.update[MongoDBObject,DBObject](q, news, true) //nlpNews.save[DBObject](news)
+    result.getN()
   }
 
 }

@@ -15,11 +15,17 @@ import scala.concurrent.Await
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import it.dtk.actor.NlpController
+import akka.pattern._
+import akka.actor.ActorSystem
+import akka.actor.Props
 
 object NlpReceptionist {
   case object Start
   case object Pause
   case object Stop
+  case class Finished(processedNews: Int)
+
+  def props = Props[NlpReceptionist]
 }
 
 class NlpReceptionist extends Actor with ActorLogging {
@@ -30,6 +36,8 @@ class NlpReceptionist extends Actor with ActorLogging {
   def host = "10.1.0.62"
   def db = "dbNews"
 
+  var processed = 0
+
   val nlpControllerActor = context.actorOf(NlpController.props)
 
   val newsIterator = DBManager.iterateOverNews(10)
@@ -38,17 +46,28 @@ class NlpReceptionist extends Actor with ActorLogging {
     case Start =>
       //process the news 10 by 10
       val newsSeq = newsIterator.next
-      nlpControllerActor ! NlpController.Process(newsSeq)
-      
+
+      if (newsSeq.isEmpty)
+        context.parent ! Finished(processed)
+      else
+        nlpControllerActor ! NlpController.Process(newsSeq)
+
     case NlpController.Processed(newsSeq) =>
-    //save the news in the db collection nlpNews
-    newsSeq.foreach(DBManager.saveNlpNews(_))
+      //save the news in the db collection nlpNews
+      newsSeq.foreach(DBManager.saveNlpNews(_))
+      processed += newsSeq.size
+      //process the next ten news
+      self ! Start
 
     case NlpController.FailedProcess(news, ex) =>
-    //save a reference to the news and the error in a log file
-    val stacktraceString = ex.getStackTrace().map(_.toString()).mkString(" ")
-    log.error("error for the news with id {} title {} and stacktrace",news.id, 
+      //save a reference to the news and the error in a log file
+      val stacktraceString = ex.getStackTrace().map(_.toString()).mkString(" ")
+      log.error("error for the news with id {} title {} and stacktrace", news.id,
         news.title.getOrElse("no title"), stacktraceString)
+
+    case Pause =>
+
+    case Stop =>
   }
 }
 
@@ -64,6 +83,11 @@ object Main {
 
   def main(args: Array[String]) {
 
+    val system = ActorSystem("NewsExtractor")
+    val receptionist = system.actorOf(NlpReceptionist.props, "NLPReceptionist")
+    
+    receptionist ! NlpReceptionist.Start
+    
   }
 
 }

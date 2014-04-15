@@ -16,10 +16,10 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.3.1",
-  "com.typesafe.akka" %% "akka-testkit" % "2.3.1",
-  "com.typesafe.akka" %% "akka-cluster" % "2.3.1",
-  "org.mongodb" %% "casbah" % "2.7.0-RC2",
+  "com.typesafe.akka" %% "akka-actor" % "2.2.4",
+  "com.typesafe.akka" %% "akka-testkit" % "2.2.4",
+  "com.typesafe.akka" %% "akka-cluster" % "2.2.4",
+  "org.mongodb" %% "casbah" % "2.7.0",
   "org.annolab.tt4j" % "org.annolab.tt4j" % "1.1.2",
   "com.github.rholder" % "snowball-stemmer" % "1.3.0.581.1",
   "ch.qos.logback" % "logback-classic" % "1.1.1",
@@ -30,3 +30,6 @@ libraryDependencies ++= Seq(
   //"io.argonaut" %% "argonaut" % "6.0.3" ,
   "com.ning" % "async-http-client" % "1.8.4"
 )
+
+
+atmosSettings
