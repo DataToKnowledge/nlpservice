@@ -77,6 +77,8 @@ class NlpController extends Actor with ActorLogging {
       val modMap = mapNews + (news.id -> news)
       val modNewsProcessed = mapProcessed + (news.id -> true)
 
+      //TODO call the detectors
+      
       val count = counter - 1
 
       val nextStatus = if (count == 0) {
