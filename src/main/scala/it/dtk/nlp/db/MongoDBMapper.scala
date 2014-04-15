@@ -51,45 +51,6 @@ object MongoDBMapper {
     Sentence(seqWords.getOrElse(Vector.empty))
   }
 
-  implicit def nlpTitleToDBO(title: NLPTitle): DBObject = {
-    DBObject(
-      "sentences" -> title.sentences.map(s => sentenceToDBO(s))
-    )
-  }
-
-  implicit def dBOtoNlpTitle(dbo: DBObject): NLPTitle = {
-    val seqDBO = dbo.getAs[Seq[DBObject]]("sentences")
-    //convert to sentences
-    val seqSentences = seqDBO.map(s => s.map(dBOToSentence))
-    NLPTitle(seqSentences.getOrElse(Vector.empty))
-  }
-
-  implicit def nlpSummaryToDBO(summary: NLPSummary): DBObject = {
-    DBObject(
-      "sentences" -> summary.sentences.map(s => sentenceToDBO(s))
-    )
-  }
-
-  implicit def dBOtoNlpSummary(dbo: DBObject): NLPSummary = {
-    val seqDBO = dbo.getAs[Seq[DBObject]]("sentences")
-    //convert to sentences
-    val seqSentences = seqDBO.map(s => s.map(dBOToSentence))
-    NLPSummary(seqSentences.getOrElse(Vector.empty))
-  }
-
-  implicit def nlpTextToDBO(text: NLPText): DBObject = {
-    DBObject(
-      "sentences" -> text.sentences.map(s => sentenceToDBO(s))
-    )
-  }
-
-  implicit def dBOtoNlpText(dbo: DBObject): NLPText = {
-    val seqDBO = dbo.getAs[Seq[DBObject]]("sentences")
-    //convert to sentences
-    val seqSentences = seqDBO.map(s => s.map(dBOToSentence))
-    NLPText(seqSentences.getOrElse(Vector.empty))
-  }
-
   implicit def dBOToNews(dbo: DBObject): News = {
     RegisterJodaTimeConversionHelpers()
     News(

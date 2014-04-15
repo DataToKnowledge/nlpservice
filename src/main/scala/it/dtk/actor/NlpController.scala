@@ -29,7 +29,6 @@ class NlpController extends Actor with ActorLogging {
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
 
   import NlpController._
-  import NewsPart._
   import TextProActor._
 
   /*
@@ -103,7 +102,7 @@ class NlpController extends Actor with ActorLogging {
       }
   }
 
-  override def postStop: Unit = {
+  override def postStop(): Unit = {
     textProRouter ! PoisonPill
   }
 

@@ -1,8 +1,6 @@
 package it.dtk.actor
 
 import akka.actor.{ Actor, ActorLogging }
-import it.dtk.nlp.db.Sentence
-import NewsPart._
 import akka.actor.Props
 import it.dtk.nlp.TextProClient
 import scala.util.Success
@@ -17,8 +15,7 @@ object TextProActor {
   case class Result(news: News)
   case class Fail(news: News, ex: Throwable)
 
-  def props =
-    Props(classOf[TextProActor])
+  def props = Props(classOf[TextProActor])
 
   /**
    * @param nrOfInstances
@@ -39,7 +36,7 @@ class TextProActor extends Actor with ActorLogging {
   def receive = {
 
     case Parse(news) =>
-      val send = sender
+      val send = sender()
       
       val res = for {
         (titleKeywords, titleSentences) <- textProClient.process(news.title)
@@ -50,8 +47,8 @@ class TextProActor extends Actor with ActorLogging {
       
       res.onComplete {
         case Success((titleSentences, summSentences, corpSentences, corpKeywords)) =>
-          val modNews = news.copy(nlpTitle = Option(NLPTitle(titleSentences)), nlpSummary = Option(NLPSummary(summSentences)),
-              nlpText = Option(NLPText(corpSentences)), nlpTags = Option(corpKeywords))
+          val modNews = news.copy(nlpTitle = Option(titleSentences), nlpSummary = Option(summSentences),
+              nlpText = Option(corpSentences), nlpTags = Option(corpKeywords))
           send ! Result(modNews)
         case Failure(ex) =>
           send ! Fail(news,ex)
