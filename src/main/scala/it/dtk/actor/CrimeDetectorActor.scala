@@ -5,12 +5,8 @@ import it.dtk.actor.NewsPart._
 import it.dtk.nlp.detector.CrimeDetector
 import akka.actor.Props
 import akka.routing.RoundRobinPool
-import it.dtk.nlp.db.Word
 
 object CrimeDetectorActor {
-  case class Process(newsId: String, sentences: Seq[Word], value: NewsPart)
-  case class Result(newsId: String, sentences: Seq[Word], value: NewsPart)
-
   def props = Props(classOf[CrimeDetectorActor])
 
   /**
@@ -27,18 +23,18 @@ object CrimeDetectorActor {
  */
 class CrimeDetectorActor extends Actor with ActorLogging {
 
-  import CrimeDetectorActor._
+  import NlpController._
 
   def receive = {
 
-    case Process(newsId, sentences, Title) =>
-      sender() ! Result(newsId, CrimeDetector.detect(sentences), Title)
+    case DetectorProcess(newsId, sentences, Title) =>
+      sender() ! DetectorResult(newsId, CrimeDetector.detect(sentences), Title)
 
-    case Process(newsId, sentences, Summary) =>
-      sender() ! Result(newsId, CrimeDetector.detect(sentences), Summary)
+    case DetectorProcess(newsId, sentences, Summary) =>
+      sender() ! DetectorResult(newsId, CrimeDetector.detect(sentences), Summary)
 
-    case Process(newsId, sentences, Corpus) =>
-      sender() ! Result(newsId, CrimeDetector.detect(sentences), Corpus)
+    case DetectorProcess(newsId, sentences, Corpus) =>
+      sender() ! DetectorResult(newsId, CrimeDetector.detect(sentences), Corpus)
 
   }
 
