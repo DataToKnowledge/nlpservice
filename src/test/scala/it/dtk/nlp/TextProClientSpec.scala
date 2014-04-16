@@ -6,6 +6,8 @@ import it.dtk.nlp.db._
 
 object TextProClientSpec {
 
+  val host = "193.204.187.132"
+
   val title = "Ricercato per traffico di droga, latitante albanese arrestato a Cassano"
 
   val firstWordResult = Word("Ricercato", Some(1), Some(0), Some(9), Some("-"), Some("VSP"), Some("ricercare"), Some("ricercare+v+part+pass+m+nil+sing"), None, Vector.empty[String], Some("B-VX"))
@@ -34,7 +36,7 @@ class TextProClientSpec extends BaseTestClass {
 
   "A TextProClient" when {
 
-    val client = new TextProClient
+    val client = new TextProClient(host)
 
     "process the title of a news" should {
       val result = client.process(Option(title))

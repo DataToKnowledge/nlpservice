@@ -28,7 +28,7 @@ object NewsPart extends Enumeration {
   val Title, Summary, Corpus = Value
 }
 
-class NlpController extends Actor with ActorLogging {
+class NlpController(textProHost: String) extends Actor with ActorLogging {
 
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
 
@@ -46,7 +46,7 @@ class NlpController extends Actor with ActorLogging {
   val postagRouter = context.actorOf(PosTaggerActor.routerProps(), "postagRouter")
   val sentenceRouter = context.actorOf(SentenceDetectorActor.routerProps(), "sentenceDetectorRouter")
   val stemmerRouter = context.actorOf(StemmerActor.routerProps(), "stemmerRouter")
-  val textProRouter = context.actorOf(TextProActor.routerProps(), "textProRouter")
+  val textProRouter = context.actorOf(TextProActor.routerProps(host = textProHost), "textProRouter")
   val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
   val callInterval = 20.seconds

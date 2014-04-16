@@ -28,12 +28,11 @@ object NlpReceptionist {
   def props = Props[NlpReceptionist]
 }
 
-class NlpReceptionist extends Actor with ActorLogging {
+class NlpReceptionist(dbHost: String, textProHost: String) extends Actor with ActorLogging {
 
   import NlpReceptionist._
 
   //db configurations
-  def host = "10.1.0.62"
   def db = "dbNews"
 
   var processed = 0
@@ -86,8 +85,11 @@ object Main {
     //Use the system's dispatcher as ExecutionContext
     import system.dispatcher
 
+    val dbHost = if (args.size > 0) args(0) else "127.0.0.1"
+    val textProHost = if (args.size > 1) args(1) else "127.0.0.1"
+
     val system = ActorSystem("NewsExtractor")
-    val receptionist = system.actorOf(NlpReceptionist.props, "NLPReceptionist")
+    val receptionist = system.actorOf(Props(classOf[NlpReceptionist], dbHost, textProHost), "NLPReceptionist")
     
     receptionist ! NlpReceptionist.Start
     

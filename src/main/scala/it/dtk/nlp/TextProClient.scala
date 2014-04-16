@@ -9,14 +9,14 @@ import scala.annotation.tailrec
 import it.dtk.nlp.db._
 import scala.io.Codec
 
-class TextProClient {
+class TextProClient(host: String) {
 
   private val executorService = Executors.newCachedThreadPool()
   private implicit val executionContext = ExecutionContext.fromExecutorService(executorService)
 
   private val client = AsyncWebClient
 
-  private val urlPost = "http://10.1.0.61:7070/nlp"
+  private val urlPost = "http://" + host + ":7070/nlp"
 
   /**
    * @param text

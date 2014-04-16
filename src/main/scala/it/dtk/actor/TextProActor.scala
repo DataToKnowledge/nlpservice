@@ -15,25 +15,25 @@ object TextProActor {
   case class Result(news: News)
   case class Fail(news: News, ex: Throwable)
 
-  def props = Props(classOf[TextProActor])
+  def props(host: String) = Props(classOf[TextProActor], host)
 
   /**
    * @param nrOfInstances
    * @return the props for a router with a defined number of instances
    */
-  def routerProps(nrOfInstances: Int = 3) =
-    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
+  def routerProps(nrOfInstances: Int = 3, host: String) =
+    props(host).withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
   //TODO akka 2.3.2
   //RoundRobinPool(nrOfInstances).props(props)
 
 }
 
-class TextProActor extends Actor with ActorLogging {
+class TextProActor(host: String) extends Actor with ActorLogging {
 
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
   import TextProActor._
 
-  private val textProClient = new TextProClient
+  private val textProClient = new TextProClient(host)
 
   def receive = {
 
