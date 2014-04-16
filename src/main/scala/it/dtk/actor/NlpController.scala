@@ -1,7 +1,7 @@
 package it.dtk.actor
 
 import akka.actor.{ Actor, ActorLogging }
-import it.dtk.nlp.db.{Word, News}
+import it.dtk.nlp.db.{ Word, News }
 import akka.actor.ActorRef
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -55,12 +55,11 @@ class NlpController extends Actor with ActorLogging {
 
   val waiting: Receive = {
     case Process(newsSeq) =>
-      log.debug("start processing {} news", newsSeq.length)
+      log.info("start processing {} news", newsSeq.length)
       context.become(runNext(newsSeq, sender))
   }
 
   def runNext(newsSeq: Seq[News], send: ActorRef): Receive = {
-    val mapNewsProcessed = newsSeq.map(_.id).map(_ -> false).toMap
     val mapNews = newsSeq.foldLeft(Map.empty[String, News])((map, news) => map + (news.id -> news))
     val send = sender
 
@@ -70,10 +69,10 @@ class NlpController extends Actor with ActorLogging {
       interval += callInterval
     }
 
-    running(mapNewsProcessed, mapNews, newsSeq.length, send)
+    running(mapNews, 0, send)
   }
 
-  def running(mapProcessed: Map[String, Boolean], mapNews: Map[String, News], jobs: Int, send: ActorRef): Receive = {
+  def running(mapNews: Map[String, News], jobs: Int, send: ActorRef): Receive = {
 
     case TextProActor.Result(news) =>
 
@@ -99,39 +98,39 @@ class NlpController extends Actor with ActorLogging {
       addressRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
       j = j + 3
 
+      //update the news and change the context
+      val modMap = mapNews.updated(news.id, news)
+      context.become(running(modMap, j, send))
+
     case TextProActor.Fail(news, ex) =>
       //TODO reschedule the message
       send ! FailedProcess(news, ex)
 
     case DetectorResult(newsId, sentences, NewsPart.Title) =>
-      val merge = mergeIOBEntity(mapNews.get(newsId).get.nlpTitle.get, sentences)
+      val n = mapNews.get(newsId).get
+      val merge = mergeIOBEntity(n.nlpTitle.get, sentences)
       val modMap = mapNews + (newsId -> mapNews.get(newsId).get.copy(nlpTitle = Option(merge)))
-      val modNewsProcessed = mapProcessed + (newsId -> true)
-
-      context.become(nextStatus(modNewsProcessed, modMap, jobs - 1, send))
+      context.become(nextStatus(modMap, jobs - 1, send))
 
     case DetectorResult(newsId, sentences, NewsPart.Summary) =>
-      val merge = mergeIOBEntity(mapNews.get(newsId).get.nlpSummary.get, sentences)
+      val n = mapNews.get(newsId).get
+      val merge = mergeIOBEntity(n.nlpSummary.get, sentences)
       val modMap = mapNews + (newsId -> mapNews.get(newsId).get.copy(nlpSummary = Option(merge)))
-      val modNewsProcessed = mapProcessed + (newsId -> true)
-
-      context.become(nextStatus(modNewsProcessed, modMap, jobs - 1, send))
+      context.become(nextStatus(modMap, jobs - 1, send))
 
     case DetectorResult(newsId, sentences, NewsPart.Corpus) =>
-      val merge = mergeIOBEntity(mapNews.get(newsId).get.nlpCorpus.get, sentences)
+      val n = mapNews.get(newsId).get
+      val merge = mergeIOBEntity(n.nlpCorpus.get, sentences)
       val modMap = mapNews + (newsId -> mapNews.get(newsId).get.copy(nlpCorpus = Option(merge)))
-      val modNewsProcessed = mapProcessed + (newsId -> true)
-
-      context.become(nextStatus(modNewsProcessed, modMap, jobs - 1, send))
-
+      context.become(nextStatus(modMap, jobs - 1, send))
   }
 
-  private def nextStatus(mapProcessed: Map[String, Boolean], mapNews: Map[String, News], jobs: Int, send: ActorRef) = {
+  private def nextStatus(mapNews: Map[String, News], jobs: Int, send: ActorRef) = {
     if (jobs == 0) {
       send ! Processed(mapNews.values.toSeq)
       waiting
     } else {
-      running(mapProcessed, mapNews, jobs, send)
+      running(mapNews, jobs, send)
     }
   }
 

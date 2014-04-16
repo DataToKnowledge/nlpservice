@@ -28,7 +28,6 @@ class TextProClient {
       val params = Map("text" -> text.get)
       val res = client.post(urlPost, params).map { response =>
         val body = new String(Codec.fromUTF8(response.getResponseBodyAsBytes))
-        println(body)
         parseText(body)
       }
       res
