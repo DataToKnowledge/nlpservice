@@ -2,10 +2,12 @@ package it.dtk.actor
 
 import akka.actor.Actor
 import akka.actor.ActorLogging
-import it.dtk.actor.NewsPart._
 import it.dtk.nlp.detector.AddressDetector
 import akka.actor.Props
 import akka.routing.RoundRobinRouter
+import scala.util.Success
+import scala.util.Failure
+import it.dtk.nlp.detector._
 
 object AddressDetectorActor {
   def props = Props(classOf[AddressDetectorActor])
@@ -30,15 +32,16 @@ class AddressDetectorActor extends Actor with ActorLogging {
 
   def receive = {
 
-    case DetectorProcess(newsId, sentences, Title) =>
-      sender ! DetectorResult(newsId, AddressDetector.detect(sentences), Title)
-
-    case DetectorProcess(newsId, sentences, Summary) =>
-      sender ! DetectorResult(newsId, AddressDetector.detect(sentences), Summary)
-
-    case DetectorProcess(newsId, sentences, Corpus) =>
-      sender ! DetectorResult(newsId, AddressDetector.detect(sentences), Corpus)
-
+    case Detector.Process(newsId, sentences, part) =>
+      val result = AddressDetector.detect(sentences)
+      
+      result match {
+        case Success(sents) =>
+          sender ! Detector.Result(newsId, sents , part)
+          
+        case Failure(ex) =>
+          sender ! Detector.Failure(newsId,part,ex)
+      }
   }
   
 }

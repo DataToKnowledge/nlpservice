@@ -1,6 +1,8 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.{TreeTagger, TextPreprocessor, BaseTestClass}
+import it.dtk.nlp.{ TreeTagger, TextPreprocessor, BaseTestClass }
+import scala.util.Success
+import scala.util.Failure
 
 object CityDetectorSpec {
 
@@ -26,9 +28,13 @@ class CityDetectorSpec extends BaseTestClass {
         whenReady(TreeTagger.tag(TextPreprocessor.apply(sentence))) {
           sentence =>
             val result = CityDetector.detect(sentence)
-
-            result.count(_.iobEntity.contains("B-CITY")) should be(1)
-            result.count(_.iobEntity.contains("I-CITY")) should be(2)
+            result match {
+              case Success(res) =>
+                res.count(_.iobEntity.contains("B-CITY")) should be(1)
+                res.count(_.iobEntity.contains("I-CITY")) should be(2)
+              case Failure(ex) =>
+                ex.printStackTrace()
+            }
         }
       }
 
@@ -38,8 +44,14 @@ class CityDetectorSpec extends BaseTestClass {
           sentence =>
             val result = CityDetector.detect(sentence)
 
-            result.count(_.iobEntity.contains("B-CITY")) should be(1)
-            result.count(_.iobEntity.contains("I-CITY")) should be(0)
+            result match {
+              case Success(res) =>
+                res.count(_.iobEntity.contains("B-CITY")) should be(1)
+                res.count(_.iobEntity.contains("I-CITY")) should be(0)
+              case Failure(ex) =>
+                ex.printStackTrace()
+            }
+
         }
       }
 

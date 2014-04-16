@@ -2,6 +2,7 @@ package it.dtk.nlp.detector
 
 import it.dtk.nlp.db.{Address, DBManager, Word}
 import org.slf4j.LoggerFactory
+import scala.util.Try
 
 /**
  * @author Michele Damiano Torelli <daniele@datatoknowledge.it>
@@ -43,11 +44,11 @@ object AddressDetector extends Detector {
 
   private val log = LoggerFactory.getLogger("AddressDetector")
 
-  override def detect(sentence: Seq[Word]): Seq[Word] = _detect(sentence, cityName = None)
+  override def detect(sentence: Seq[Word]): Try[Seq[Word]] = _detect(sentence, cityName = None)
 
-  def detect(sentence: Seq[Word], cityName: String): Seq[Word] = _detect(sentence, Option(cityName))
+  def detect(sentence: Seq[Word], cityName: String): Try[Seq[Word]] = _detect(sentence, Option(cityName))
 
-  private def _detect(sentence: Seq[Word], cityName: Option[String]): Seq[Word] = {
+  private def _detect(sentence: Seq[Word], cityName: Option[String]): Try[Seq[Word]] = Try {
     var result = Vector.empty[Word]
 
     def bumpEndIndex(offset: Int) =  {

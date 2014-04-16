@@ -1,11 +1,13 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.{TreeTagger, TextPreprocessor}
-import org.scalatest.{Matchers, FlatSpec}
+import it.dtk.nlp.{ TreeTagger, TextPreprocessor }
+import org.scalatest.{ Matchers, FlatSpec }
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.net.URL
-import org.scalatest.concurrent.{Futures, ScalaFutures}
+import org.scalatest.concurrent.{ Futures, ScalaFutures }
+import scala.util.Success
+import scala.util.Failure
 
 /**
  * @author Michele Damiano Torelli <daniele@datatoknowledge.it>
@@ -22,9 +24,15 @@ class DateDetectorSpec extends FlatSpec with Matchers with Futures with ScalaFut
       words =>
         val results = DateDetector.detect(words)
 
-        results.size should be(words.size)
-        results.count(w => w.iobEntity.contains("B-DATE")) should be(4)
-        results.count(w => w.iobEntity.contains("I-DATE")) should be(11)
+        results match {
+          case Success(res) =>
+            res.size should be(words.size)
+            res.count(w => w.iobEntity.contains("B-DATE")) should be(4)
+            res.count(w => w.iobEntity.contains("I-DATE")) should be(11)
+          case Failure(ex) =>
+            ex.printStackTrace()
+        }
+
     }
   }
 
@@ -34,8 +42,13 @@ class DateDetectorSpec extends FlatSpec with Matchers with Futures with ScalaFut
       words =>
         val results = DateDetector.detect(words)
 
-        results.size should be(words.size)
-        results.count(w => w.iobEntity.nonEmpty) should be(0)
+        results match {
+          case Success(res) =>
+            res.size should be(words.size)
+            res.count(w => w.iobEntity.nonEmpty) should be(0)
+          case Failure(ex) =>
+            ex.printStackTrace()
+        }
     }
   }
 
@@ -56,8 +69,7 @@ class DateDetectorSpec extends FlatSpec with Matchers with Futures with ScalaFut
       "http://bari.repubblica.it/cronaca/2014/03/24/news/abuso_d_ufficio_sospeso_il_sindaco_di_fasano_lello_di_bari-81768917/",
       "http://bari.repubblica.it/cronaca/2014/03/24/news/falsi_braccianti-81760445/",
       "http://bari.repubblica.it/cronaca/2014/03/24/news/fasano-81758511/",
-      "http://bari.repubblica.it/cronaca/2014/03/24/news/anno_accademico-81750197/"
-    )
+      "http://bari.repubblica.it/cronaca/2014/03/24/news/anno_accademico-81750197/")
 
     urls foreach {
       urlStr =>

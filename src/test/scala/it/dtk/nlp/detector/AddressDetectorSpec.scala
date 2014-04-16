@@ -1,6 +1,8 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.{TreeTagger, TextPreprocessor, BaseTestClass}
+import it.dtk.nlp.{ TreeTagger, TextPreprocessor, BaseTestClass }
+import scala.util.Success
+import scala.util.Failure
 
 object AddressDetectorSpec {
 
@@ -23,9 +25,13 @@ class AddressDetectorSpec extends BaseTestClass {
       whenReady(TreeTagger.tag(TextPreprocessor.apply(address))) {
         sentence =>
           val result = AddressDetector.detect(sentence)
+          result match {
+            case Success(res) =>
+              res.count(_.iobEntity.contains("B-ADDRESS")) should be(1)
+            case Failure(ex) =>
+              ex.printStackTrace()
+          }
 
-          result.count(_.iobEntity.contains("B-ADDRESS")) should be(1)
-          result.count(_.iobEntity.contains("I-ADDRESS")) should be(2)
       }
     }
 
@@ -34,8 +40,13 @@ class AddressDetectorSpec extends BaseTestClass {
         sentence =>
           val result = AddressDetector.detect(sentence, city)
 
-          result.count(_.iobEntity.contains("B-ADDRESS")) should be(1)
-          result.count(_.iobEntity.contains("I-ADDRESS")) should be(2)
+          result match {
+            case Success(res) =>
+              res.count(_.iobEntity.contains("B-ADDRESS")) should be(1)
+              res.count(_.iobEntity.contains("I-ADDRESS")) should be(2)
+            case Failure(ex) =>
+              ex.printStackTrace()
+          }
       }
     }
 

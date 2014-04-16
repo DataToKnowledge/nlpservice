@@ -1,13 +1,13 @@
 package it.dtk.actor
 
 import akka.actor.{ Actor, ActorLogging }
-import it.dtk.actor.NewsPart._
 import akka.actor.Props
 import it.dtk.nlp.TreeTagger
 import scala.util.{ Failure, Success }
 import scala.concurrent.ExecutionContext.Implicits.global
 import it.dtk.nlp.db.Word
 import akka.routing.RoundRobinRouter
+import it.dtk.nlp.detector.NewsPart._
 
 object PosTaggerActor {
   case class Process(newsId: String, text: Seq[Word], value: NewsPart)
@@ -36,12 +36,12 @@ class PosTaggerActor extends Actor with ActorLogging {
 
   def receive = {
 
-    case Process(newsId, text, Title) =>
+    case Process(newsId, text, part) =>
       TreeTagger.tag(text) onComplete {
         case Success(res) =>
-          sender ! Result(newsId, res, Title)
+          sender ! Result(newsId, res, part)
         case Failure(ex) =>
-          sender ! Fail(newsId, ex, Title)
+          sender ! Fail(newsId, ex, part)
       }
 
   }

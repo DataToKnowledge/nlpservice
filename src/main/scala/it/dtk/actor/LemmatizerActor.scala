@@ -1,15 +1,13 @@
 package it.dtk.actor
 
 import akka.actor.{ Actor, ActorLogging }
-import it.dtk.actor.NewsPart._
 import it.dtk.nlp.Lemmatizer
 import akka.actor.Props
 import it.dtk.nlp.db.Word
 import akka.routing.RoundRobinRouter
+import it.dtk.nlp.detector.Detector
 
 object LemmatizerActor {
-  case class Process(newsId: String, sentences: Seq[Word], value: NewsPart)
-  case class Result(newsId: String, sentences: Seq[Word], value: NewsPart)
 
   def props = Props(classOf[LemmatizerActor])
 
@@ -32,14 +30,11 @@ class LemmatizerActor extends Actor with ActorLogging {
   import LemmatizerActor._
 
   def receive = {
-    case Process(newsId, sentences, Title) =>
-      sender ! Result(newsId, sentences.map(Lemmatizer.lemma), Title)
+    case Detector.Process(newsId, sentences, part) =>
+      
+      val result = sentences.map(Lemmatizer.lemma)
+      sender ! Detector.Result(newsId, result, part)
 
-    case Process(newsId, sentences, Summary) =>
-      sender ! Result(newsId, sentences.map(Lemmatizer.lemma), Summary)
-
-    case Process(newsId, sentences, Corpus) =>
-      sender ! Result(newsId, sentences.map(Lemmatizer.lemma), Corpus)
   }
 
 }

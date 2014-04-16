@@ -1,10 +1,11 @@
 package it.dtk.actor
 
 import akka.actor.{ Actor, ActorLogging }
-import it.dtk.actor.NewsPart._
 import it.dtk.nlp.detector.DateDetector
 import akka.actor.Props
 import akka.routing.RoundRobinRouter
+import it.dtk.nlp.detector.Detector
+import scala.util._
 
 object DateDetectorActor {
   def props = Props(classOf[DateDetectorActor])
@@ -29,15 +30,15 @@ class DateDetectorActor extends Actor with ActorLogging {
 
   def receive = {
 
-    case DetectorProcess(newsId, sentences, Title) =>
-      sender ! DetectorResult(newsId, DateDetector.detect(sentences), Title)
+    case Detector.Process(newsId, sentences, part) =>
+      val result = DateDetector.detect(sentences)
+      result match {
+        case Success(sents) =>
+          sender ! Detector.Result(newsId, sents, part)
 
-    case DetectorProcess(newsId, sentences, Summary) =>
-      sender ! DetectorResult(newsId, DateDetector.detect(sentences), Summary)
-
-    case DetectorProcess(newsId, sentences, Corpus) =>
-      sender ! DetectorResult(newsId, DateDetector.detect(sentences), Corpus)
-
+        case Failure(ex) =>
+          sender ! Detector.Failure(newsId, part, ex)
+      }
   }
 
 }

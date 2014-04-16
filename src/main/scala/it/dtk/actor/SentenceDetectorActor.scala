@@ -1,10 +1,10 @@
 package it.dtk.actor
 
 import akka.actor.{ Actor, ActorLogging }
-import it.dtk.actor.NewsPart._
 import it.dtk.nlp.TextPreprocessor
 import akka.actor.Props
 import akka.routing.RoundRobinRouter
+import it.dtk.nlp.detector.NewsPart._
 
 object SentenceDetectorActor {
   case class Process(newsId: String, text: String, value: NewsPart)

@@ -9,23 +9,17 @@ import java.util.concurrent.Executor
 import scala.concurrent.ExecutionContext
 import akka.actor.Props
 import akka.actor.PoisonPill
-import it.dtk.actor.NewsPart.NewsPart
+import it.dtk.nlp.detector._
+import it.dtk.nlp.detector.NewsPart._
 
 object NlpController {
 
   case class Process(news: Seq[News])
   case class Processed(news: Seq[News])
   case class FailedProcess(news: News, ex: Throwable)
-
-  case class DetectorProcess(newsId: String, sentences: Seq[Word], value: NewsPart)
-  case class DetectorResult(newsId: String, sentences: Seq[Word], value: NewsPart)
+  case class FailedProcessPart(idNews: String, part: NewsPart, ex: Throwable)
 
   def props = Props(classOf[NlpController])
-}
-
-object NewsPart extends Enumeration {
-  type NewsPart = Value
-  val Title, Summary, Corpus = Value
 }
 
 class NlpController(textProHost: String) extends Actor with ActorLogging {
@@ -78,25 +72,25 @@ class NlpController(textProHost: String) extends Actor with ActorLogging {
 
       var j = jobs
 
-      cityRouter ! new DetectorProcess(news.id, news.nlpTitle.get, NewsPart.Title)
-      cityRouter ! new DetectorProcess(news.id, news.nlpSummary.get, NewsPart.Summary)
-      cityRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
-      j = j + 3
+      cityRouter ! new Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
+      cityRouter ! new Detector.Process(news.id, news.nlpSummary.get, NewsPart.Summary)
+      cityRouter ! new Detector.Process(news.id, news.nlpCorpus.get, NewsPart.Corpus)
+      j += 3
 
-      crimeRouter ! new DetectorProcess(news.id, news.nlpTitle.get, NewsPart.Title)
-      crimeRouter ! new DetectorProcess(news.id, news.nlpSummary.get, NewsPart.Summary)
-      crimeRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
-      j = j + 3
+      crimeRouter ! new Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
+      crimeRouter ! new Detector.Process(news.id, news.nlpSummary.get, NewsPart.Summary)
+      crimeRouter ! new Detector.Process(news.id, news.nlpCorpus.get, NewsPart.Corpus)
+      j += 3
 
-      dateRouter ! new DetectorProcess(news.id, news.nlpTitle.get, NewsPart.Title)
-      dateRouter ! new DetectorProcess(news.id, news.nlpSummary.get, NewsPart.Summary)
-      dateRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
-      j = j + 3
+      dateRouter ! new Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
+      dateRouter ! new Detector.Process(news.id, news.nlpSummary.get, NewsPart.Summary)
+      dateRouter ! new Detector.Process(news.id, news.nlpCorpus.get, NewsPart.Corpus)
+      j += 3
 
-      addressRouter ! new DetectorProcess(news.id, news.nlpTitle.get, NewsPart.Title)
-      addressRouter ! new DetectorProcess(news.id, news.nlpSummary.get, NewsPart.Summary)
-      addressRouter ! new DetectorProcess(news.id, news.nlpCorpus.get, NewsPart.Corpus)
-      j = j + 3
+      addressRouter ! new Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
+      addressRouter ! new Detector.Process(news.id, news.nlpSummary.get, NewsPart.Summary)
+      addressRouter ! new Detector.Process(news.id, news.nlpCorpus.get, NewsPart.Corpus)
+      j += 3
 
       //update the news and change the context
       val modMap = mapNews.updated(news.id, news)
@@ -106,26 +100,30 @@ class NlpController(textProHost: String) extends Actor with ActorLogging {
       //TODO reschedule the message
       send ! FailedProcess(news, ex)
 
-    case DetectorResult(newsId, sentences, NewsPart.Title) =>
+    case Detector.Result(newsId, sentences, NewsPart.Title) =>
       val n = mapNews.get(newsId).get
       val merge = mergeIOBEntity(n.nlpTitle.get, sentences)
       val modMap = mapNews + (newsId -> mapNews.get(newsId).get.copy(nlpTitle = Option(merge)))
       context.become(nextStatus(modMap, jobs - 1, send))
 
-    case DetectorResult(newsId, sentences, NewsPart.Summary) =>
+    case Detector.Result(newsId, sentences, NewsPart.Summary) =>
       val n = mapNews.get(newsId).get
       val merge = mergeIOBEntity(n.nlpSummary.get, sentences)
       val modMap = mapNews + (newsId -> mapNews.get(newsId).get.copy(nlpSummary = Option(merge)))
       context.become(nextStatus(modMap, jobs - 1, send))
 
-    case DetectorResult(newsId, sentences, NewsPart.Corpus) =>
+    case Detector.Result(newsId, sentences, NewsPart.Corpus) =>
       val n = mapNews.get(newsId).get
       val merge = mergeIOBEntity(n.nlpCorpus.get, sentences)
       val modMap = mapNews + (newsId -> mapNews.get(newsId).get.copy(nlpCorpus = Option(merge)))
       context.become(nextStatus(modMap, jobs - 1, send))
+
+    case Detector.Failure(newsId, part, ex) =>
+      send ! FailedProcessPart(newsId, part, ex)
+      context.become(nextStatus(mapNews, jobs - 1, send))
   }
 
-  private def nextStatus(mapNews: Map[String, News], jobs: Int, send: ActorRef) = {
+  private def nextStatus(mapNews: Map[String, News], jobs: Int, send: ActorRef): Receive = {
     if (jobs == 0) {
       send ! Processed(mapNews.values.toSeq)
       waiting

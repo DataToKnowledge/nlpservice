@@ -5,6 +5,7 @@ import org.joda.time.format.DateTimeFormat
 import java.net.URL
 import org.slf4j.LoggerFactory
 import it.dtk.nlp.db.Word
+import scala.util.Try
 
 /**
  * Implements recognition of date entities
@@ -41,7 +42,7 @@ object DateDetector extends Detector {
 
   val log = LoggerFactory.getLogger("DateDetector")
 
-  override def detect(sentence: Seq[Word]): Seq[Word] = {
+  override def detect(sentence: Seq[Word]): Try[Seq[Word]] = Try {
     var nextIndex = 0
     var result = Vector.empty[Word]
 

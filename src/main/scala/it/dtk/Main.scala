@@ -63,8 +63,13 @@ class NlpReceptionist(dbHost: String, textProHost: String) extends Actor with Ac
     case NlpController.FailedProcess(news, ex) =>
       //save a reference to the news and the error in a log file
       val stacktraceString = ex.getStackTrace().map(_.toString()).mkString(" ")
-      log.error("error for the news with id {} title {} and stacktrace", news.id,
+      log.error("failed process news with id {} title {} and stacktrace {}", news.id,
         news.title.getOrElse("no title"), stacktraceString)
+        
+    case NlpController.FailedProcessPart(newsId, part, ex) =>
+       val stacktraceString = ex.getStackTrace().map(_.toString()).mkString(" ")
+      log.error("failed process news part {} with id {} and stacktrace {}", part, newsId, 
+          stacktraceString)
 
     case Pause =>
 
