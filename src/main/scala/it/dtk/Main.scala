@@ -43,6 +43,8 @@ class NlpReceptionist(dbHost: String, textProHost: String) extends Actor with Ac
 
   def receive = {
     case Start =>
+      log.info("Using MongoDB instance on {}", dbHost)
+      log.info("Using TextProServer instance on {}", textProHost)
       //process the news 10 by 10
       val newsSeq = newsIterator.next
 
