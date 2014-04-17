@@ -37,7 +37,7 @@ class NlpReceptionist(dbHost: String, textProHost: String) extends Actor with Ac
 
   var processed = 0
 
-  val nlpControllerActor = context.actorOf(NlpController.props)
+  val nlpControllerActor = context.actorOf(NlpController.props(textProHost))
 
   val newsIterator = DBManager.iterateOverNews(10)
 
@@ -65,11 +65,11 @@ class NlpReceptionist(dbHost: String, textProHost: String) extends Actor with Ac
       val stacktraceString = ex.getStackTrace().map(_.toString()).mkString(" ")
       log.error("failed process news with id {} title {} and stacktrace {}", news.id,
         news.title.getOrElse("no title"), stacktraceString)
-        
+
     case NlpController.FailedProcessPart(newsId, part, ex) =>
-       val stacktraceString = ex.getStackTrace().map(_.toString()).mkString(" ")
-      log.error("failed process news part {} with id {} and stacktrace {}", part, newsId, 
-          stacktraceString)
+      val stacktraceString = ex.getStackTrace().map(_.toString()).mkString(" ")
+      log.error("failed process news part {} with id {} and stacktrace {}", part, newsId,
+        stacktraceString)
 
     case Pause =>
 
@@ -84,11 +84,14 @@ class NlpReceptionist(dbHost: String, textProHost: String) extends Actor with Ac
  */
 object Main {
 
-//  private val executorService = Executors.newCachedThreadPool()
-//  private implicit val executionContext = ExecutionContext.fromExecutorService(executorService)
+  //  private val executorService = Executors.newCachedThreadPool()
+  //  private implicit val executionContext = ExecutionContext.fromExecutorService(executorService)
 
+  /**
+   * @param args 193.204.187.132 193.204.187.132
+   */
   def main(args: Array[String]) {
-    
+
     //Use the system's dispatcher as ExecutionContext
     import system.dispatcher
 
@@ -97,9 +100,9 @@ object Main {
 
     val system = ActorSystem("NewsExtractor")
     val receptionist = system.actorOf(Props(classOf[NlpReceptionist], dbHost, textProHost), "NLPReceptionist")
-    
+
     receptionist ! NlpReceptionist.Start
-    
+
   }
 
 }
