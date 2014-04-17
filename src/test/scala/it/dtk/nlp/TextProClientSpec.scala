@@ -6,7 +6,7 @@ import it.dtk.nlp.db._
 
 object TextProClientSpec {
 
-  val host = "193.204.187.132"
+  val host = "10.1.0.1"
 
   val title = "Ricercato per traffico di droga, latitante albanese arrestato a Cassano"
 

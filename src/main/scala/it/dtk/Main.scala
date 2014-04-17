@@ -25,9 +25,15 @@ object NlpReceptionist {
   case object Stop
   case class Finished(processedNews: Int)
 
-  def props = Props[NlpReceptionist]
+  def props(dbHost: String, textProHost: String) = Props(classOf[NlpReceptionist], dbHost, textProHost)
 }
 
+/**
+ * 10.1.0.1 10.1.0.1
+ *
+ * @param dbHost
+ * @param textProHost
+ */
 class NlpReceptionist(dbHost: String, textProHost: String) extends Actor with ActorLogging {
 
   import NlpReceptionist._

@@ -20,6 +20,7 @@ object NlpController {
   case class FailedProcessPart(idNews: String, part: NewsPart, ex: Throwable)
 
   def props(textProHost: String) = Props(classOf[NlpController],textProHost)
+
 }
 
 class NlpController(textProHost: String) extends Actor with ActorLogging {
