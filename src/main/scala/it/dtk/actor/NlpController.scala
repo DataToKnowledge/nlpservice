@@ -19,11 +19,11 @@ object NlpController {
   case class FailedProcess(news: News, ex: Throwable)
   case class FailedProcessPart(idNews: String, part: NewsPart, ex: Throwable)
 
-  def props(textProHost: String) = Props(classOf[NlpController],textProHost)
+  def props() = Props[NlpController]
 
 }
 
-class NlpController(textProHost: String) extends Actor with ActorLogging {
+class NlpController extends Actor with ActorLogging {
 
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
 
@@ -41,7 +41,7 @@ class NlpController(textProHost: String) extends Actor with ActorLogging {
   val postagRouter = context.actorOf(PosTaggerActor.routerProps(), "postagRouter")
   val sentenceRouter = context.actorOf(SentenceDetectorActor.routerProps(), "sentenceDetectorRouter")
   val stemmerRouter = context.actorOf(StemmerActor.routerProps(), "stemmerRouter")
-  val textProRouter = context.actorOf(TextProActor.routerProps(host = textProHost), "textProRouter")
+  val textProRouter = context.actorOf(TextProActor.routerProps(), "textProRouter")
   val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
   val callInterval = 20.seconds
@@ -51,12 +51,11 @@ class NlpController(textProHost: String) extends Actor with ActorLogging {
   val waiting: Receive = {
     case Process(newsSeq) =>
       log.info("start processing {} news", newsSeq.length)
-      context.become(runNext(newsSeq, sender))
+      context.become(runNext(newsSeq, sender()))
   }
 
   def runNext(newsSeq: Seq[News], send: ActorRef): Receive = {
     val mapNews = newsSeq.foldLeft(Map.empty[String, News])((map, news) => map + (news.id -> news))
-    val send = sender
 
     newsSeq.foreach { n =>
       var interval = callInterval
@@ -97,9 +96,9 @@ class NlpController(textProHost: String) extends Actor with ActorLogging {
       val modMap = mapNews.updated(news.id, news)
       context.become(running(modMap, j, send))
 
-    case TextProActor.Fail(news, ex) =>
+    case TextProActor.Fail(newsId, ex) =>
       //TODO reschedule the message
-      send ! FailedProcess(news, ex)
+      send ! FailedProcess(mapNews.get(newsId).get, ex)
 
     case Detector.Result(newsId, sentences, NewsPart.Title) =>
       val n = mapNews.get(newsId).get

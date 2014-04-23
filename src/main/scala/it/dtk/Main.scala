@@ -1,21 +1,9 @@
 package it.dtk
 
 import it.dtk.nlp.db.DBManager
-import it.dtk.nlp.{ TreeTagger, TextPreprocessor }
-import it.dtk.nlp.detector.{ CityDetector, DateDetector }
-import it.dtk.nlp.TextProClient
-import scala.util._
-import java.util.concurrent.Executors
-import scala.concurrent.ExecutionContext
-import it.dtk.nlp.db.News
-import scala.concurrent.Future
-import it.dtk.nlp.detector.CrimeDetector
-import it.dtk.nlp.detector.AddressDetector
-import scala.concurrent.Await
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import it.dtk.actor.NlpController
-import akka.pattern._
 import akka.actor.ActorSystem
 import akka.actor.Props
 
@@ -25,16 +13,14 @@ object NlpReceptionist {
   case object Stop
   case class Finished(processedNews: Int)
 
-  def props(dbHost: String, textProHost: String) = Props(classOf[NlpReceptionist], dbHost, textProHost)
+  def props(dbHost: String) = Props(classOf[NlpReceptionist], dbHost)
 }
 
 /**
- * 10.1.0.1 10.1.0.1
  *
  * @param dbHost
- * @param textProHost
  */
-class NlpReceptionist(dbHost: String, textProHost: String) extends Actor with ActorLogging {
+class NlpReceptionist(dbHost: String) extends Actor with ActorLogging {
 
   import NlpReceptionist._
 
@@ -43,14 +29,13 @@ class NlpReceptionist(dbHost: String, textProHost: String) extends Actor with Ac
 
   var processed = 0
 
-  val nlpControllerActor = context.actorOf(NlpController.props(textProHost))
+  val nlpControllerActor = context.actorOf(NlpController.props)
 
   val newsIterator = DBManager.iterateOverNews(1)
 
   def receive = {
     case Start =>
       log.info("Using MongoDB instance on {}", dbHost)
-      log.info("Using TextProServer instance on {}", textProHost)
       //process the news 10 by 10
       val newsSeq = newsIterator.next
 
@@ -61,19 +46,19 @@ class NlpReceptionist(dbHost: String, textProHost: String) extends Actor with Ac
 
     case NlpController.Processed(newsSeq) =>
       //save the news in the db collection nlpNews
-      newsSeq.foreach(DBManager.saveNlpNews(_))
+      newsSeq.foreach(DBManager.saveNlpNews)
       processed += newsSeq.size
       //process the next ten news
       self ! Start
 
     case NlpController.FailedProcess(news, ex) =>
       //save a reference to the news and the error in a log file
-      val stacktraceString = ex.getStackTrace().map(_.toString()).mkString(" ")
+      val stacktraceString = ex.getStackTrace.map(_.toString).mkString(" ")
       log.error("failed process news with id {} title {} and stacktrace {}", news.id,
         news.title.getOrElse("no title"), stacktraceString)
 
     case NlpController.FailedProcessPart(newsId, part, ex) =>
-      val stacktraceString = ex.getStackTrace().map(_.toString()).mkString(" ")
+      val stacktraceString = ex.getStackTrace.map(_.toString).mkString(" ")
       log.error("failed process news part {} with id {} and stacktrace {}", part, newsId,
         stacktraceString)
 
@@ -94,7 +79,7 @@ object Main {
   //  private implicit val executionContext = ExecutionContext.fromExecutorService(executorService)
 
   /**
-   * @param args 193.204.187.132 193.204.187.132
+   * @param args 10.1.0.1
    */
   def main(args: Array[String]) {
 
@@ -102,10 +87,9 @@ object Main {
     import system.dispatcher
 
     val dbHost = if (args.size > 0) args(0) else "127.0.0.1"
-    val textProHost = if (args.size > 1) args(1) else "127.0.0.1"
 
     val system = ActorSystem("NLPService")
-    val receptionist = system.actorOf(Props(classOf[NlpReceptionist], dbHost, textProHost), "NLPReceptionist")
+    val receptionist = system.actorOf(Props(classOf[NlpReceptionist], dbHost), "NLPReceptionist")
 
     receptionist ! NlpReceptionist.Start
 

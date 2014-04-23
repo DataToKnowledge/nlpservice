@@ -27,8 +27,6 @@ object CityDetectorActor {
  */
 class CityDetectorActor extends Actor with ActorLogging {
 
-  import NlpController._
-
   def receive = {
 
     case Detector.Process(newsId, sentences, part) =>

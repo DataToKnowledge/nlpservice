@@ -2,7 +2,6 @@ package it.dtk.actor
 
 import akka.actor.Actor
 import akka.actor.ActorLogging
-import it.dtk.nlp.detector.AddressDetector
 import akka.actor.Props
 import akka.routing.RoundRobinRouter
 import scala.util.Success
@@ -27,8 +26,6 @@ object AddressDetectorActor {
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
 class AddressDetectorActor extends Actor with ActorLogging {
-
-  import NlpController._
 
   def receive = {
 

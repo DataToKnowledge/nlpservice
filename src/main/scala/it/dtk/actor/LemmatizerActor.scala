@@ -3,7 +3,6 @@ package it.dtk.actor
 import akka.actor.{ Actor, ActorLogging }
 import it.dtk.nlp.Lemmatizer
 import akka.actor.Props
-import it.dtk.nlp.db.Word
 import akka.routing.RoundRobinRouter
 import it.dtk.nlp.detector.Detector
 
@@ -26,8 +25,6 @@ object LemmatizerActor {
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
 class LemmatizerActor extends Actor with ActorLogging {
-
-  import LemmatizerActor._
 
   def receive = {
     case Detector.Process(newsId, sentences, part) =>
