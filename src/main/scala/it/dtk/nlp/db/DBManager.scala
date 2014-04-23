@@ -32,7 +32,7 @@ object DBManager {
    * @return
    */
   def findLemma(word: String): Option[Lemma] = {
-    val regex = "(?i)^" + word + "$"
+    val regex = "(?i)^" + word.replace("(", "").replace(")", "") + "$"
     lemma.findOne(MongoDBObject("word" -> regex.r)).map(r => r)
   }
 
@@ -43,7 +43,7 @@ object DBManager {
    * @return
    */
   def findCrime(word: String): Option[Crime] = {
-    val regex = "(?i)^" + word + "$"
+    val regex = "(?i)^" + word.replace("(", "").replace(")", "") + "$"
     crime.findOne(MongoDBObject("word" -> regex.r)).map(r => r)
   }
 
@@ -54,8 +54,8 @@ object DBManager {
    * @return
    */
   def findAddress(street: String, city: Option[String] = None): Option[Address] = {
-    val regexAddr = "(?i)^" + street + "$"
-    val regexCity = if (city.isDefined) Some("(?i)^" + city.get + "$") else None
+    val regexAddr = "(?i)^" + street.replace("(", "").replace(")", "") + "$"
+    val regexCity = if (city.isDefined) Some("(?i)^" + city.get.replace("(", "").replace(")", "") + "$") else None
     val query = {
       if (city.isDefined) MongoDBObject("street" -> regexAddr.r, "city" -> regexCity.get.r)
       else MongoDBObject("street" -> regexAddr.r)
@@ -71,13 +71,12 @@ object DBManager {
    * @return
    */
   def findCity(city_name: String): Option[City] = {
-    val regex = "(?i)^" + city_name + "$"
+    val regex = "(?i)^" + city_name.replace("(", "").replace(")", "") + "$"
     city.findOne(MongoDBObject("city_name" -> regex.r)).map(r => r)
   }
 
   def getNews(limit: Int = 0): List[News] = {
     if (limit == 0) {
-      val r = news.find()
       news.find().map(n => MongoDBMapper.dBOToNews(n)).toList
     } else {
       news.find().limit(limit).map(n => MongoDBMapper.dBOToNews(n)).toList
