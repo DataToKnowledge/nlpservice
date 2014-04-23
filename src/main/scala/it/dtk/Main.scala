@@ -104,7 +104,7 @@ object Main {
     val dbHost = if (args.size > 0) args(0) else "127.0.0.1"
     val textProHost = if (args.size > 1) args(1) else "127.0.0.1"
 
-    val system = ActorSystem("NewsExtractor")
+    val system = ActorSystem("NLPService")
     val receptionist = system.actorOf(Props(classOf[NlpReceptionist], dbHost, textProHost), "NLPReceptionist")
 
     receptionist ! NlpReceptionist.Start
