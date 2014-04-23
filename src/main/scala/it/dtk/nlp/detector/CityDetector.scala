@@ -45,12 +45,12 @@ object CityDetector extends Detector {
             log.info(s"Found city: ${res.city_name}")
 
             val currentWord = sentence.apply(startIndex)
-            result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "B-CITY")
+            result :+= currentWord.copy(iobEntity = currentWord.iobEntity + "B-CITY")
 
             while (startIndex < endIndex) {
               startIndex += 1
               val nextWord = sentence.apply(startIndex)
-              result :+= nextWord.copy(iobEntity = nextWord.iobEntity :+ "I-CITY")
+              result :+= nextWord.copy(iobEntity = nextWord.iobEntity + "I-CITY")
             }
 
             startIndex += 1

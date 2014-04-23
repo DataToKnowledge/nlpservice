@@ -78,9 +78,8 @@ class TextProClient(host: String) {
 
       val word = split match {
         case split10 if split10.size == 10 =>
-          var iobEntity = Vector.empty[String]
-          if (!split(8).equals("O"))
-            iobEntity = Vector(split(8))
+          val iobEntity = if (split(8).equals("O")) Set.empty[String] else Set(split(8))
+
           Option(Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
             Option(split(3).toInt), Option(split(4)), Option(split(5)),
             Option(split(6)), Option(split(7)), None, iobEntity, Option(split(9))))
@@ -88,7 +87,7 @@ class TextProClient(host: String) {
         case split8 if split8.size == 8 =>
           Option(Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
             Option(split(3).toInt), Option(split(4)), Option(split(5)),
-            Option(split(6)), Option(split(7)), None, Vector.empty[String], None))
+            Option(split(6)), Option(split(7)), None, Set.empty[String], None))
 
         case _ =>
           None

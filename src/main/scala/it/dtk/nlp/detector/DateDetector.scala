@@ -55,7 +55,7 @@ object DateDetector extends Detector {
 
         sentence.slice(dateR.get.head, dateR.get.last + 1).foreach { w =>
           val prevIOB = w.iobEntity
-          val newIOB = if (w == sentence.apply(dateR.get.head)) prevIOB :+ "B-DATE" else prevIOB :+ "I-DATE"
+          val newIOB = if (w == sentence.apply(dateR.get.head)) prevIOB + "B-DATE" else prevIOB + "I-DATE"
           result :+= w.copy(iobEntity = newIOB)
         }
         val date = sentence.slice(dateR.get.head, dateR.get.last + 1).map(word => word.token).mkString(sep = " ")

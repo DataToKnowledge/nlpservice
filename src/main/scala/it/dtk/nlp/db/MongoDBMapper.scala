@@ -34,7 +34,7 @@ object MongoDBMapper {
       dbo.getAs[String]("lemma"),
       dbo.getAs[String]("comMorpho"),
       dbo.getAs[String]("stem"),
-      dbo.getAs[Seq[String]]("iobEntity").get,
+      dbo.getAs[Set[String]]("iobEntity").get,
       dbo.getAs[String]("chunk"))
   }
 
