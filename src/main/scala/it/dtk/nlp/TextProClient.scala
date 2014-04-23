@@ -24,7 +24,7 @@ class TextProClient(host: String) {
    */
   def process(text: Option[String]): Future[(Map[String, Double], Seq[Word])] = {
 
-    if (text.isDefined) {
+    if (text.getOrElse("").nonEmpty) {
       val params = Map("text" -> text.get)
       val res = client.post(urlPost, params).map { response =>
         val body = new String(Codec.fromUTF8(response.getResponseBodyAsBytes))

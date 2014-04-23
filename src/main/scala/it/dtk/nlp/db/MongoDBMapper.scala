@@ -82,9 +82,18 @@ object MongoDBMapper {
       "metaDescription" -> news.metaDescription,
       "metaKeyword" -> news.metaKeyword,
       "canonicalUrl" -> news.canonicalUrl,
-      "topImage" -> news.topImage
+      "topImage" -> news.topImage,
+      "nlpTitle" -> news.nlpTitle,
+      "nlpSummary" -> news.nlpSummary,
+      "nlpCorpus" -> news.nlpCorpus,
+      "crimes" -> news.crimes,
+      "addresses" -> news.addresses,
+      "persons" -> news.persons,
+      "locations" -> news.locations,
+      "dates" -> news.dates,
+      "organizations" -> news.organizations,
+      "nlpTags" -> news.nlpTags
     )
-
   }
 
   implicit def dBOtoLemma(dbo: DBObject): Lemma = {

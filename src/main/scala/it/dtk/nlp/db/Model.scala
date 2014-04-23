@@ -14,9 +14,9 @@ case class News(id: String, urlWebSite: String, urlNews: String, title: Option[S
                 newsDate: Option[DateTime], corpus: Option[String] = None, tags: Option[Set[String]] = None,
                 metaDescription: Option[String] = None, metaKeyword: Option[String] = None, canonicalUrl: Option[String] = None,
                 topImage: Option[String] = None, nlpTitle: Option[Seq[Word]] = None, nlpSummary: Option[Seq[Word]] = None,
-                nlpCorpus: Option[Seq[Word]] = None, crime: Option[Seq[String]] = None, address: Option[Seq[String]] = None,
-                person: Option[Seq[String]] = None, location: Option[Seq[String]] = None, date: Option[Seq[String]] = None,
-                organization: Option[Seq[String]] = None, nlpTags: Option[Map[String, Double]] = None)
+                nlpCorpus: Option[Seq[Word]] = None, crimes: Option[Seq[String]] = None, addresses: Option[Seq[String]] = None,
+                persons: Option[Seq[String]] = None, locations: Option[Seq[String]] = None, dates: Option[Seq[String]] = None,
+                organizations: Option[Seq[String]] = None, nlpTags: Option[Map[String, Double]] = None)
 
 case class Lemma(id: String, word: String, lemma: Option[String] = None, features: Option[String] = None)
 
