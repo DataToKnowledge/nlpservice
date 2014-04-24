@@ -1,13 +1,14 @@
 package it.dtk.actor
 
-import akka.actor.{ActorRef, Actor, ActorLogging, Props}
-import it.dtk.nlp.db._
+import akka.actor._
 import akka.routing.RoundRobinRouter
-import it.dtk.textpro.TextPro
 import scala.annotation.tailrec
 import scala.collection.mutable
+import it.dtk.textpro.TextProActor
+import it.dtk.nlp.db.Word
+import it.dtk.nlp.db.News
 
-object TextProActor {
+object TextProActorWrapper {
 
   case class Parse(news: News)
 
@@ -15,7 +16,7 @@ object TextProActor {
 
   case class Fail(newsId: String, ex: Throwable)
 
-  def props() = Props[TextProActor]
+  def props() = Props[TextProActorWrapper]
 
   /**
    * @param nrOfInstances
@@ -29,11 +30,11 @@ object TextProActor {
 
 }
 
-class TextProActor extends Actor with ActorLogging {
+class TextProActorWrapper extends Actor with ActorLogging {
 
-  import TextProActor._
+  import TextProActorWrapper._
 
-  private val textProClient = context.system.actorOf(Props[TextPro], "textProActor")
+  private val textProClient = context.system.actorOf(Props[TextProActor], "TextProActor")
 
   private val queue: mutable.Stack[News] = new scala.collection.mutable.Stack[News]
 
@@ -54,7 +55,7 @@ class TextProActor extends Actor with ActorLogging {
         queue :+ news
       }
 
-    case TextPro.Result(id, nlpText) =>
+    case TextProActor.Result(id, nlpText)) =>
       jobs = jobs - 1
 
       val res = parseText(nlpText)
@@ -77,7 +78,7 @@ class TextProActor extends Actor with ActorLogging {
         }
       }
 
-    case TextPro.Fail(id, ex) =>
+    case TextProActor.Fail(id, ex) =>
       jobs = jobs - 1
       send ! Fail(id.split("_")(0), ex)
 
@@ -92,9 +93,9 @@ class TextProActor extends Actor with ActorLogging {
     currentNews = news
     jobs = jobs + 3
 
-    textProClient ! TextPro.Parse(news.id + "_title", news.title.getOrElse(""))
-    textProClient ! TextPro.Parse(news.id + "_summary", news.summary.getOrElse(""))
-    textProClient ! TextPro.Parse(news.id + "_corpus", news.corpus.getOrElse(""))
+    textProClient ! TextProActor.Parse(news.id + "_title", news.title.getOrElse(""))
+    textProClient ! TextProActor.Parse(news.id + "_summary", news.summary.getOrElse(""))
+    textProClient ! TextProActor.Parse(news.id + "_corpus", news.corpus.getOrElse(""))
   }
 
   private def parseText(text: String): (Map[String, Double], Seq[Word]) = {

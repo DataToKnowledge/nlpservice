@@ -28,7 +28,7 @@ class NlpController extends Actor with ActorLogging {
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
 
   import NlpController._
-  import TextProActor._
+  import TextProActorWrapper._
 
   /*
    * These are all the routers 
@@ -41,7 +41,7 @@ class NlpController extends Actor with ActorLogging {
   val postagRouter = context.actorOf(PosTaggerActor.routerProps(), "postagRouter")
   val sentenceRouter = context.actorOf(SentenceDetectorActor.routerProps(), "sentenceDetectorRouter")
   val stemmerRouter = context.actorOf(StemmerActor.routerProps(), "stemmerRouter")
-  val textProRouter = context.actorOf(TextProActor.routerProps(), "textProRouter")
+  val textProRouter = context.actorOf(TextProActorWrapper.routerProps(), "textProRouter")
   val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
   val callInterval = 20.seconds
@@ -68,7 +68,7 @@ class NlpController extends Actor with ActorLogging {
 
   def running(mapNews: Map[String, News], jobs: Int, send: ActorRef): Receive = {
 
-    case TextProActor.Result(news) =>
+    case TextProActorWrapper.Result(news) =>
 
       var j = jobs
 
@@ -96,7 +96,7 @@ class NlpController extends Actor with ActorLogging {
       val modMap = mapNews.updated(news.id, news)
       context.become(running(modMap, j, send))
 
-    case TextProActor.Fail(newsId, ex) =>
+    case TextProActorWrapper.Fail(newsId, ex) =>
       //TODO reschedule the message
       send ! FailedProcess(mapNews.get(newsId).get, ex)
 
