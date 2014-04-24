@@ -55,7 +55,7 @@ class TextProActorWrapper extends Actor with ActorLogging {
         queue :+ news
       }
 
-    case TextProActor.Result(id, nlpText)) =>
+    case TextProActor.Result(id, nlpText) =>
       jobs = jobs - 1
 
       val res = parseText(nlpText)
