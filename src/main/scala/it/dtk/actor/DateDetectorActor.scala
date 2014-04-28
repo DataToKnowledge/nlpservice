@@ -3,9 +3,9 @@ package it.dtk.actor
 import akka.actor.{ Actor, ActorLogging }
 import it.dtk.nlp.detector.DateDetector
 import akka.actor.Props
-import akka.routing.RoundRobinRouter
 import it.dtk.nlp.detector.Detector
 import scala.util._
+import akka.routing.RoundRobinPool
 
 object DateDetectorActor {
   def props = Props(classOf[DateDetectorActor])
@@ -15,9 +15,7 @@ object DateDetectorActor {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 10) =
-    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
-  //TODO akka 2.3.2
-  //RoundRobinPool(nrOfInstances).props(props)
+    RoundRobinPool(nrOfInstances).props(props)
 }
 
 /**

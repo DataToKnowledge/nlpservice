@@ -8,6 +8,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import it.dtk.nlp.db.Word
 import akka.routing.RoundRobinRouter
 import it.dtk.nlp.detector.NewsPart._
+import akka.routing.RoundRobinPool
 
 object PosTaggerActor {
   case class Process(newsId: String, text: Seq[Word], value: NewsPart)
@@ -21,9 +22,7 @@ object PosTaggerActor {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 5) =
-    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
-  //TODO akka 2.3.2
-  //RoundRobinPool(nrOfInstances).props(props)
+    RoundRobinPool(nrOfInstances).props(props)
 }
 
 /**

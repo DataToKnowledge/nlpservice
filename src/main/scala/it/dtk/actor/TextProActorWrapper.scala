@@ -7,6 +7,7 @@ import scala.collection.mutable
 import it.dtk.textpro.TextProActor
 import it.dtk.nlp.db.Word
 import it.dtk.nlp.db.News
+import akka.routing.RoundRobinPool
 
 object TextProActorWrapper {
 
@@ -23,10 +24,7 @@ object TextProActorWrapper {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 1) =
-    props().withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
-
-  //TODO akka 2.3.2
-  //RoundRobinPool(nrOfInstances).props(props)
+    RoundRobinPool(nrOfInstances).props(props)
 
 }
 

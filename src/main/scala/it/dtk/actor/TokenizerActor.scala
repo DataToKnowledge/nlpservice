@@ -5,7 +5,7 @@ import it.dtk.nlp.detector.NewsPart._
 import it.dtk.nlp.TextPreprocessor
 import akka.actor.Props
 import it.dtk.nlp.db.Word
-import akka.routing.RoundRobinRouter
+import akka.routing.RoundRobinPool
 
 object TokenizerActor {
   case class Process(newsId: String, text: String, value: NewsPart)
@@ -18,9 +18,7 @@ object TokenizerActor {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 5) =
-    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
-  //TODO akka 2.3.2
-  //RoundRobinPool(nrOfInstances).props(props)
+    RoundRobinPool(nrOfInstances).props(props)
 }
 
 /**

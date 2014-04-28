@@ -5,6 +5,7 @@ import it.dtk.nlp.TextPreprocessor
 import akka.actor.Props
 import akka.routing.RoundRobinRouter
 import it.dtk.nlp.detector.NewsPart._
+import akka.routing.RoundRobinPool
 
 object SentenceDetectorActor {
   case class Process(newsId: String, text: String, value: NewsPart)
@@ -17,9 +18,7 @@ object SentenceDetectorActor {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 10) =
-    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
-  //TODO akka 2.3.2
-  //RoundRobinPool(nrOfInstances).props(props)
+    RoundRobinPool(nrOfInstances).props(props)
 }
 
 /**

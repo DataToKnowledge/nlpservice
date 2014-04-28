@@ -3,8 +3,8 @@ package it.dtk.actor
 import akka.actor.{ Actor, ActorLogging }
 import it.dtk.nlp.Lemmatizer
 import akka.actor.Props
-import akka.routing.RoundRobinRouter
 import it.dtk.nlp.detector.Detector
+import akka.routing.RoundRobinPool
 
 object LemmatizerActor {
 
@@ -15,9 +15,7 @@ object LemmatizerActor {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 5) =
-    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
-  //TODO akka 2.3.2
-  //RoundRobinPool(nrOfInstances).props(props)
+    RoundRobinPool(nrOfInstances).props(props)
 }
 
 /**

@@ -3,10 +3,10 @@ package it.dtk.actor
 import akka.actor.{ Actor, ActorLogging }
 import it.dtk.nlp.detector.CityDetector
 import akka.actor.Props
-import akka.routing.RoundRobinRouter
 import it.dtk.nlp.detector.Detector
 import scala.util.Success
 import scala.util.Failure
+import akka.routing.RoundRobinPool
 
 object CityDetectorActor {
   def props = Props(classOf[CityDetectorActor])
@@ -16,9 +16,7 @@ object CityDetectorActor {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 5) =
-    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
-  //TODO akka 2.3.2
-  //RoundRobinPool(nrOfInstances).props(props)
+    RoundRobinPool(nrOfInstances).props(props)
 }
 
 /**
@@ -33,10 +31,10 @@ class CityDetectorActor extends Actor with ActorLogging {
       val result = CityDetector.detect(sentences)
       result match {
         case Success(sents) =>
-          sender ! Detector.Result(newsId, sents , part)
-          
+          sender ! Detector.Result(newsId, sents, part)
+
         case Failure(ex) =>
-          sender ! Detector.Failure(newsId,part,ex)
+          sender ! Detector.Failure(newsId, part, ex)
       }
   }
 

@@ -3,10 +3,10 @@ package it.dtk.actor
 import akka.actor.{ Actor, ActorLogging }
 import it.dtk.nlp.detector.CrimeDetector
 import akka.actor.Props
-import akka.routing.RoundRobinRouter
 import it.dtk.nlp.detector.Detector
 import scala.util.Success
 import scala.util.Failure
+import akka.routing.RoundRobinPool
 
 object CrimeDetectorActor {
   def props = Props(classOf[CrimeDetectorActor])
@@ -16,9 +16,7 @@ object CrimeDetectorActor {
    * @return the props for a router with a defined number of instances
    */
   def routerProps(nrOfInstances: Int = 5) =
-    props.withRouter(RoundRobinRouter(nrOfInstances = nrOfInstances))
-  //TODO akka 2.3.2
-  //RoundRobinPool(nrOfInstances).props(props)
+    RoundRobinPool(nrOfInstances).props(props)
 }
 
 /**
