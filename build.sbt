@@ -16,14 +16,11 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.2.4",
-  "com.typesafe.akka" %% "akka-testkit" % "2.2.4",
-  "com.typesafe.akka" %% "akka-cluster" % "2.2.4",
+  "textproactor" % "textproactor_2.10" % "1.0",
   "org.mongodb" %% "casbah" % "2.7.0",
   "org.annolab.tt4j" % "org.annolab.tt4j" % "1.1.2",
   "com.github.rholder" % "snowball-stemmer" % "1.3.0.581.1",
   "ch.qos.logback" % "logback-classic" % "1.1.1",
-  "textproactor" % "textproactor_2.10" % "1.0",
   "org.scalatest" % "scalatest_2.10" % "2.1.2" % "test",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
   //"com.jolbox" % "bonecp" % "0.8.0.RELEASE",
