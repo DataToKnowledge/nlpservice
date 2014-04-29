@@ -28,5 +28,3 @@ libraryDependencies ++= Seq(
   //"io.argonaut" %% "argonaut" % "6.0.3"
 )
 
-
-atmosSettings
