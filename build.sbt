@@ -30,5 +30,6 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.1.2" 
 )
 
- //"io.argonaut" %% "argonaut" % "6.0.3"
+//"io.argonaut" %% "argonaut" % "6.0.3"
 //atmosSettings
+
