@@ -11,6 +11,7 @@ import akka.actor.Props
 import akka.actor.PoisonPill
 import it.dtk.nlp.detector._
 import it.dtk.nlp.detector.NewsPart._
+import it.dtk.actor.textpro.TextProActor
 
 object NlpController {
 
@@ -18,6 +19,7 @@ object NlpController {
   case class Processed(news: Seq[News])
   case class FailedProcess(news: News, ex: Throwable)
   case class FailedProcessPart(idNews: String, part: NewsPart, ex: Throwable)
+  case class FailParsingTextProResult(ex: Throwable)
 
   def props() = Props[NlpController]
 
@@ -28,7 +30,6 @@ class NlpController extends Actor with ActorLogging {
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
 
   import NlpController._
-  import TextProActorWrapper._
 
   /*
    * These are all the routers 
@@ -41,7 +42,7 @@ class NlpController extends Actor with ActorLogging {
   val postagRouter = context.actorOf(PosTaggerActor.routerProps(), "postagRouter")
   val sentenceRouter = context.actorOf(SentenceDetectorActor.routerProps(), "sentenceDetectorRouter")
   val stemmerRouter = context.actorOf(StemmerActor.routerProps(), "stemmerRouter")
-  val textProRouter = context.actorOf(TextProActorWrapper.routerProps(), "textProRouter")
+  val textProRouter = context.actorOf(TextProActor.routerProps(), "TextProRouter")
   val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
   val callInterval = 20.seconds
@@ -59,7 +60,7 @@ class NlpController extends Actor with ActorLogging {
 
     newsSeq.foreach { n =>
       var interval = callInterval
-      context.system.scheduler.scheduleOnce(interval, textProRouter, Parse(n))
+      context.system.scheduler.scheduleOnce(interval, textProRouter, TextProActor.Parse(n))
       interval += callInterval
     }
 
@@ -68,7 +69,7 @@ class NlpController extends Actor with ActorLogging {
 
   def running(mapNews: Map[String, News], jobs: Int, send: ActorRef): Receive = {
 
-    case TextProActorWrapper.Result(news) =>
+    case TextProActor.Result(news) =>
 
       var j = jobs
 
@@ -96,9 +97,12 @@ class NlpController extends Actor with ActorLogging {
       val modMap = mapNews.updated(news.id, news)
       context.become(running(modMap, j, send))
 
-    case TextProActorWrapper.Fail(newsId, ex) =>
+    case TextProActor.Fail(newsId, ex) =>
       //TODO reschedule the message
       send ! FailedProcess(mapNews.get(newsId).get, ex)
+      
+    case TextProActor.FailProcessingLine(ex) =>
+      send ! FailParsingTextProResult(ex)
 
     case Detector.Result(newsId, sentences, NewsPart.Title) =>
       val n = mapNews.get(newsId).get

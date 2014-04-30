@@ -1,98 +1,34 @@
 package it.dtk
 
-import it.dtk.nlp.db.DBManager
-import akka.actor.Actor
-import akka.actor.ActorLogging
-import it.dtk.actor.NlpController
+import com.typesafe.config.ConfigFactory
 import akka.actor.ActorSystem
-import akka.actor.Props
+import it.dtk.actor.NlpReceptionist
 
-object NlpReceptionist {
-  case object Start
-  case object Pause
-  case object Stop
-  case class Finished(processedNews: Int)
-
-  def props(dbHost: String) = Props(classOf[NlpReceptionist], dbHost)
-}
-
-/**
- *
- * @param dbHost
- */
-class NlpReceptionist(dbHost: String) extends Actor with ActorLogging {
-
-  import NlpReceptionist._
-
-  //db configurations
-  def db = "dbNews"
-
-  var processed = 0
-
-  val nlpControllerActor = context.actorOf(NlpController.props())
-
-  val newsIterator = DBManager.iterateOverNews(1)
-
-  def receive = {
-    case Start =>
-      log.info("Using MongoDB instance on {}", dbHost)
-      //process the news 10 by 10
-      val newsSeq = newsIterator.next
-
-      if (newsSeq.isEmpty)
-        context.parent ! Finished(processed)
-      else
-        nlpControllerActor ! NlpController.Process(newsSeq)
-
-    case NlpController.Processed(newsSeq) =>
-      //save the news in the db collection nlpNews
-      newsSeq.foreach(DBManager.saveNlpNews)
-      processed += newsSeq.size
-      //process the next ten news
-      self ! Start
-
-    case NlpController.FailedProcess(news, ex) =>
-      //save a reference to the news and the error in a log file
-      val stacktraceString = ex.getStackTrace.map(_.toString).mkString(" ")
-      log.error("failed process news with id {} title {} and stacktrace {}", news.id,
-        news.title.getOrElse("no title"), stacktraceString)
-
-    case NlpController.FailedProcessPart(newsId, part, ex) =>
-      val stacktraceString = ex.getStackTrace.map(_.toString).mkString(" ")
-      log.error("failed process news part {} with id {} and stacktrace {}", part, newsId,
-        stacktraceString)
-
-    case Pause =>
-
-    case Stop =>
-  }
-}
-
-/**
- * Author: DataToKnowledge S.r.l.s.
- * Project: NLPService
- * Date: 20/03/14
- */
 object Main {
 
-  //  private val executorService = Executors.newCachedThreadPool()
-  //  private implicit val executionContext = ExecutionContext.fromExecutorService(executorService)
-
-  /**
-   * @param args 10.0.0.1
-   */
   def main(args: Array[String]) {
 
-    //Use the system's dispatcher as ExecutionContext
-    import system.dispatcher
+    if (args.length == 3) {
+      startup(args(0), args(1), args(2))
+    } else {
+      println("specify db host, hostname and port number to run NlpService such as 10.0.0.1 10.0.0.10 2552")
+      System.exit(1)
+    }
+  }
 
-    val dbHost = if (args.size > 0) args(0) else "127.0.0.1"
+  def startup(dbHost: String, hostname: String, port: String): Unit = {
+    // Override the configuration of the port
+//    val config = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + port).
+//      withFallback(ConfigFactory.parseString("akka.remote.netty.tcp.hostname=" + hostname)).
+//      withFallback(ConfigFactory.load("textpro.conf"))
+    
+    val config = ConfigFactory.load()
 
-    val system = ActorSystem("NLPService")
-    val receptionist = system.actorOf(Props(classOf[NlpReceptionist], dbHost), "NLPReceptionist")
-
+    val system = ActorSystem("NlpService", config)
+    
+    val receptionist = system.actorOf(NlpReceptionist.props(dbHost))
+    
     receptionist ! NlpReceptionist.Start
-
   }
 
 }
