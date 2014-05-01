@@ -18,15 +18,16 @@ object TextProActor {
 
   case class Fail(newsId: String, ex: Throwable)
 
-  def props() = Props(classOf[TextProActor])
+  def props() = Props[TextProActor]
 
   /**
    * the name should be TextProRouter
    * @param nrOfInstances
    * @return
    */
-  def routerProps(nrOfInstances: Int = 1) = FromConfig.props(props)
-    //RoundRobinPool(nrOfInstances).props(props)
+//  def routerProps(nrOfInstances: Int = 1) = 
+//    FromConfig.props(props)
+//    //RoundRobinPool(nrOfInstances).props(props)
 
   private case class ElementPair(keywords: Map[String, Double], words: Seq[Word])
 }

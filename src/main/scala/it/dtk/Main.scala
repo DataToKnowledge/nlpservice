@@ -22,7 +22,9 @@ object Main {
 //      withFallback(ConfigFactory.parseString("akka.remote.netty.tcp.hostname=" + hostname)).
 //      withFallback(ConfigFactory.load("textpro.conf"))
     
-    val config = ConfigFactory.load()
+    val config = ConfigFactory.load("application.conf")
+    val s = config.getConfig("akka.actor.deployment")
+    println(config)
 
     val system = ActorSystem("NlpService", config)
     

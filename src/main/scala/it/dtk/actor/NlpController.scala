@@ -42,7 +42,8 @@ class NlpController extends Actor with ActorLogging {
   val postagRouter = context.actorOf(PosTaggerActor.routerProps(), "postagRouter")
   val sentenceRouter = context.actorOf(SentenceDetectorActor.routerProps(), "sentenceDetectorRouter")
   val stemmerRouter = context.actorOf(StemmerActor.routerProps(), "stemmerRouter")
-  val textProRouter = context.actorOf(TextProActor.routerProps(), "TextProRouter")
+  val textProRouter = context.actorOf(TextProActor.props, "textProActor")
+  println(textProRouter.path)
   val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
   val callInterval = 20.seconds

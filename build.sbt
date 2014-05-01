@@ -20,6 +20,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-testkit" % "2.3.2",
   "com.typesafe.akka" %% "akka-cluster" % "2.3.2",
   "com.typesafe.akka" %% "akka-slf4j" % "2.3.2",
+  "com.typesafe.akka" %% "akka-remote" % "2.3.2",
   "org.mongodb" %% "casbah" % "2.7.0",
   "org.annolab.tt4j" % "org.annolab.tt4j" % "1.1.2",
   "com.github.rholder" % "snowball-stemmer" % "1.3.0.581.1",
