@@ -8,7 +8,7 @@ import org.joda.time.DateTime
 
 case class Word(token: String, tokenId: Option[Int] = None, tokenStart: Option[Int] = None, tokenEnd: Option[Int] = None,
                 sentence: Option[String] = None, posTag: Option[String] = None, lemma: Option[String] = None, compMorpho: Option[String] = None,
-                stem: Option[String] = None, iobEntity: Set[String] = Set.empty[String], chunk: Option[String] = None)
+                stem: Option[String] = None, iobEntity: Set[String] = Set.empty[String], chunk: Option[String] = None, id: String = "")
 
 case class News(id: String, urlWebSite: String, urlNews: String, title: Option[String], summary: Option[String],
                 newsDate: Option[DateTime], corpus: Option[String] = None, tags: Option[Set[String]] = None,

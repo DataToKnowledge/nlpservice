@@ -76,25 +76,28 @@ class NlpController extends Actor with ActorLogging {
 
       var j = jobs
 
-      cityRouter ! new Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
-      cityRouter ! new Detector.Process(news.id, news.nlpSummary.get, NewsPart.Summary)
-      cityRouter ! new Detector.Process(news.id, news.nlpCorpus.get, NewsPart.Corpus)
-      j += 3
+      if (news.nlpTitle.isDefined) {
+        cityRouter ! new Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
+        crimeRouter ! new Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
+        dateRouter ! new Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
+        addressRouter ! new Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
+        j += 4
+      }
+      if (news.nlpSummary.isDefined) {
+        cityRouter ! new Detector.Process(news.id, news.nlpSummary.get, NewsPart.Summary)
+        crimeRouter ! new Detector.Process(news.id, news.nlpSummary.get, NewsPart.Summary)
+        dateRouter ! new Detector.Process(news.id, news.nlpSummary.get, NewsPart.Summary)
+        addressRouter ! new Detector.Process(news.id, news.nlpSummary.get, NewsPart.Summary)
+        j += 4
+      }
 
-      crimeRouter ! new Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
-      crimeRouter ! new Detector.Process(news.id, news.nlpSummary.get, NewsPart.Summary)
-      crimeRouter ! new Detector.Process(news.id, news.nlpCorpus.get, NewsPart.Corpus)
-      j += 3
-
-      dateRouter ! new Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
-      dateRouter ! new Detector.Process(news.id, news.nlpSummary.get, NewsPart.Summary)
-      dateRouter ! new Detector.Process(news.id, news.nlpCorpus.get, NewsPart.Corpus)
-      j += 3
-
-      addressRouter ! new Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
-      addressRouter ! new Detector.Process(news.id, news.nlpSummary.get, NewsPart.Summary)
-      addressRouter ! new Detector.Process(news.id, news.nlpCorpus.get, NewsPart.Corpus)
-      j += 3
+      if (news.nlpCorpus.isDefined) {
+        cityRouter ! new Detector.Process(news.id, news.nlpCorpus.get, NewsPart.Corpus)
+        crimeRouter ! new Detector.Process(news.id, news.nlpCorpus.get, NewsPart.Corpus)
+        dateRouter ! new Detector.Process(news.id, news.nlpCorpus.get, NewsPart.Corpus)
+        addressRouter ! new Detector.Process(news.id, news.nlpCorpus.get, NewsPart.Corpus)
+        j += 4
+      }
 
       //update the news and change the context
       val modMap = mapNews.updated(news.id, news)
@@ -103,7 +106,7 @@ class NlpController extends Actor with ActorLogging {
     case TextProActor.Fail(newsId, ex) =>
       //TODO reschedule the message
       send ! FailedProcess(mapNews.get(newsId).get, ex)
-      
+
     case TextProActor.FailProcessingLine(ex) =>
       send ! FailParsingTextProResult(ex)
 

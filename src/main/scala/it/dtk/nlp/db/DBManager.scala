@@ -96,14 +96,14 @@ object DBManager {
    */
   def saveNlpNews(news: News): Int = {
     val q = MongoDBObject("urlNews" -> news.urlNews)
-    val result = nlpNews.update[MongoDBObject,DBObject](q, news, true) //nlpNews.save[DBObject](news)
+    val result = nlpNews.update[MongoDBObject, DBObject](q, news, true) //nlpNews.save[DBObject](news)
     result.getN()
   }
 
 }
 
 class CollectionIterator(val cursor: MongoCursor, val batchSize: Int) {
-  
+
   def hasNext = cursor.hasNext
 
   def next: IndexedSeq[News] = {

@@ -25,8 +25,8 @@ object TextProActor {
    * @param nrOfInstances
    * @return
    */
-//  def routerProps(nrOfInstances: Int = 1) = 
-//    FromConfig.props(props)
+  def routerProps(nrOfInstances: Int = 1) = 
+    FromConfig.props(props)
 //    //RoundRobinPool(nrOfInstances).props(props)
 
   private case class ElementPair(keywords: Map[String, Double], words: Seq[Word])

@@ -31,7 +31,7 @@ class NlpReceptionist(dbHost: String) extends Actor with ActorLogging {
 
   val nlpControllerActor = context.actorOf(NlpController.props(), "nlpController")
 
-  val newsIterator = DBManager.iterateOverNews(5)
+  val newsIterator = DBManager.iterateOverNews(10)
 
   def receive = {
     case Start =>
@@ -47,7 +47,13 @@ class NlpReceptionist(dbHost: String) extends Actor with ActorLogging {
     case NlpController.Processed(newsSeq) =>
       //save the news in the db collection nlpNews
       newsSeq.foreach { n =>
-        DBManager.saveNlpNews(n)
+        try {
+          DBManager.saveNlpNews(n)
+        } catch {
+          case ex: Throwable =>
+            ex.printStackTrace()
+        }
+
         log.info("save news with id {} and title {}", n.id, n.title)
       }
 

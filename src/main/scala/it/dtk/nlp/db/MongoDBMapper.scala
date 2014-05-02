@@ -9,6 +9,7 @@ object MongoDBMapper {
 
   implicit def wordToDBO(word: Word): DBObject = {
     DBObject(
+      "_id" -> new ObjectId(),
       "token" -> word.token,
       "tokenId" -> word.tokenId,
       "tokenStart" -> word.tokenStart,
@@ -35,7 +36,8 @@ object MongoDBMapper {
       dbo.getAs[String]("comMorpho"),
       dbo.getAs[String]("stem"),
       dbo.getAs[Set[String]]("iobEntity").get,
-      dbo.getAs[String]("chunk"))
+      dbo.getAs[String]("chunk"),
+      dbo._id.map(_.toString()).get)
   }
 
   implicit def sentenceToDBO(sentence: Seq[Word]): DBObject = {
