@@ -12,6 +12,7 @@ import akka.actor.PoisonPill
 import it.dtk.nlp.detector._
 import it.dtk.nlp.detector.NewsPart._
 import it.dtk.actor.textpro.TextProActor
+import akka.routing.FromConfig
 
 object NlpController {
 
@@ -42,11 +43,12 @@ class NlpController extends Actor with ActorLogging {
   val postagRouter = context.actorOf(PosTaggerActor.routerProps(), "postagRouter")
   val sentenceRouter = context.actorOf(SentenceDetectorActor.routerProps(), "sentenceDetectorRouter")
   val stemmerRouter = context.actorOf(StemmerActor.routerProps(), "stemmerRouter")
-  val textProRouter = context.actorOf(TextProActor.props, "textProActor")
+  //val textProRouter = context.actorOf(Props[TextProActor], "textProActor")
+  val textProRouter = context.actorOf(FromConfig.props(Props[TextProActor]), "textProActorPool")
   println(textProRouter.path)
   val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
-  val callInterval = 20.seconds
+  val callInterval = 5.seconds
 
   def receive = waiting
 

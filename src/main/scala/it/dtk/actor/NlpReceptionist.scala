@@ -29,7 +29,7 @@ class NlpReceptionist(dbHost: String) extends Actor with ActorLogging{
 
   var processed = 0
 
-  val nlpControllerActor = context.actorOf(NlpController.props())
+  val nlpControllerActor = context.actorOf(NlpController.props(),"nlpController")
 
   val newsIterator = DBManager.iterateOverNews(1)
 

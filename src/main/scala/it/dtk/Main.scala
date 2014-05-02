@@ -18,18 +18,20 @@ object Main {
 
   def startup(dbHost: String, hostname: String, port: String): Unit = {
     // Override the configuration of the port
-//    val config = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + port).
-//      withFallback(ConfigFactory.parseString("akka.remote.netty.tcp.hostname=" + hostname)).
-//      withFallback(ConfigFactory.load("textpro.conf"))
-    
-    val config = ConfigFactory.load("application.conf")
-    val s = config.getConfig("akka.actor.deployment")
-    println(config)
+    //    val config = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + port).
+    //      withFallback(ConfigFactory.parseString("akka.remote.netty.tcp.hostname=" + hostname)).
+    //      withFallback(ConfigFactory.load("textpro.conf"))
+
+    //val config = ConfigFactory.load("application.conf")
+    //val s = config.getConfig("akka.actor.deployment")
+    //println(config)
+
+    val config = ConfigFactory.load("application")
 
     val system = ActorSystem("NlpService", config)
-    
-    val receptionist = system.actorOf(NlpReceptionist.props(dbHost))
-    
+
+    val receptionist = system.actorOf(NlpReceptionist.props(dbHost),"receptionist")
+
     receptionist ! NlpReceptionist.Start
   }
 
