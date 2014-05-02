@@ -17,7 +17,7 @@ object MongoDBMapper {
       "sentence" -> word.sentence,
       "posTag" -> word.posTag,
       "lemma" -> word.lemma,
-      "com    Morpho" -> word.compMorpho,
+      "comMorpho" -> word.compMorpho,
       "stem" -> word.stem,
       "iobEntity" -> word.iobEntity,
       "chunk" -> word.chunk
@@ -94,7 +94,8 @@ object MongoDBMapper {
       "locations" -> news.locations,
       "dates" -> news.dates,
       "organizations" -> news.organizations,
-      "nlpTags" -> news.nlpTags
+      //FIXME remember to restore the dots
+      "nlpTags" -> news.nlpTags.map(_.map(kw => (kw._1.replace(".", "_dot_") -> kw._2)))
     )
   }
 
