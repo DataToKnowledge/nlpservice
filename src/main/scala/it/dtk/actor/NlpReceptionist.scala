@@ -20,7 +20,7 @@ object NlpReceptionist {
  *
  * @param dbHost
  */
-class NlpReceptionist(dbHost: String) extends Actor with ActorLogging{
+class NlpReceptionist(dbHost: String) extends Actor with ActorLogging {
 
   import NlpReceptionist._
 
@@ -29,9 +29,9 @@ class NlpReceptionist(dbHost: String) extends Actor with ActorLogging{
 
   var processed = 0
 
-  val nlpControllerActor = context.actorOf(NlpController.props(),"nlpController")
+  val nlpControllerActor = context.actorOf(NlpController.props(), "nlpController")
 
-  val newsIterator = DBManager.iterateOverNews(1)
+  val newsIterator = DBManager.iterateOverNews(5)
 
   def receive = {
     case Start =>
@@ -46,7 +46,11 @@ class NlpReceptionist(dbHost: String) extends Actor with ActorLogging{
 
     case NlpController.Processed(newsSeq) =>
       //save the news in the db collection nlpNews
-      newsSeq.foreach(DBManager.saveNlpNews)
+      newsSeq.foreach { n =>
+        DBManager.saveNlpNews(n)
+        log.info("save news with id {} and title {}", n.id, n.title)
+      }
+
       processed += newsSeq.size
       //process the next ten news
       self ! Start
@@ -61,9 +65,9 @@ class NlpReceptionist(dbHost: String) extends Actor with ActorLogging{
       val stacktraceString = ex.getStackTrace.map(_.toString).mkString(" ")
       log.error("failed process news part {} with id {} and stacktrace {}", part, newsId,
         stacktraceString)
-        
+
     case NlpController.FailParsingTextProResult(ex) =>
-      log.error("error processing textpro "  + ex.getMessage())
+      log.error("error processing textpro " + ex.getMessage())
 
     case Pause =>
 
