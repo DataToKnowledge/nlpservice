@@ -40,11 +40,11 @@ object MongoDBMapper {
       dbo._id.map(_.toString()).get)
   }
 
-  implicit def sentenceToDBO(sentence: Seq[Word]): DBObject = {
-    DBObject(
-      "words" -> sentence.map(wordToDBO)
-    )
-  }
+//  implicit def sentenceToDBO(sentence: Seq[Word]): DBObject = {
+//    DBObject(
+//      "words" -> sentence.map(wordToDBO)
+//    )
+//  }
 
   implicit def dBOToSentence(dbo: DBObject): Seq[Word] = {
     val seqDBO = dbo.getAs[Seq[DBObject]]("words")
@@ -85,9 +85,9 @@ object MongoDBMapper {
       "metaKeyword" -> news.metaKeyword,
       "canonicalUrl" -> news.canonicalUrl,
       "topImage" -> news.topImage,
-      "nlpTitle" -> news.nlpTitle,
-      "nlpSummary" -> news.nlpSummary,
-      "nlpCorpus" -> news.nlpCorpus,
+      "nlpTitle" -> news.nlpTitle.map(_.map(wordToDBO(_))),
+      "nlpSummary" -> news.nlpSummary.map(_.map(wordToDBO(_))),
+      "nlpCorpus" -> news.nlpCorpus.map(_.map(wordToDBO(_))),
       "crimes" -> news.crimes,
       "addresses" -> news.addresses,
       "persons" -> news.persons,
