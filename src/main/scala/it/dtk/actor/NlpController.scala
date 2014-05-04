@@ -31,6 +31,7 @@ class NlpController extends Actor with ActorLogging {
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
 
   import NlpController._
+  
 
   /*
    * These are all the routers 
@@ -53,6 +54,9 @@ class NlpController extends Actor with ActorLogging {
   def receive = waiting
 
   val waiting: Receive = {
+     case CollectionFillerActor.Processed(processedNews, send) =>
+      send ! Processed(processedNews)
+    
     case Process(newsSeq) =>
       log.info("start processing {} news", newsSeq.length)
       context.become(runNext(newsSeq, sender()))
@@ -72,6 +76,9 @@ class NlpController extends Actor with ActorLogging {
 
   def running(mapNews: Map[String, News], jobs: Int, send: ActorRef): Receive = {
 
+    case CollectionFillerActor.Processed(processedNews, send) =>
+      send ! Processed(processedNews)
+    
     case TextProActor.Result(news) =>
 
       var j = jobs
@@ -135,7 +142,10 @@ class NlpController extends Actor with ActorLogging {
 
   private def nextStatus(mapNews: Map[String, News], jobs: Int, send: ActorRef): Receive = {
     if (jobs == 0) {
-      send ! Processed(mapNews.values.toSeq)
+      val fillCollectionActor = context.actorOf(Props[CollectionFillerActor], "collectionFillerActor")
+      fillCollectionActor ! CollectionFillerActor.Process(mapNews.values.toSeq, send)
+
+      //send ! Processed(mapNews.values.toSeq)
       waiting
     } else {
       running(mapNews, jobs, send)
