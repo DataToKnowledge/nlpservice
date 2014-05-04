@@ -48,7 +48,7 @@ class NlpController extends Actor with ActorLogging {
   println(textProRouter.path)
   val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
-  val callInterval = 4.seconds
+  val callInterval = 5.seconds
 
   def receive = waiting
 
