@@ -6,6 +6,7 @@ import akka.actor.ActorLogging
 import it.dtk.nlp.db.News
 import it.dtk.nlp.db.Word
 import akka.actor.ActorRef
+import scala.annotation.tailrec
 
 object CollectionFillerActor {
 
@@ -25,64 +26,62 @@ class CollectionFillerActor extends Actor with ActorLogging {
   }
 
   def process(news: News): News = {
-    var crimeCollection = Seq.empty[String]
-    var adressCollection = Seq.empty[String]
-    var personCollection = Seq.empty[String]
-    var locationCollection = Seq.empty[String]
-    var dateCollection = Seq.empty[String]
-    var organizzationCollection = Seq.empty[String]
-
-    //CRIME
-    if (news.nlpCorpus.isDefined)
-      crimeCollection = crimeCollection ++ fillCollection(news.nlpCorpus.get, "B-CRIME", "I-CRIME")
-    if (news.nlpSummary.isDefined)
-      crimeCollection = crimeCollection ++ fillCollection(news.nlpSummary.get, "B-CRIME", "I-CRIME")
-    if (news.nlpTitle.isDefined)
-      crimeCollection = crimeCollection ++ fillCollection(news.nlpTitle.get, "B-CRIME", "I-CRIME")
-    //DATE
-    if (news.nlpCorpus.isDefined)
-      dateCollection = dateCollection ++ fillCollection(news.nlpCorpus.get, "B-DATE", "I-DATE")
-    if (news.nlpSummary.isDefined)
-      dateCollection = dateCollection ++ fillCollection(news.nlpSummary.get, "B-DATE", "I-DATE")
-    if (news.nlpTitle.isDefined)
-      dateCollection = dateCollection ++ fillCollection(news.nlpTitle.get, "B-DATE", "I-DATE")
-    //ADDRESS
-    if (news.nlpCorpus.isDefined)
-      adressCollection = adressCollection ++ fillCollection(news.nlpCorpus.get, "B-ADDRESS", "I-ADDRESS")
-    if (news.nlpSummary.isDefined)
-      adressCollection = adressCollection ++ fillCollection(news.nlpSummary.get, "B-ADDRESS", "I-ADDRESS")
-    if (news.nlpTitle.isDefined)
-      adressCollection = adressCollection ++ fillCollection(news.nlpTitle.get, "B-ADDRESS", "I-ADDRESS")
-    //CITY
-    if (news.nlpCorpus.isDefined)
-      locationCollection = locationCollection ++ fillCollection(news.nlpCorpus.get, "B-CITY", "I-CITY")
-    if (news.nlpSummary.isDefined)
-      locationCollection = locationCollection ++ fillCollection(news.nlpSummary.get, "B-CITY", "I-CITY")
-    if (news.nlpTitle.isDefined)
-      locationCollection = locationCollection ++ fillCollection(news.nlpTitle.get, "B-CITY", "I-CITY")
-
-    //PERSON
-    if (news.nlpCorpus.isDefined)
-      personCollection = personCollection ++ fillCollection(news.nlpCorpus.get, "B-PER", "I-PER")
-    if (news.nlpSummary.isDefined)
-      personCollection = personCollection ++ fillCollection(news.nlpSummary.get, "B-PER", "I-PER")
-    if (news.nlpTitle.isDefined)
-      personCollection = personCollection ++ fillCollection(news.nlpTitle.get, "B-PER", "I-PER")
-    //ORGANIZATION
-    if (news.nlpCorpus.isDefined)
-      organizzationCollection = organizzationCollection ++ fillCollection(news.nlpCorpus.get, "B-ORG", "I-ORG")
-    if (news.nlpSummary.isDefined)
-      organizzationCollection = organizzationCollection ++ fillCollection(news.nlpSummary.get, "B-ORG", "I-ORG")
-    if (news.nlpTitle.isDefined)
-      organizzationCollection = organizzationCollection ++ fillCollection(news.nlpTitle.get, "B-ORG", "I-ORG")
+    val crimeCollection = fillCollection(news.nlpTitle, "B-CRIME", "I-CRIME") ++ fillCollection(news.nlpSummary, "B-CRIME", "I-CRIME") ++
+      fillCollection(news.nlpCorpus, "B-CRIME", "I-CRIME")
+    val addressCollection = fillCollection(news.nlpTitle, "B-ADDRESS", "I-ADDRESS") ++ fillCollection(news.nlpSummary, "B-ADDRESS", "I-ADDRESS") ++
+      fillCollection(news.nlpCorpus, "B-ADDRESS", "I-ADDRESS")
+    val personCollection = fillCollection(news.nlpTitle, "B-PER", "I-PER") ++ fillCollection(news.nlpSummary, "B-PER", "I-PER") ++
+      fillCollection(news.nlpCorpus, "B-PER", "I-PER")
+    val locationCollection = fillCollection(news.nlpTitle, "B-CITY", "I-CITY") ++ fillCollection(news.nlpSummary, "B-CITY", "I-CITY") ++
+      fillCollection(news.nlpCorpus, "B-CITY", "I-CITY")
+    val dateCollection = fillCollection(news.nlpTitle, "B-DATE", "I-DATE") ++ fillCollection(news.nlpSummary, "B-DATE", "I-DATE") ++
+      fillCollection(news.nlpCorpus, "B-DATE", "I-DATE")
+    val organizzationCollection = fillCollection(news.nlpTitle, "B-ORG", "I-ORG") ++ fillCollection(news.nlpSummary, "B-ORG", "I-ORG") ++
+      fillCollection(news.nlpCorpus, "B-ORG", "I-ORG")
 
     news.copy(crimes = Option(crimeCollection), locations = Option(locationCollection),
-      addresses = Option(adressCollection), dates = Option(dateCollection), 
-      organizations = Option(organizzationCollection), persons=Option(personCollection))
-
+      addresses = Option(addressCollection), dates = Option(dateCollection),
+      organizations = Option(organizzationCollection), persons = Option(personCollection))
   }
 
-  def fillCollection(sentence: Seq[Word], bEncoding: String, eEncoding: String): Seq[String] = {
+  def fillCollection(words: Option[Seq[Word]], bEncoding: String, iEncoding: String): Seq[String] = {
+
+    @tailrec
+    def findCollection0(acc: Seq[String], lastElem: Option[String], words: Seq[Word]): Seq[String] = {
+
+      if (words.isEmpty)
+        if (lastElem.isDefined) acc.+:(lastElem.get) else acc
+      else {
+        val h = words.head
+        val (list, newElem) = h match {
+          //case is a bEncoding
+          case w if (w.iobEntity.contains(bEncoding)) =>
+            val list = if (lastElem.isDefined) acc.+:(lastElem.get) else acc
+            val newElem = Option(h.lemma.getOrElse(h.token))
+            (list, newElem) //return the element to add to the collection and the new element
+
+          //case is a iEncoding
+          case w if (w.iobEntity.contains(iEncoding)) =>
+            val updateElem = lastElem.map(_ + " " + h.lemma.getOrElse(h.token))
+            (acc, updateElem) //return the element to add to the collection and the new element
+
+          case _ =>
+             val list = if (lastElem.isDefined) acc.+:(lastElem.get) else acc
+            (list, Option.empty[String])
+        }
+        findCollection0(list, newElem, words.tail)
+      }
+    }
+
+    if (words.isEmpty)
+      Seq.empty[String]
+    else {
+      val filteredWords = words.get.filter(_.iobEntity.size > 0)
+      findCollection0(Seq.empty[String], Option.empty[String], filteredWords).reverse
+    }
+  }
+
+  def fillCollection2(sentence: Seq[Word], bEncoding: String, eEncoding: String): Seq[String] = {
 
     var collection = Seq.empty[String]
     //val nlpCorpus = news.nlpCorpus.get

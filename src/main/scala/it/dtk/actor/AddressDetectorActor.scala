@@ -10,7 +10,7 @@ import akka.routing.RoundRobinPool
 
 object AddressDetectorActor {
   def props = Props(classOf[AddressDetectorActor])
-  
+
     /**
    * @param nrOfInstances
    * @return the props for a router with a defined number of instances
@@ -29,14 +29,15 @@ class AddressDetectorActor extends Actor with ActorLogging {
 
     case Detector.Process(newsId, sentences, part) =>
       val result = AddressDetector.detect(sentences)
-      
+
       result match {
         case Success(sents) =>
           sender ! Detector.Result(newsId, sents , part)
-          
+
         case Failure(ex) =>
           sender ! Detector.Failure(newsId,part,ex)
+        
       }
   }
-  
+
 }

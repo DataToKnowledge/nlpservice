@@ -31,7 +31,7 @@ class NlpReceptionist(dbHost: String) extends Actor with ActorLogging {
 
   val nlpControllerActor = context.actorOf(NlpController.props(), "nlpController")
 
-  val newsIterator = DBManager.iterateOverNews(10)
+  val newsIterator = DBManager.iterateOverNews(1)
 
   def receive = {
     case Start =>

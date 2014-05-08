@@ -31,7 +31,6 @@ class NlpController extends Actor with ActorLogging {
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
 
   import NlpController._
-  
 
   /*
    * These are all the routers 
@@ -46,7 +45,6 @@ class NlpController extends Actor with ActorLogging {
   val stemmerRouter = context.actorOf(StemmerActor.routerProps(), "stemmerRouter")
   //val textProRouter = context.actorOf(Props[TextProActor], "textProActor")
   val textProRouter = context.actorOf(FromConfig.props(Props[TextProActor]), "textProActorPool")
-  println(textProRouter.path)
   val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
   val callInterval = 5.seconds
@@ -54,9 +52,10 @@ class NlpController extends Actor with ActorLogging {
   def receive = waiting
 
   val waiting: Receive = {
-     case CollectionFillerActor.Processed(processedNews, send) =>
+    case CollectionFillerActor.Processed(processedNews, send) =>
+      sender ! PoisonPill
       send ! Processed(processedNews)
-    
+
     case Process(newsSeq) =>
       log.info("start processing {} news", newsSeq.length)
       context.become(runNext(newsSeq, sender()))
@@ -77,8 +76,9 @@ class NlpController extends Actor with ActorLogging {
   def running(mapNews: Map[String, News], jobs: Int, send: ActorRef): Receive = {
 
     case CollectionFillerActor.Processed(processedNews, send) =>
+      sender ! PoisonPill
       send ! Processed(processedNews)
-    
+
     case TextProActor.Result(news) =>
 
       var j = jobs
@@ -142,7 +142,7 @@ class NlpController extends Actor with ActorLogging {
 
   private def nextStatus(mapNews: Map[String, News], jobs: Int, send: ActorRef): Receive = {
     if (jobs == 0) {
-      val fillCollectionActor = context.actorOf(Props[CollectionFillerActor], "collectionFillerActor")
+      val fillCollectionActor = context.actorOf(Props[CollectionFillerActor])
       fillCollectionActor ! CollectionFillerActor.Process(mapNews.values.toSeq, send)
 
       //send ! Processed(mapNews.values.toSeq)
