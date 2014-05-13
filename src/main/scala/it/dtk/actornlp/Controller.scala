@@ -121,14 +121,14 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
   def receive = {
     case Detector.Result(news.id, words, NewsPart.Title) =>
       val merge = mergeIOBEntity(news.nlpTitle.get, words)
-      processedNews = processedNews.copy(nlpCorpus = Option(merge))
+      processedNews = processedNews.copy(nlpTitle = Option(merge))
       processing -= 1
       if (processing == 0)
         context.parent ! Processed(processedNews)
 
     case Detector.Result(news.id, words, NewsPart.Summary) =>
       val merge = mergeIOBEntity(news.nlpSummary.get, words)
-      processedNews = processedNews.copy(nlpCorpus = Option(merge))
+      processedNews = processedNews.copy(nlpSummary = Option(merge))
       processing -= 1
       if (processing == 0)
         context.parent ! Processed(processedNews)

@@ -31,7 +31,7 @@ class CollectionFillerActor extends Actor with ActorLogging {
     
     case ProcessSingle(news,send) =>
       val procNews = process(news)
-      sender ! ProcessedSingle(news,send)
+      sender ! ProcessedSingle(procNews,send)
 
     case Process(news, send) =>
       val processedNews = news.map(n => process(n))
