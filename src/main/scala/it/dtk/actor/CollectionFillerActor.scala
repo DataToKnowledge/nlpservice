@@ -7,11 +7,20 @@ import it.dtk.nlp.db.News
 import it.dtk.nlp.db.Word
 import akka.actor.ActorRef
 import scala.annotation.tailrec
+import akka.actor.Props
+import akka.routing.RoundRobinPool
 
 object CollectionFillerActor {
 
+  case class ProcessSingle(news: News, sender: ActorRef)
   case class Process(news: Seq[News], sender: ActorRef)
   case class Processed(newsProcessed: Seq[News], send: ActorRef)
+  case class ProcessedSingle(news: News, send: ActorRef)
+  
+  def props = Props[CollectionFillerActor]
+  
+  def routerProps(nrOfInstances: Int = 5) =
+    RoundRobinPool(nrOfInstances).props(props)
 }
 
 class CollectionFillerActor extends Actor with ActorLogging {
@@ -19,6 +28,10 @@ class CollectionFillerActor extends Actor with ActorLogging {
   import CollectionFillerActor._
 
   def receive = {
+    
+    case ProcessSingle(news,send) =>
+      val procNews = process(news)
+      sender ! ProcessedSingle(news,send)
 
     case Process(news, send) =>
       val processedNews = news.map(n => process(n))

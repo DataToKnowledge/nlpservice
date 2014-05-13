@@ -26,7 +26,6 @@ class NlpReceptionist(dbHost: String, newsIteration: Int) extends Actor with Act
 
   //db configurations
   def db = "dbNews"
-
   var processed = 0
 
   val nlpControllerActor = context.actorOf(NlpController.props(), "nlpController")
