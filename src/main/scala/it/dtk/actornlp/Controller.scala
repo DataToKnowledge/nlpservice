@@ -67,7 +67,7 @@ class Controller extends Actor with ActorLogging {
         log.error("sender not defined for news {}", news.id)
 
     case CollectionFillerActor.ProcessedSingle(news, send) =>
-      log.debug("end processing news with title {}", news.title.getOrElse(news.id))
+      log.info("end processing news with title {}", news.title.getOrElse(news.id))
       send ! Processed(news)
 
   }
