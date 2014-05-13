@@ -34,7 +34,6 @@ class Controller extends Actor with ActorLogging {
   //  val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
   val textProRouter = context.actorOf(FromConfig.props(Props[TextProActor]), "textProActorPool")
-  println(textProRouter.path)
   val collectionFilterActor = context.actorOf(CollectionFillerActor.routerProps(5),"collectionFilterPool")
 
   def receive = {
@@ -68,6 +67,7 @@ class Controller extends Actor with ActorLogging {
         log.error("sender not defined for news {}", news.id)
 
     case CollectionFillerActor.ProcessedSingle(news, send) =>
+      log.debug("end processing news with title {}", news.title.getOrElse(news.id))
       send ! Processed(news)
 
   }
@@ -121,21 +121,21 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
   def receive = {
     case Detector.Result(news.id, words, NewsPart.Title) =>
       val merge = mergeIOBEntity(news.nlpCorpus.get, words)
-      processedNews = news.copy(nlpCorpus = Option(merge))
+      processedNews = processedNews.copy(nlpCorpus = Option(merge))
       processing -= 1
       if (processing == 0)
         context.parent ! Processed(processedNews)
 
     case Detector.Result(news.id, words, NewsPart.Summary) =>
       val merge = mergeIOBEntity(news.nlpCorpus.get, words)
-      processedNews = news.copy(nlpCorpus = Option(merge))
+      processedNews = processedNews.copy(nlpCorpus = Option(merge))
       processing -= 1
       if (processing == 0)
         context.parent ! Processed(processedNews)
 
     case Detector.Result(news.id, words, NewsPart.Corpus) =>
       val merge = mergeIOBEntity(news.nlpCorpus.get, words)
-      processedNews = news.copy(nlpCorpus = Option(merge))
+      processedNews = processedNews.copy(nlpCorpus = Option(merge))
       processing -= 1
       if (processing == 0)
         context.parent ! Processed(processedNews)
