@@ -5,7 +5,6 @@ import akka.actor.ActorLogging
 import akka.actor.Props
 import it.dtk.nlp.db.DBManager
 import com.typesafe.config.ConfigFactory
-import org.scalatest.time.Second
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration._
 import java.util.concurrent.Executor
