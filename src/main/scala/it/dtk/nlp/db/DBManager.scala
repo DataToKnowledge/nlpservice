@@ -12,7 +12,12 @@ import com.mongodb.casbah.MongoCursor
  */
 object DBManager {
 
-  private val mongoClient = MongoClient("10.0.0.1", 27017)
+  /**
+   * default value
+   */
+  var dbHost: String = "10.0.0.11"
+
+  private val mongoClient = MongoClient(dbHost, 27017)
 
   private val db = mongoClient("wheretolive")
 

@@ -8,15 +8,15 @@ object Main {
 
   def main(args: Array[String]) {
 
-    if (args.length == 3) {
-      startup(args(0), args(1), args(2))
+    if (args.length == 1) {
+      startup(args(0))
     } else {
-      println("specify db host, hostname and port number to run NlpService such as 10.0.0.1 10.0.0.10 2552")
+      println("specify db host 10.0.0.11")
       System.exit(1)
     }
   }
 
-  def startup(dbHost: String, hostname: String, port: String): Unit = {
+  def startup(dbHost: String): Unit = {
     // Override the configuration of the port
     //    val config = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + port).
     //      withFallback(ConfigFactory.parseString("akka.remote.netty.tcp.hostname=" + hostname)).
