@@ -33,7 +33,7 @@ class NlpController extends Actor with ActorLogging {
 
   import NlpController._
 
-  context.setReceiveTimeout(5.minutes)
+  context.setReceiveTimeout(2.minutes)
 
   /*
    * These are all the routers 
