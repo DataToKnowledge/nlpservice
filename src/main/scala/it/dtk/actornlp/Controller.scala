@@ -34,6 +34,7 @@ class Controller extends Actor with ActorLogging {
   //  val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
   val textProRouter = context.actorOf(FromConfig.props(Props[TextProActor]), "textProActorPool")
+  println(textProRouter.path)
   val collectionFilterActor = context.actorOf(CollectionFillerActor.routerProps(5),"collectionFilterPool")
 
   def receive = {
@@ -90,8 +91,8 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
 
   val addressActor = context.actorOf(AddressDetectorActor.props, s"addressActor$id")
   val cityActor = context.actorOf(CityDetectorActor.props, s"cityActor$id")
-  val crimeActor = context.actorOf(CrimeDetectorActor.props, s"crimeActor#id")
-  val dateActor = context.actorOf(DateDetectorActor.props, s"dateActor#id")
+  val crimeActor = context.actorOf(CrimeDetectorActor.props, s"crimeActor$id")
+  val dateActor = context.actorOf(DateDetectorActor.props, s"dateActor$id")
 
   if (news.nlpTitle.isDefined) {
     addressActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)

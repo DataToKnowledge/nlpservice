@@ -28,10 +28,9 @@ class Receptionist extends Actor with ActorLogging {
   val conf = ConfigFactory.load("nlp");
   val dbHost = conf.getString("nlp.dbHost")
   val batchNewsSize = conf.getInt("nlp.batch.size")
-
-  val waitTime = conf.getDuration("nlp.wait.call", TimeUnit.SECONDS)
-
-  val timeout = conf.getDuration("nlp.wait.timeout", TimeUnit.SECONDS).seconds
+  val waitTime = conf.getLong("nlp.wait.call")
+  val time = conf.getLong("nlp.wait.timeout")
+  val timeout = time.seconds
   context.setReceiveTimeout(timeout)
 
   def db = "dbNews"
