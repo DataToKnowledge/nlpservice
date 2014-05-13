@@ -13,6 +13,7 @@ import it.dtk.nlp.detector._
 import it.dtk.nlp.detector.NewsPart._
 import it.dtk.actor.textpro.TextProActor
 import akka.routing.FromConfig
+import akka.actor.ReceiveTimeout
 
 object NlpController {
 
@@ -31,6 +32,8 @@ class NlpController extends Actor with ActorLogging {
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
 
   import NlpController._
+
+  context.setReceiveTimeout(5.minutes)
 
   /*
    * These are all the routers 
@@ -138,14 +141,17 @@ class NlpController extends Actor with ActorLogging {
     case Detector.Failure(newsId, part, ex) =>
       send ! FailedProcessPart(newsId, part, ex)
       context.become(nextStatus(mapNews, jobs - 1, send))
+
+    case r: ReceiveTimeout =>
+      log.error("receive timeout for a news")
+      context.become(nextStatus(mapNews, jobs - 1, send))
+
   }
 
   private def nextStatus(mapNews: Map[String, News], jobs: Int, send: ActorRef): Receive = {
     if (jobs == 0) {
       val fillCollectionActor = context.actorOf(Props[CollectionFillerActor])
       fillCollectionActor ! CollectionFillerActor.Process(mapNews.values.toSeq, send)
-
-      //send ! Processed(mapNews.values.toSeq)
       waiting
     } else {
       running(mapNews, jobs, send)
