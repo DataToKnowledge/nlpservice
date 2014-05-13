@@ -8,15 +8,15 @@ object Main {
 
   def main(args: Array[String]) {
 
-    if (args.length == 1) {
-      startup(args(0))
+    if (args.length == 2) {
+      startup(args(0), args(1))
     } else {
-      println("specify db host 10.0.0.11")
+      println("specify db host and new per iteration 10.0.0.11 5")
       System.exit(1)
     }
   }
 
-  def startup(dbHost: String): Unit = {
+  def startup(dbHost: String, newsIteration: String): Unit = {
     // Override the configuration of the port
     //    val config = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + port).
     //      withFallback(ConfigFactory.parseString("akka.remote.netty.tcp.hostname=" + hostname)).
@@ -30,7 +30,7 @@ object Main {
 
     val system = ActorSystem("NlpService", config)
 
-    val receptionist = system.actorOf(NlpReceptionist.props(dbHost),"receptionist")
+    val receptionist = system.actorOf(NlpReceptionist.props(dbHost, newsIteration.toInt),"receptionist")
 
     receptionist ! NlpReceptionist.Start
   }

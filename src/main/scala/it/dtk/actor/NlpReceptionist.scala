@@ -13,14 +13,14 @@ object NlpReceptionist {
   case object Stop
   case class Finished(processedNews: Int)
 
-  def props(dbHost: String) = Props(classOf[NlpReceptionist], dbHost)
+  def props(dbHost: String, newsIteration: Int = 1) = Props(classOf[NlpReceptionist], dbHost, newsIteration)
 }
 
 /**
  *
  * @param dbHost
  */
-class NlpReceptionist(dbHost: String) extends Actor with ActorLogging {
+class NlpReceptionist(dbHost: String, newsIteration: Int) extends Actor with ActorLogging {
 
   import NlpReceptionist._
 
@@ -33,7 +33,7 @@ class NlpReceptionist(dbHost: String) extends Actor with ActorLogging {
   
   DBManager.dbHost = dbHost
 
-  val newsIterator = DBManager.iterateOverNews(1)
+  val newsIterator = DBManager.iterateOverNews(newsIteration)
 
   def receive = {
     case Start =>
