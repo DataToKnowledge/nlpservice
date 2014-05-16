@@ -10,10 +10,12 @@ import scala.concurrent.duration._
 import java.util.concurrent.Executor
 import scala.concurrent.ExecutionContext
 import akka.actor.ReceiveTimeout
+import it.dtk.nlp.db.News
 
 object Receptionist {
 
   case object Start
+  case object Next
   def props = Props(classOf[Receptionist])
 }
 
@@ -34,7 +36,6 @@ class Receptionist extends Actor with ActorLogging {
   context.setReceiveTimeout(timeout)
 
   def db = "dbNews"
-  var nextCall: Long = 0
 
   var countProcessing = 0
 
@@ -43,9 +44,12 @@ class Receptionist extends Actor with ActorLogging {
   DBManager.dbHost = dbHost
   val newsIterator = DBManager.iterateOverNews(batchNewsSize)
 
+  var nextBatch = IndexedSeq.empty[News]
+
   def receive = {
     case Start =>
       log.info("processing {} news from db {}", batchNewsSize, dbHost)
+      var nextCall: Long = 0
 
       val newsSeq = newsIterator.next
       newsSeq.foreach { n =>
@@ -53,6 +57,13 @@ class Receptionist extends Actor with ActorLogging {
         context.system.scheduler.scheduleOnce(nextCall.seconds, controllerActor, Controller.Process(n))
         countProcessing += 1
       }
+
+    case Next =>
+      nextBatch = if (nextBatch.isEmpty) newsIterator.next else nextBatch
+
+      context.system.scheduler.scheduleOnce(waitTime.seconds, controllerActor, Controller.Process(nextBatch.head))
+      countProcessing += 1
+      nextBatch = nextBatch.tail
 
     case Controller.Processed(news) =>
       try {
@@ -78,5 +89,7 @@ class Receptionist extends Actor with ActorLogging {
     countProcessing -= 1
     if (countProcessing == 0)
       self ! Start
+    else
+      self ! Next
   }
 }

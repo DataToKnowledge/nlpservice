@@ -17,7 +17,9 @@ object DBManager {
    */
   var dbHost: String = "10.0.0.11"
 
-  private val mongoClient = MongoClient(dbHost, 27017)
+  val options = MongoClientOptions(autoConnectRetry=true, connectTimeout=240000, socketKeepAlive=true)
+  private val mongoClient = MongoClient(dbHost, options)
+  
 
   private val db = mongoClient("wheretolive")
 
