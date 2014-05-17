@@ -17,9 +17,8 @@ object DBManager {
    */
   var dbHost: String = "10.0.0.11"
 
-  val options = MongoClientOptions(autoConnectRetry=true, connectTimeout=240000, socketKeepAlive=true)
+  val options = MongoClientOptions(autoConnectRetry = true, connectTimeout = 240000, socketKeepAlive = true)
   private val mongoClient = MongoClient(dbHost, options)
-  
 
   private val db = mongoClient("wheretolive")
 
@@ -110,8 +109,9 @@ object DBManager {
 }
 
 class CollectionIterator(val cursor: MongoCursor, val batchSize: Int) {
-
-  def hasNext = cursor.hasNext
+  var c = cursor.toStream
+  
+  def hasNext = c.isEmpty
 
   def next: IndexedSeq[News] = {
 
@@ -119,8 +119,9 @@ class CollectionIterator(val cursor: MongoCursor, val batchSize: Int) {
     var result = Vector.empty[News]
 
     while (hasNext && i < batchSize) {
-      result = result :+ MongoDBMapper.dBOToNews(cursor.next)
+      result = result :+ MongoDBMapper.dBOToNews(c.head)
       i += 1
+      c = c.tail
     }
     result
   }

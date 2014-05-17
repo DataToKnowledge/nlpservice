@@ -49,12 +49,12 @@ class CollectionFillerActor extends Actor with ActorLogging {
       fillCollection(news.nlpCorpus, "B-CITY", "I-CITY")
     val dateCollection = fillCollection(news.nlpTitle, "B-DATE", "I-DATE") ++ fillCollection(news.nlpSummary, "B-DATE", "I-DATE") ++
       fillCollection(news.nlpCorpus, "B-DATE", "I-DATE")
-    val organizzationCollection = fillCollection(news.nlpTitle, "B-ORG", "I-ORG") ++ fillCollection(news.nlpSummary, "B-ORG", "I-ORG") ++
+    val organizationCollection = fillCollection(news.nlpTitle, "B-ORG", "I-ORG") ++ fillCollection(news.nlpSummary, "B-ORG", "I-ORG") ++
       fillCollection(news.nlpCorpus, "B-ORG", "I-ORG")
 
     news.copy(crimes = Option(crimeCollection), locations = Option(locationCollection),
       addresses = Option(addressCollection), dates = Option(dateCollection),
-      organizations = Option(organizzationCollection), persons = Option(personCollection))
+      organizations = Option(organizationCollection), persons = Option(personCollection))
   }
 
   def fillCollection(words: Option[Seq[Word]], bEncoding: String, iEncoding: String): Seq[String] = {
