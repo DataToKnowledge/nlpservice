@@ -67,8 +67,10 @@ class Receptionist extends Actor with ActorLogging {
 
     case Controller.Processed(news) =>
       try {
-        DBManager.saveNlpNews(news)
-        log.info("succesfully saved news {}", news.title.getOrElse(news.id))
+        val r = DBManager.saveNlpNews(news)
+        if (r == 0)
+          log.error("error saving news with id {}",news.id)
+        log.info("succesfully saved news with id {} and title", news.id, news.title)
         shouldIProcess()
       } catch {
         case ex: Throwable =>
