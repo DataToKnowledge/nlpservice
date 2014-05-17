@@ -50,7 +50,8 @@ class CollectionFillerActor extends Actor with ActorLogging {
     val dateCollection = fillCollection(news.nlpTitle, "B-DATE", "I-DATE") ++ fillCollection(news.nlpSummary, "B-DATE", "I-DATE") ++
       fillCollection(news.nlpCorpus, "B-DATE", "I-DATE")
     val organizationCollection = fillCollection(news.nlpTitle, "B-ORG", "I-ORG") ++ fillCollection(news.nlpSummary, "B-ORG", "I-ORG") ++
-      fillCollection(news.nlpCorpus, "B-ORG", "I-ORG")
+      fillCollection(news.nlpCorpus, "B-ORG", "I-ORG") ++ fillCollection(news.nlpTitle, "B-GPE", "I-GPE") ++ fillCollection(news.nlpSummary, "B-GPE", "I-GPE") ++
+      fillCollection(news.nlpCorpus, "B-GPE", "I-GPE")
 
     news.copy(crimes = Option(crimeCollection), locations = Option(locationCollection),
       addresses = Option(addressCollection), dates = Option(dateCollection),
@@ -70,12 +71,12 @@ class CollectionFillerActor extends Actor with ActorLogging {
           //case is a bEncoding
           case w if (w.iobEntity.contains(bEncoding)) =>
             val list = if (lastElem.isDefined) acc.+:(lastElem.get) else acc
-            val newElem = Option(h.lemma.getOrElse(h.token))
+            val newElem = Option(h.token)
             (list, newElem) //return the element to add to the collection and the new element
 
           //case is a iEncoding
           case w if (w.iobEntity.contains(iEncoding)) =>
-            val updateElem = lastElem.map(_ + " " + h.lemma.getOrElse(h.token))
+            val updateElem = lastElem.map(_ + " " + h.token)
             (acc, updateElem) //return the element to add to the collection and the new element
 
           case _ =>
