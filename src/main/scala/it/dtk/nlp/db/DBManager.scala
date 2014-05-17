@@ -111,7 +111,7 @@ object DBManager {
 class CollectionIterator(val cursor: MongoCursor, val batchSize: Int) {
   var c = cursor.toStream
   
-  def hasNext = c.isEmpty
+  def hasNext = !c.isEmpty
 
   def next: IndexedSeq[News] = {
 
