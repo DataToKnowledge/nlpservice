@@ -64,7 +64,7 @@ class Receptionist extends Actor with ActorLogging {
           countProcessing += 1
           count += 1
         } else {
-          log.debug("skipping processed news with id {} and title {}", n.id, n.title)
+          log.info("skipping processed news with id {} and title {}", n.id, n.title)
         }
 
       }
@@ -89,7 +89,7 @@ class Receptionist extends Actor with ActorLogging {
           count += 1
           nextBatch = nextBatch.tail
         } else {
-          log.debug("skipping processed news with id {} and title {}", h.id, h.title)
+          log.info("skipping processed news with id {} and title {}", h.id, h.title)
         }
 
       }
