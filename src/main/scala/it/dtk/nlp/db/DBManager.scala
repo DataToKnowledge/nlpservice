@@ -89,12 +89,15 @@ object DBManager {
     }
   }
 
+  def findNlpNews(id: String): Option[News] =
+    nlpNews.findOne("_id" $eq id).map(r => r)
+
   /**
    * @param batchSize
    * @return an collection iterator which allows to iterate of the news collection
    */
   def iterateOverNews(batchSize: Int): CollectionIterator =
-    new CollectionIterator(news.find(), batchSize)
+    new CollectionIterator(news, batchSize)
 
   /**
    * @param news
@@ -108,21 +111,26 @@ object DBManager {
 
 }
 
-class CollectionIterator(val cursor: MongoCursor, val batchSize: Int) {
-  var c = cursor.toStream
-  
-  def hasNext = !c.isEmpty
+class CollectionIterator(val collection: MongoCollection, val batchSize: Int) {
+
+  var vectorNews = findNews(Option.empty[String])
+
+  private def findNews(index: Option[String]): Vector[News] = {
+
+    val cursor = if (index.isEmpty) {
+      collection.find("_id" $gt index.get).limit(batchSize)
+    } else {
+      collection.find().limit(batchSize)
+    }
+    cursor.map(MongoDBMapper.dBOToNews).toVector
+  }
+
+  def hasNext = !vectorNews.isEmpty
 
   def next: IndexedSeq[News] = {
-
-    var i = 0
-    var result = Vector.empty[News]
-
-    while (hasNext && i < batchSize) {
-      result = result :+ MongoDBMapper.dBOToNews(c.head)
-      i += 1
-      c = c.tail
-    }
+    val result = vectorNews
+    val lastIndex = Option(vectorNews.last.id)
+    vectorNews = findNews(lastIndex)
     result
   }
 
