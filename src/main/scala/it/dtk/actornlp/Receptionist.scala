@@ -68,7 +68,6 @@ class Receptionist extends Actor with ActorLogging {
         }
 
       }
-
       if (newsSeq.isEmpty) {
         log.info("Processed {} news", count)
         self ! PoisonPill
