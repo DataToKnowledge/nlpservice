@@ -3,6 +3,7 @@ package it.dtk
 import com.typesafe.config.ConfigFactory
 import akka.actor.ActorSystem
 import it.dtk.actornlp.Receptionist
+import akka.actor.Inbox
 
 object MainNlp {
 
@@ -25,9 +26,9 @@ object MainNlp {
     val config = ConfigFactory.load("application")
 
     val system = ActorSystem("NlpService", config)
+    val inbox = Inbox.create(system)
 
     val receptionist = system.actorOf(Receptionist.props, "receptionist")
-
     receptionist ! Receptionist.Start
   }
 

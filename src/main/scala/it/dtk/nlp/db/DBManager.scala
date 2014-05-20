@@ -5,6 +5,7 @@ import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.Imports._
 import MongoDBMapper._
 import com.mongodb.casbah.MongoCursor
+import com.mongodb.casbah.commons.MongoDBObject
 
 /**
  *
@@ -90,7 +91,7 @@ object DBManager {
   }
 
   def findNlpNews(id: String): Option[News] =
-    nlpNews.findOne("_id" $eq id).map(r => r)
+    nlpNews.findOne("_id" $eq new ObjectId(id)).map(r => r)
 
   /**
    * @param batchSize
@@ -110,28 +111,21 @@ object DBManager {
   }
 
 }
+//collection.find("_id" $gt new ObjectId(id)).limit(batchSize).map(MongoDBMapper.dBOToNews).toVector
 
 class CollectionIterator(val collection: MongoCollection, val batchSize: Int) {
 
-  var vectorNews = findNews(Option.empty[String])
+  require(collection.size > 0)
+  var vector = Option(collection.find().limit(batchSize).map(MongoDBMapper.dBOToNews).toVector)
+  var lastId = vector.map(_.last.id)
 
-  private def findNews(index: Option[String]): Vector[News] = {
-
-    val cursor = if (!index.isEmpty) {
-      collection.find("_id" $gt index.get).limit(batchSize)
-    } else {
-      collection.find().limit(batchSize)
-    }
-    cursor.map(MongoDBMapper.dBOToNews).toVector
-  }
-
-  def hasNext = !vectorNews.isEmpty
+  def hasNext = !vector.isEmpty
 
   def next: IndexedSeq[News] = {
-    val result = vectorNews
-    val lastIndex = Option(vectorNews.last.id)
-    vectorNews = findNews(lastIndex)
-    result
+    val result = vector
+    vector = lastId.map(id => collection.find("_id" $gt new ObjectId(id)).limit(batchSize).map(MongoDBMapper.dBOToNews).toVector)
+    lastId = vector.map(_.last.id)
+    result.getOrElse(Vector.empty[News])
   }
 
 }

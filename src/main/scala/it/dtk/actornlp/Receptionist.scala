@@ -11,11 +11,14 @@ import java.util.concurrent.Executor
 import scala.concurrent.ExecutionContext
 import akka.actor.ReceiveTimeout
 import it.dtk.nlp.db.News
+import akka.actor.ActorRef
+import akka.actor.PoisonPill
 
 object Receptionist {
 
   case object Start
   case object Next
+  case class Finished(count: Int)
   def props = Props(classOf[Receptionist])
 }
 
@@ -38,6 +41,7 @@ class Receptionist extends Actor with ActorLogging {
   def db = "dbNews"
 
   var countProcessing = 0
+  var count = 0
 
   val controllerActor = context.actorOf(Controller.props(), "controller")
 
@@ -52,24 +56,49 @@ class Receptionist extends Actor with ActorLogging {
       var nextCall: Long = 0
 
       val newsSeq = newsIterator.next
+
       newsSeq.foreach { n =>
         nextCall += waitTime
-        context.system.scheduler.scheduleOnce(nextCall.seconds, controllerActor, Controller.Process(n))
-        countProcessing += 1
+        if (DBManager.findNlpNews(n.id).isEmpty) {
+          context.system.scheduler.scheduleOnce(nextCall.seconds, controllerActor, Controller.Process(n))
+          countProcessing += 1
+          count += 1
+        } else {
+          log.debug("skipping processed news with id {} and title {}", n.id, n.title)
+        }
+
+      }
+
+      if (newsSeq.isEmpty) {
+        log.info("Processed {} news", count)
+        self ! PoisonPill
       }
 
     case Next =>
+
       nextBatch = if (nextBatch.isEmpty) newsIterator.next else nextBatch
 
-      context.system.scheduler.scheduleOnce(waitTime.seconds, controllerActor, Controller.Process(nextBatch.head))
-      countProcessing += 1
-      nextBatch = nextBatch.tail
+      if (nextBatch.isEmpty) {
+        log.info("Processed {} news", count)
+        self ! PoisonPill
+      } else {
+        val h = nextBatch.head
+        if (DBManager.findNlpNews(h.id).isEmpty) {
+          context.system.scheduler.scheduleOnce(waitTime.seconds, controllerActor, Controller.Process(nextBatch.head))
+          countProcessing += 1
+          count += 1
+          nextBatch = nextBatch.tail
+        } else {
+          log.debug("skipping processed news with id {} and title {}", h.id, h.title)
+        }
+
+      }
 
     case Controller.Processed(news) =>
       try {
         val r = DBManager.saveNlpNews(news)
         if (r == 0)
-          log.error("error saving news with id {}",news.id)
+          log.error("error saving news with id {}", news.id)
         log.info("succesfully saved news with id {} and title {}", news.id, news.title)
         shouldIProcess()
       } catch {
