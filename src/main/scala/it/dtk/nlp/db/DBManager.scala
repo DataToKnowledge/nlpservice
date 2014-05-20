@@ -40,7 +40,9 @@ object DBManager {
    */
   def findLemma(word: String): Option[Lemma] = {
     val regex = "(?i)^" + word.replace("(", "").replace(")", "") + "$"
-    lemma.findOne(MongoDBObject("word" -> regex.r)).map(r => r)
+    lemma.findOne("word" $regex regex).map(r => r)
+    //used regex as explained in  http://mongodb.github.io/casbah/guide/query_dsl.html
+    //lemma.findOne(MongoDBObject("word" -> regex.r)).map(r => r)
   }
 
   /**
@@ -51,7 +53,8 @@ object DBManager {
    */
   def findCrime(word: String): Option[Crime] = {
     val regex = "(?i)^" + word.replace("(", "").replace(")", "") + "$"
-    crime.findOne(MongoDBObject("word" -> regex.r)).map(r => r)
+    crime.findOne("word" $regex regex).map(r => r)
+    //crime.findOne(MongoDBObject("word" -> regex.r)).map(r => r)
   }
 
   /**
@@ -63,10 +66,10 @@ object DBManager {
   def findAddress(street: String, city: Option[String] = None): Option[Address] = {
     val regexAddr = "(?i)^" + street.replace("(", "").replace(")", "") + "$"
     val regexCity = if (city.isDefined) Some("(?i)^" + city.get.replace("(", "").replace(")", "") + "$") else None
-    val query = {
-      if (city.isDefined) MongoDBObject("street" -> regexAddr.r, "city" -> regexCity.get.r)
-      else MongoDBObject("street" -> regexAddr.r)
-    }
+    val query = if (city.isDefined) 
+      MongoDBObject("street" -> regexAddr.r, "city" -> regexCity.get.r)
+    else
+      MongoDBObject("street" -> regexAddr.r)
 
     address.findOne(query).map(r => r)
   }
@@ -79,7 +82,8 @@ object DBManager {
    */
   def findCity(city_name: String): Option[City] = {
     val regex = "(?i)^" + city_name.replace("(", "").replace(")", "") + "$"
-    city.findOne(MongoDBObject("city_name" -> regex.r)).map(r => r)
+    city.findOne("city_name" $regex regex).map(r => r)
+    //city.findOne(MongoDBObject("city_name" -> regex.r)).map(r => r)
   }
 
   def getNews(limit: Int = 0): List[News] = {
@@ -111,7 +115,6 @@ object DBManager {
   }
 
 }
-//collection.find("_id" $gt new ObjectId(id)).limit(batchSize).map(MongoDBMapper.dBOToNews).toVector
 
 class CollectionIterator(val collection: MongoCollection, val batchSize: Int) {
 

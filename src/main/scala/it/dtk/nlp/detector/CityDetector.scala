@@ -49,7 +49,7 @@ object CityDetector extends Detector {
 
             while (startIndex < endIndex) {
               startIndex += 1
-              val nextWord = sentence.apply(startIndex)
+              val nextWord = sentence(startIndex)
               result :+= nextWord.copy(iobEntity = nextWord.iobEntity + "I-CITY")
             }
 
