@@ -117,7 +117,7 @@ class CollectionIterator(val collection: MongoCollection, val batchSize: Int) {
 
   private def findNews(index: Option[String]): Vector[News] = {
 
-    val cursor = if (index.isEmpty) {
+    val cursor = if (!index.isEmpty) {
       collection.find("_id" $gt index.get).limit(batchSize)
     } else {
       collection.find().limit(batchSize)
