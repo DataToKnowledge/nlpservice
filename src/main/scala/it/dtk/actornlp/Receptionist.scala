@@ -39,7 +39,6 @@ class Receptionist extends Actor with ActorLogging {
   context.setReceiveTimeout(timeout)
 
   def db = "dbNews"
-
   var countProcessing = 0
   var count = 0
 
