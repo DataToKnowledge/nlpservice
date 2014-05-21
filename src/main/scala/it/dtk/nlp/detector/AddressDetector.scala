@@ -78,12 +78,12 @@ object AddressDetector extends Detector {
             log.info(s"Found address: ${res.street} (City: ${res.city.getOrElse("None")})")
 
             val currentWord = sentence.apply(startIndex)
-            result :+= currentWord.copy(iobEntity = currentWord.iobEntity + "B-ADDRESS")
+            result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "B-ADDRESS")
 
             while (startIndex < endIndex) {
               startIndex += 1
               val nextWord = sentence.apply(startIndex)
-              result :+= nextWord.copy(iobEntity = nextWord.iobEntity + "I-ADDRESS")
+              result :+= nextWord.copy(iobEntity = nextWord.iobEntity :+ "I-ADDRESS")
             }
 
             // TODO: Civic number discovery

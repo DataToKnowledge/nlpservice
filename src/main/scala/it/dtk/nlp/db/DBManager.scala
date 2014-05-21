@@ -80,8 +80,8 @@ object DBManager {
    * @param city_name
    * @return
    */
-  def findCity(city_name: String): Option[City] = {
-    val regex = "(?i)^" + city_name.replace("(", "").replace(")", "") + "$"
+  def findCity(cityName: String): Option[City] = {
+    val regex = "(?i)^" + cityName.replace("(", "").replace(")", "") + "$"
     city.findOne("city_name" $regex regex).map(r => r)
     //city.findOne(MongoDBObject("city_name" -> regex.r)).map(r => r)
   }

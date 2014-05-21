@@ -15,10 +15,10 @@ object CrimeDetector extends Detector {
     var i = 0
     def setEntity(sentence: Seq[Word], start: Int, end: Int): Unit = {
       var currentWord = sentence.apply(start)
-      result :+= currentWord.copy(iobEntity = currentWord.iobEntity + "B-CRIME")
+      result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "B-CRIME")
       for (i <- (start + 1) to end) {
         currentWord = sentence.apply(i)
-        result :+= currentWord.copy(iobEntity = currentWord.iobEntity + "I-CRIME")
+        result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "I-CRIME")
       }
     }
 

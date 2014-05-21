@@ -35,7 +35,7 @@ object MongoDBMapper {
       dbo.getAs[String]("lemma"),
       dbo.getAs[String]("comMorpho"),
       dbo.getAs[String]("stem"),
-      dbo.getAs[Set[String]]("iobEntity").get,
+      dbo.getAs[Vector[String]]("iobEntity").get,
       dbo.getAs[String]("chunk"),
       dbo._id.map(_.toString()).get)
   }

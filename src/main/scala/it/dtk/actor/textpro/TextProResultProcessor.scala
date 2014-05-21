@@ -55,7 +55,7 @@ private object TextProResultProcessor {
 
       split match {
         case split10 if split10.size == 10 =>
-          val iobEntity = if (split(8).equals("O")) Set.empty[String] else Set(split(8))
+          val iobEntity = if (split(8).equals("O")) Vector.empty[String] else Vector(split(8))
 
           Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
             Option(split(3).toInt), Option(split(4)), Option(split(5)),
@@ -64,7 +64,7 @@ private object TextProResultProcessor {
         case split8 if split8.size == 8 =>
           Word(split(0), Option(split(1).toInt), Option(split(2).toInt),
             Option(split(3).toInt), Option(split(4)), Option(split(5)),
-            Option(split(6)), Option(split(7)), None, Set.empty[String], None)
+            Option(split(6)), Option(split(7)), None, Vector.empty[String], None)
 
         case _ =>
           throw new Throwable(s"wrong size ${split.size} for $line")

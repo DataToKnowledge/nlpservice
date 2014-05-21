@@ -28,7 +28,7 @@ class CityDetectorActor extends Actor with ActorLogging {
   def receive = {
 
     case Detector.Process(newsId, sentences, part) =>
-      val result = CityDetector.detect(sentences)
+      val result = CityDetector.detect(sentences.toIndexedSeq)
       result match {
         case Success(sents) =>
           sender ! Detector.Result(newsId, sents, part)

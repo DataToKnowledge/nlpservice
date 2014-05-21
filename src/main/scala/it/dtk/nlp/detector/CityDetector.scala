@@ -1,18 +1,21 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.db.{City, DBManager, Word}
+import it.dtk.nlp.db.{ City, DBManager, Word }
 import org.slf4j.LoggerFactory
 import scala.util.Try
+import EntityType._
+import scala.collection.immutable.TreeMap
 
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
-object CityDetector extends Detector {
+object CityDetector {
 
   /**
    * Maximum number of tokens for a city
    */
-  private val RANGE = 3
+  val range = 4
+  val step = 1
 
   /**
    * City name regular expression
@@ -21,65 +24,40 @@ object CityDetector extends Detector {
 
   private val log = LoggerFactory.getLogger("CityDetector")
 
-  override def detect(sentence: Seq[Word]): Try[Seq[Word]] = Try {
-    var result = Vector.empty[Word]
+  def detect(words: IndexedSeq[Word]): Try[Seq[Word]] = Try {
 
-    def bumpEndIndex(offset: Int) = {
-      if (offset + RANGE >= sentence.length) sentence.length - 1
-      else offset + RANGE
+    //create a map of words ordered by tokenId
+    var mapWords = words.map(w => w.tokenId.get -> w).toMap
+    var taggedTokenId = Set.empty[Int]
+
+    def tag(slice: IndexedSeq[Word], pos: Int, value: EntityType): Option[Word] = {
+      val tokenId = slice(pos).tokenId.get
+      mapWords.get(tokenId).map(w => w.copy(iobEntity = w.iobEntity :+ value.toString()))
     }
 
-    var startIndex: Int = 0
-    var endIndex = bumpEndIndex(startIndex)
+    for (sizeNGram <- range to 1 by -1) {
+      val sliding = words.sliding(sizeNGram)
 
-    while (startIndex < sentence.length) {
-      val city = sentence.slice(startIndex, endIndex + 1).map(word => word.token).mkString(sep = " ")
+      for (slide <- sliding) {
+        val candidate = slide.map(_.token).mkString(" ")
+        if (candidate.matches(CITIES_R)) {
+          DBManager.findCity(candidate).foreach { city =>
+            for (j <- 0 until slide.size) {
+              val word = if (j == 0)
+                tag(slide, j, EntityType.B_CITY)
+              else
+                tag(slide, j, EntityType.I_CITY)
 
-      // verifico se questa sequenze di word matcha l'espressione regolare
-      if (city.matches(CITIES_R)) {
-        DBManager.findCity(city) match {
-
-          // ho trovato una corrispondenza nel DB, flaggo le word come City e sposto la finestra
-          // di N posizioni, dove N e` il numero di word che ho flaggato
-          case Some(res: City) =>
-            log.info(s"Found city: ${res.city_name}")
-
-            val currentWord = sentence.apply(startIndex)
-            result :+= currentWord.copy(iobEntity = currentWord.iobEntity + "B-CITY")
-
-            while (startIndex < endIndex) {
-              startIndex += 1
-              val nextWord = sentence(startIndex)
-              result :+= nextWord.copy(iobEntity = nextWord.iobEntity + "I-CITY")
+              if (word.isDefined && !taggedTokenId.contains(word.get.tokenId.get)) {
+                mapWords += (word.get.tokenId.get -> word.get)
+                taggedTokenId += word.get.tokenId.get
+              }
             }
-
-            startIndex += 1
-            endIndex = bumpEndIndex(startIndex)
-
-          // nessuna corrispondenza nel DB
-          case None =>
-            log.debug(s"Cannot find a city named: $city")
-            // stringo la finestra di 1 posizione oppure la ri-calibro
-            if (startIndex < endIndex) {
-              endIndex -= 1
-            } else {
-              result :+= sentence.apply(startIndex)
-
-              startIndex += 1
-              endIndex = bumpEndIndex(startIndex)
-            }
+          }
         }
-      } else {
-        // non matcha l'espressione regolare, muovo la finestra di 1 posizione
-        result :+= sentence.apply(startIndex)
-
-        startIndex += 1
-        endIndex += 1
       }
-
     }
-
-    result.toSeq
+    //return the sequence of the words where some words are annotated with entity
+    TreeMap(mapWords.toArray: _*).values.toIndexedSeq
   }
-
 }

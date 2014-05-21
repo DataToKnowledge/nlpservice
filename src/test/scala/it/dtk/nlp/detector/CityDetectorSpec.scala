@@ -8,7 +8,7 @@ object CityDetectorSpec {
 
   val sentence = "Si tratta di un 57enne di Grumello Del Monte arrestato dai carabinieri con l’accusa di detenzione illegale di arma da sparo."
 
-  val city = "BARI"
+  val city = "la citta in cui sono nato BARI"
 
 }
 
@@ -25,13 +25,14 @@ class CityDetectorSpec extends BaseTestClass {
 
       "tag a compound-city" in {
 
-        whenReady(TreeTagger.tag(TextPreprocessor.apply(sentence))) {
+        whenReady(TreeTagger.tag(TextPreprocessor(sentence))) {
           sentence =>
-            val result = CityDetector.detect(sentence)
+            val result = CityDetector.detect(sentence.toIndexedSeq)
             result match {
               case Success(res) =>
-                res.count(_.iobEntity.contains("B-CITY")) should be(1)
-                res.count(_.iobEntity.contains("I-CITY")) should be(2)
+                //res.foreach(w => println(w.token + " " + w.iobEntity))
+                res.count(_.iobEntity.contains("B_CITY")) should be(1)
+                res.count(_.iobEntity.contains("I_CITY")) should be(2)
               case Failure(ex) =>
                 ex.printStackTrace()
             }
@@ -42,12 +43,13 @@ class CityDetectorSpec extends BaseTestClass {
 
         whenReady(TreeTagger.tag(TextPreprocessor.apply(city))) {
           sentence =>
-            val result = CityDetector.detect(sentence)
+            val result = CityDetector.detect(sentence.toIndexedSeq)
 
             result match {
               case Success(res) =>
-                res.count(_.iobEntity.contains("B-CITY")) should be(1)
-                res.count(_.iobEntity.contains("I-CITY")) should be(0)
+                //res.foreach(w => println(w.token + " " + w.iobEntity))
+                res.count(_.iobEntity.contains("B_CITY")) should be(1)
+                res.count(_.iobEntity.contains("I_CITY")) should be(0)
               case Failure(ex) =>
                 ex.printStackTrace()
             }

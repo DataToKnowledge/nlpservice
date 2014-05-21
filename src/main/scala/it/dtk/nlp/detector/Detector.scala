@@ -15,6 +15,11 @@ object Detector {
   case class Failure(newsId: String, part: NewsPart, ex: Throwable)
 }
 
+object EntityType extends Enumeration {
+  type EntityType = Value
+  val B_CITY, I_CITY = Value
+}
+
 /**
  * Entry point for detector classes
  *
@@ -22,7 +27,7 @@ object Detector {
  *
  */
 trait Detector {
-
+  
   def detect(sentence: Seq[Word]): Try[Seq[Word]]
 
 }

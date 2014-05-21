@@ -34,7 +34,6 @@ object TreeTagger {
     tagger.setModel("italian-par-linux-3.2-utf8.bin:utf-8")
     tagger
   }
-  
 
   /**
    * Returns a list of tokens with their relative pos-tag
@@ -46,10 +45,12 @@ object TreeTagger {
     val p = Promise[Seq[Word]]()
 
     var tags = Vector.empty[Word]
+    var tokenId = 0
 
     treeTagger.setHandler(new TokenHandler[String] {
       override def token(tok: String, pos: String, lemm: String): Unit = {
-        tags :+= new Word(token = tok, posTag = Option(pos), lemma = Option(lemm))
+        tags :+= Word(token = tok, tokenId = Option(tokenId), posTag = Option(pos), lemma = Option(lemm))
+        tokenId+=1
       }
     })
 
@@ -72,7 +73,7 @@ object TreeTagger {
   def tag(token: String): Future[Option[String]] = {
     val p = Promise[Option[String]]()
 
-    tag(Array(new Word(token))) onComplete {
+    tag(Array(Word(token))) onComplete {
       case Success(s) =>
         p success s.head.posTag
       case Failure(ex) =>
