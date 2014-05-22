@@ -6,6 +6,7 @@ import java.net.URL
 import org.slf4j.LoggerFactory
 import it.dtk.nlp.db.Word
 import scala.util.Try
+import EntityType._
 
 /**
  * Implements recognition of date entities
@@ -13,7 +14,7 @@ import scala.util.Try
  * @author Michele Damiano Torelli <daniele@datatoknowledge.it>
  *
  */
-object DateDetector extends Detector {
+object DateDetector {
 
   /* Maximum number of tokens for a date */
   val OFFSET = 6
@@ -41,8 +42,14 @@ object DateDetector extends Detector {
   val FULL_DATE_R = COMPACT_DATE_R + "|((" + DAY_OF_WEEK_R + "(,)?\\s+)?" + DATE_R + ")"
 
   val log = LoggerFactory.getLogger("DateDetector")
+  
+  def detectNews(words: IndexedSeq[Word]): Try[Seq[Word]] = Try {
+    
+    
+    ???
+  }
 
-  override def detect(sentence: Seq[Word]): Try[Seq[Word]] = Try {
+  def detect(sentence: Seq[Word]): Try[Seq[Word]] = Try {
     var nextIndex = 0
     var result = Vector.empty[Word]
 
@@ -55,7 +62,7 @@ object DateDetector extends Detector {
 
         sentence.slice(dateR.get.head, dateR.get.last + 1).foreach { w =>
           val prevIOB = w.iobEntity
-          val newIOB = if (w == sentence.apply(dateR.get.head)) prevIOB + "B-DATE" else prevIOB + "I-DATE"
+          val newIOB = if (w == sentence.apply(dateR.get.head)) prevIOB + EntityType.B_DATE.toString() else prevIOB + EntityType.B_DATE.toString()
           result :+= w.copy(iobEntity = w.iobEntity :+ newIOB)
         }
         val date = sentence.slice(dateR.get.head, dateR.get.last + 1).map(word => word.token).mkString(sep = " ")

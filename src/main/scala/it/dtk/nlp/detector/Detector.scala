@@ -17,7 +17,7 @@ object Detector {
 
 object EntityType extends Enumeration {
   type EntityType = Value
-  val B_CITY, I_CITY, B_ADDRESS, I_ADDRESS, B_CRIME, I_CRIME = Value
+  val B_CITY, I_CITY, B_ADDRESS, I_ADDRESS, B_CRIME, I_CRIME, B_DATE, I_DATE = Value
 }
 
 /**
