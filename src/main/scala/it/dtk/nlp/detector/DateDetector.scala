@@ -43,7 +43,7 @@ object DateDetector {
 
   val log = LoggerFactory.getLogger("DateDetector")
   
-  def detectNews(words: IndexedSeq[Word]): Try[Seq[Word]] = Try {
+  def detectNew(words: IndexedSeq[Word]): Try[Seq[Word]] = Try {
     
     
     ???
