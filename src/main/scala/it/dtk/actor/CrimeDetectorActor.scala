@@ -28,7 +28,7 @@ class CrimeDetectorActor extends Actor with ActorLogging {
   def receive = {
 
     case Detector.Process(newsId, sentences, part) =>
-      val result = CrimeDetector.detect(sentences)
+      val result = CrimeDetector.detect(sentences.toIndexedSeq)
 
       result match {
         case Success(sents) =>

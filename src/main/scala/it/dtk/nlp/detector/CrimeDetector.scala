@@ -1,16 +1,53 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.db.Word
 import it.dtk.nlp.db.DBManager
 import it.dtk.nlp.db.Crime
 import scala.util.Try
+import it.dtk.nlp.db.Word
+import EntityType._
+import scala.collection.immutable.TreeMap
 
-object CrimeDetector extends Detector {
+object CrimeDetector {
 
-  //  var crimeWords: List[String] = List()
-  //  var result = Vector.empty[Word]
-  val offset = 3
-  override def detect(sentence: Seq[Word]): Try[Seq[Word]] = Try {
+  val range = 3
+
+  def detect(words: IndexedSeq[Word]): Try[Seq[Word]] = Try {
+
+    //create a map of words ordered by tokenId
+    var mapWords = words.map(w => w.tokenId.get -> w).toMap
+    var taggedTokenId = Set.empty[Int]
+
+    def tag(slice: IndexedSeq[Word], pos: Int, value: EntityType): Option[Word] = {
+      val tokenId = slice(pos).tokenId.get
+      mapWords.get(tokenId).map(w => w.copy(iobEntity = w.iobEntity :+ value.toString()))
+    }
+
+    for (sizeNGram <- range to 1 by -1) {
+      val sliding = words.sliding(sizeNGram)
+
+      for (slide <- sliding) {
+        val candidate = slide.map(_.token).mkString(" ")
+
+        DBManager.findCrime(candidate).foreach { city =>
+          for (j <- 0 until slide.size) {
+            val word = if (j == 0)
+              tag(slide, j, EntityType.B_CRIME)
+            else
+              tag(slide, j, EntityType.I_CRIME)
+
+            if (word.isDefined && !taggedTokenId.contains(word.get.tokenId.get)) {
+              mapWords += (word.get.tokenId.get -> word.get)
+              taggedTokenId += word.get.tokenId.get
+            }
+          }
+        }
+      }
+    }
+    //return the sequence of the words where some words are annotated with entity
+    TreeMap(mapWords.toArray: _*).values.toIndexedSeq
+  }
+
+  def detect2(sentence: Seq[Word]): Try[Seq[Word]] = Try {
     var result = Vector.empty[Word]
     var i = 0
     def setEntity(sentence: Seq[Word], start: Int, end: Int): Unit = {
@@ -23,9 +60,9 @@ object CrimeDetector extends Detector {
     }
 
     while (i < sentence.size) {
-      val subSeq = sentence.slice(i, i + offset)
+      val subSeq = sentence.slice(i, i + range)
       var entityBool = false
-      for (j <- offset to 1 by -1) {
+      for (j <- range to 1 by -1) {
         val candidate = subSeq.slice(0, j)
         DBManager.findCrime(getString(candidate).trim) match {
           case Some(token: Crime) =>
