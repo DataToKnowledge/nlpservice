@@ -8,7 +8,7 @@ object AddressDetectorSpec {
 
   val sentence = "Si tratta di un 57enne di Grumello Del Monte arrestato dai carabinieri con l’accusa di detenzione illegale di arma da sparo in Via De Rossi n. 63."
   val address = "Via De Rossi"
-  val city = "Bari"
+  val city = Option("Bari")
 
 }
 
@@ -22,12 +22,13 @@ class AddressDetectorSpec extends BaseTestClass {
   "An AddressDetector" should {
 
     "tag an address" in {
-      whenReady(TreeTagger.tag(TextPreprocessor.apply(address))) {
-        sentence =>
-          val result = AddressDetector.detect(sentence)
+      whenReady(TreeTagger.tag(TextPreprocessor.apply(sentence))) {
+        s =>
+          val result = AddressDetector.detect(s.toIndexedSeq)
           result match {
             case Success(res) =>
-              res.count(_.iobEntity.contains("B-ADDRESS")) should be(1)
+              //res.foreach(w => println(w.token + " " + w.iobEntity))
+              res.count(_.iobEntity.contains(EntityType.B_ADDRESS.toString())) should be(1)
             case Failure(ex) =>
               ex.printStackTrace()
           }
@@ -36,14 +37,15 @@ class AddressDetectorSpec extends BaseTestClass {
     }
 
     "tag an address of a defined city" in {
-      whenReady(TreeTagger.tag(TextPreprocessor.apply(address))) {
-        sentence =>
-          val result = AddressDetector.detect(sentence, city)
+      whenReady(TreeTagger.tag(TextPreprocessor.apply(sentence))) {
+        s =>
+          val result = AddressDetector.detect(s.toIndexedSeq, city)
 
           result match {
             case Success(res) =>
-              res.count(_.iobEntity.contains("B-ADDRESS")) should be(1)
-              res.count(_.iobEntity.contains("I-ADDRESS")) should be(2)
+              //res.foreach(w => println(w.token + " " + w.iobEntity))
+              res.count(_.iobEntity.contains(EntityType.B_ADDRESS.toString())) should be(1)
+              res.count(_.iobEntity.contains(EntityType.I_ADDRESS.toString())) should be(2)
             case Failure(ex) =>
               ex.printStackTrace()
           }

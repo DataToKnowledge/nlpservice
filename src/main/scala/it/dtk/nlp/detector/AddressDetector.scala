@@ -1,18 +1,20 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.db.{Address, DBManager, Word}
+import it.dtk.nlp.db.{ Address, DBManager, Word }
 import org.slf4j.LoggerFactory
 import scala.util.Try
+import EntityType._
+import scala.collection.immutable.TreeMap
 
 /**
  * @author Michele Damiano Torelli <daniele@datatoknowledge.it>
  */
-object AddressDetector extends Detector {
+object AddressDetector {
 
   /**
    * Maximum number of tokens for an address
    */
-  private val RANGE = 4
+  private val range = 4
 
   /**
    * Max range in witch civic number can be matched
@@ -36,24 +38,78 @@ object AddressDetector extends Detector {
     ("circonv\\.", "circonvallazione"),
     ("str|str\\.|sda", "strada"),
     ("ss|s\\.s\\.|", "ss"),
-    ("v\\.", "via")
-  )
+    ("v\\.", "via"))
 
   private val PREFIX_R = "(via|viale|piazza|piazzale|piazzetta|vico|" +
     "corso|contrada|vicolo|largo|numero|circonvallazione|strada|ss){1,1}"
 
   private val log = LoggerFactory.getLogger("AddressDetector")
 
-  override def detect(sentence: Seq[Word]): Try[Seq[Word]] = _detect(sentence, cityName = None)
+  def detect(words: IndexedSeq[Word], cityName: Option[String] = None): Try[Seq[Word]] = Try {
 
-  def detect(sentence: Seq[Word], cityName: String): Try[Seq[Word]] = _detect(sentence, Option(cityName))
+    def normalizeToken(word: Word): Word = {
+      val result = SANIFICATION_R.foldLeft(Option.empty[String]) { (opt, r) =>
+        if (opt.isDefined)
+          opt
+        else if (word.token.matches(r._1))
+          Option(r._2)
+        else
+          opt
+      }
+      if (result.isDefined)
+        word.copy(token = result.get)
+      else word
+    }
 
-  private def _detect(sentence: Seq[Word], cityName: Option[String]): Try[Seq[Word]] = Try {
+    val normalizedWords = words.map(w => normalizeToken(w))
+    
+    //create a map of words ordered by tokenId
+    var mapWords = normalizedWords.map(w => w.tokenId.get -> w).toMap
+    var taggedTokenId = Set.empty[Int]
+
+    def tag(slide: IndexedSeq[Word], pos: Int, value: EntityType): Option[Word] = {
+      val tokenId = slide(pos).tokenId.get
+      mapWords.get(tokenId).map(w => w.copy(iobEntity = w.iobEntity :+ value.toString()))
+    }
+
+    for (sizeNGram <- range to 1 by -1) {
+      val sliding = words.sliding(sizeNGram)
+
+      for (slide <- sliding) {
+
+        if (slide(0).token.matches("(?i)" + PREFIX_R + "$")) {
+          val candidate = slide.map(_.token).mkString(" ")
+
+          DBManager.findAddress(candidate).foreach { address =>
+
+            for (j <- 0 until slide.size) {
+              val word = if (j == 0)
+                tag(slide, j, EntityType.B_ADDRESS)
+              else
+                tag(slide, j, EntityType.I_ADDRESS)
+
+              if (word.isDefined && !taggedTokenId.contains(word.get.tokenId.get)) {
+                mapWords += (word.get.tokenId.get -> word.get)
+                taggedTokenId += word.get.tokenId.get
+              }
+            }
+
+            // TODO: Civic number discovery
+          }
+        }
+      }
+    }
+
+    //return the sequence of the words where some words are annotated with entity
+    TreeMap(mapWords.toArray: _*).values.toIndexedSeq
+  }
+
+  private def _detect2(sentence: Seq[Word], cityName: Option[String]): Try[Seq[Word]] = Try {
     var result = Vector.empty[Word]
 
-    def bumpEndIndex(offset: Int) =  {
-      if (offset + RANGE >= sentence.length) sentence.length - 1
-      else offset + RANGE
+    def bumpEndIndex(offset: Int) = {
+      if (offset + range >= sentence.length) sentence.length - 1
+      else offset + range
     }
 
     def sanitize(token: String): String = {

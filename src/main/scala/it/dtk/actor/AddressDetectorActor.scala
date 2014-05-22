@@ -28,7 +28,7 @@ class AddressDetectorActor extends Actor with ActorLogging {
   def receive = {
 
     case Detector.Process(newsId, sentences, part) =>
-      val result = AddressDetector.detect(sentences)
+      val result = AddressDetector.detect(sentences.toIndexedSeq)
 
       result match {
         case Success(sents) =>

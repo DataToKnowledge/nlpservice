@@ -16,7 +16,7 @@ object TreeTagger {
 
   private val treeTaggerPath = {
     val os = System.getProperty("os.name").toLowerCase
-
+    //println(getClass().getResource("/"))
     if (os.contains("mac")) {
       getClass.getResource("/treetagger/mac").getPath
     } else if (os.contains("linux")) {
