@@ -28,7 +28,7 @@ class AddressDetectorSpec extends BaseTestClass {
           result match {
             case Success(res) =>
               //res.foreach(w => println(w.token + " " + w.iobEntity))
-              res.count(_.iobEntity.contains(EntityType.B_ADDRESS.toString())) should be(1)
+              res.count(_.iobEntity.contains(EntityType.stringValue(EntityType.B_ADDRESS))) should be(1)
             case Failure(ex) =>
               ex.printStackTrace()
           }
@@ -44,8 +44,8 @@ class AddressDetectorSpec extends BaseTestClass {
           result match {
             case Success(res) =>
               //res.foreach(w => println(w.token + " " + w.iobEntity))
-              res.count(_.iobEntity.contains(EntityType.B_ADDRESS.toString())) should be(1)
-              res.count(_.iobEntity.contains(EntityType.I_ADDRESS.toString())) should be(2)
+              res.count(_.iobEntity.contains(EntityType.stringValue(EntityType.B_ADDRESS))) should be(1)
+              res.count(_.iobEntity.contains(EntityType.stringValue(EntityType.I_ADDRESS))) should be(2)
             case Failure(ex) =>
               ex.printStackTrace()
           }

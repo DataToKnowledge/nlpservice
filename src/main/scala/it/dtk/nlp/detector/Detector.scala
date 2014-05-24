@@ -17,7 +17,13 @@ object Detector {
 
 object EntityType extends Enumeration {
   type EntityType = Value
-  val B_CITY, I_CITY, B_ADDRESS, I_ADDRESS, B_CRIME, I_CRIME, B_DATE, I_DATE = Value
+  val B_CITY, I_CITY, B_ADDRESS, I_ADDRESS, B_CRIME, I_CRIME, B_DATE, I_DATE, B_PER, I_PER, B_ORG, I_ORG, B_LOC, I_LOC, B_GPE, I_GPE = Value
+
+  def stringValue(value: EntityType) =
+    value.toString().replace("_", "-")
+
+  def enumValue(str: String): EntityType =
+    EntityType.Value(str.replace("-", "_"))
 }
 
 /**
@@ -27,7 +33,7 @@ object EntityType extends Enumeration {
  *
  */
 trait Detector {
-  
+
   def detect(sentence: Seq[Word]): Try[Seq[Word]]
 
 }

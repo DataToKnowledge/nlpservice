@@ -32,7 +32,7 @@ object CityDetector {
 
     def tag(slice: IndexedSeq[Word], pos: Int, value: EntityType): Option[Word] = {
       val tokenId = slice(pos).tokenId.get
-      mapWords.get(tokenId).map(w => w.copy(iobEntity = w.iobEntity :+ value.toString()))
+      mapWords.get(tokenId).map(w => w.copy(iobEntity = w.iobEntity :+ EntityType.stringValue(value)))
     }
 
     for (sizeNGram <- range to 1 by -1) {

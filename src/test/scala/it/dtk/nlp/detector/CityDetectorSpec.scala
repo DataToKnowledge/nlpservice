@@ -31,8 +31,8 @@ class CityDetectorSpec extends BaseTestClass {
             result match {
               case Success(res) =>
                 //res.foreach(w => println(w.token + " " + w.iobEntity))
-                res.count(_.iobEntity.contains(EntityType.B_CITY.toString())) should be(1)
-                res.count(_.iobEntity.contains(EntityType.I_CITY.toString())) should be(2)
+                res.count(_.iobEntity.contains(EntityType.stringValue(EntityType.B_CITY))) should be(1)
+                res.count(_.iobEntity.contains(EntityType.stringValue(EntityType.I_CITY))) should be(2)
               case Failure(ex) =>
                 ex.printStackTrace()
             }
@@ -48,8 +48,8 @@ class CityDetectorSpec extends BaseTestClass {
             result match {
               case Success(res) =>
                 //res.foreach(w => println(w.token + " " + w.iobEntity))
-                res.count(_.iobEntity.contains(EntityType.B_CITY.toString())) should be(1)
-                res.count(_.iobEntity.contains(EntityType.I_CITY.toString())) should be(0)
+                res.count(_.iobEntity.contains(EntityType.stringValue(EntityType.B_CITY))) should be(1)
+                res.count(_.iobEntity.contains(EntityType.stringValue(EntityType.I_CITY))) should be(0)
               case Failure(ex) =>
                 ex.printStackTrace()
             }

@@ -66,10 +66,11 @@ object AddressDetector {
     //create a map of words ordered by tokenId
     var mapWords = normalizedWords.map(w => w.tokenId.get -> w).toMap
     var taggedTokenId = Set.empty[Int]
+    //var entities = Vector.empty[String]
 
     def tag(slide: IndexedSeq[Word], pos: Int, value: EntityType): Option[Word] = {
       val tokenId = slide(pos).tokenId.get
-      mapWords.get(tokenId).map(w => w.copy(iobEntity = w.iobEntity :+ value.toString()))
+      mapWords.get(tokenId).map(w => w.copy(iobEntity = w.iobEntity :+ EntityType.stringValue(value)))
     }
 
     for (sizeNGram <- range to 1 by -1) {
@@ -81,6 +82,8 @@ object AddressDetector {
           val candidate = slide.map(_.token).mkString(" ")
 
           DBManager.findAddress(candidate).foreach { address =>
+            
+            var entity = ""
 
             for (j <- 0 until slide.size) {
               val word = if (j == 0)
@@ -91,7 +94,9 @@ object AddressDetector {
               if (word.isDefined && !taggedTokenId.contains(word.get.tokenId.get)) {
                 mapWords += (word.get.tokenId.get -> word.get)
                 taggedTokenId += word.get.tokenId.get
+                //entity += " " + word.get.token
               }
+              //entities = entities :+ entity
             }
 
             // TODO: Civic number discovery
@@ -102,75 +107,6 @@ object AddressDetector {
 
     //return the sequence of the words where some words are annotated with entity
     TreeMap(mapWords.toArray: _*).values.toIndexedSeq
-  }
-
-  private def _detect2(sentence: Seq[Word], cityName: Option[String]): Try[Seq[Word]] = Try {
-    var result = Vector.empty[Word]
-
-    def bumpEndIndex(offset: Int) = {
-      if (offset + range >= sentence.length) sentence.length - 1
-      else offset + range
-    }
-
-    def sanitize(token: String): String = {
-      SANIFICATION_R.foreach(r => if (token.matches(r._1)) return r._2)
-      token
-    }
-
-    var startIndex: Int = 0
-    var endIndex = bumpEndIndex(startIndex)
-
-    while (startIndex < sentence.length) {
-      // Sanitize address prefix
-      val sanitizedPrefix = sanitize(sentence.apply(startIndex).token)
-
-      // If prefix is Via, Corso, Piazza, ...
-      if (sanitizedPrefix.matches("(?i)" + PREFIX_R + "$")) {
-        val address = sentence.slice(startIndex, endIndex + 1).map(word => word.token).mkString(sep = " ")
-
-        DBManager.findAddress(address, cityName) match {
-          // Address found on DB
-          case Some(res: Address) =>
-            log.info(s"Found address: ${res.street} (City: ${res.city.getOrElse("None")})")
-
-            val currentWord = sentence.apply(startIndex)
-            result :+= currentWord.copy(iobEntity = currentWord.iobEntity :+ "B-ADDRESS")
-
-            while (startIndex < endIndex) {
-              startIndex += 1
-              val nextWord = sentence.apply(startIndex)
-              result :+= nextWord.copy(iobEntity = nextWord.iobEntity :+ "I-ADDRESS")
-            }
-
-            // TODO: Civic number discovery
-
-            startIndex += 1
-            endIndex = bumpEndIndex(startIndex)
-
-          // No address found on DB
-          case None =>
-            log.debug(s"Cannot find an address named: $address")
-            // Recalibrating window
-            if (startIndex < endIndex) {
-              endIndex -= 1
-            } else {
-              result :+= sentence.apply(startIndex)
-
-              startIndex += 1
-              endIndex = bumpEndIndex(startIndex)
-            }
-        }
-      } else {
-        // Slide window
-        result :+= sentence.apply(startIndex)
-
-        startIndex += 1
-        endIndex += 1
-      }
-
-    }
-
-    result.toSeq
   }
 
 }

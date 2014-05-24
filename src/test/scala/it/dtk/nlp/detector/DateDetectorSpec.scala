@@ -27,8 +27,8 @@ class DateDetectorSpec extends FlatSpec with Matchers with Futures with ScalaFut
         results match {
           case Success(res) =>
             res.size should be(words.size)
-            res.count(w => w.iobEntity.contains(EntityType.B_DATE.toString())) should be(4)
-            res.count(w => w.iobEntity.contains(EntityType.I_DATE.toString())) should be(11)
+            res.count(w => w.iobEntity.contains(EntityType.stringValue(EntityType.B_DATE))) should be(4)
+            res.count(w => w.iobEntity.contains(EntityType.stringValue(EntityType.I_DATE))) should be(11)
           case Failure(ex) =>
             ex.printStackTrace()
         }

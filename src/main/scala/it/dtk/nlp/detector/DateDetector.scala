@@ -42,10 +42,9 @@ object DateDetector {
   val FULL_DATE_R = COMPACT_DATE_R + "|((" + DAY_OF_WEEK_R + "(,)?\\s+)?" + DATE_R + ")"
 
   val log = LoggerFactory.getLogger("DateDetector")
-  
+
   def detectNew(words: IndexedSeq[Word]): Try[Seq[Word]] = Try {
-    
-    
+
     ???
   }
 
@@ -62,7 +61,9 @@ object DateDetector {
 
         sentence.slice(dateR.get.head, dateR.get.last + 1).foreach { w =>
           val prevIOB = w.iobEntity
-          val newIOB = if (w == sentence.apply(dateR.get.head)) prevIOB + EntityType.B_DATE.toString() else prevIOB + EntityType.B_DATE.toString()
+          val newIOB = if (w == sentence.apply(dateR.get.head))
+            prevIOB + EntityType.stringValue(EntityType.B_DATE)
+          else prevIOB + EntityType.stringValue(EntityType.B_DATE)
           result :+= w.copy(iobEntity = w.iobEntity :+ newIOB)
         }
         val date = sentence.slice(dateR.get.head, dateR.get.last + 1).map(word => word.token).mkString(sep = " ")
@@ -73,7 +74,6 @@ object DateDetector {
         nextIndex += 1
       }
     }
-
     result.toSeq
   }
 
@@ -247,9 +247,10 @@ object DateDetector {
     val sIndex = words.drop(startIndex).indexWhere(word => isValidDateToken(word.token))
     val eIndex = if ((sIndex + OFFSET) > words.size) words.size else sIndex + OFFSET
 
-    val dates = for (i <- eIndex until sIndex by -1;
-                     dateCandidate = words.slice(startIndex + sIndex, startIndex + i).map(_.token).mkString(sep = " ")
-                     if isValidDate(dateCandidate)) yield Range(startIndex + sIndex, startIndex + i)
+    val dates = for (
+      i <- eIndex until sIndex by -1;
+      dateCandidate = words.slice(startIndex + sIndex, startIndex + i).map(_.token).mkString(sep = " ") if isValidDate(dateCandidate)
+    ) yield Range(startIndex + sIndex, startIndex + i)
 
     if (dates.nonEmpty) Some(dates.head)
     else None
