@@ -9,6 +9,7 @@ import akka.actor.ActorRef
 import scala.annotation.tailrec
 import akka.actor.Props
 import akka.routing.RoundRobinPool
+import it.dtk.nlp.detector.EntityType
 
 object CollectionFillerActor {
 
@@ -16,9 +17,9 @@ object CollectionFillerActor {
   case class Process(news: Seq[News], sender: ActorRef)
   case class Processed(newsProcessed: Seq[News], send: ActorRef)
   case class ProcessedSingle(news: News, send: ActorRef)
-  
+
   def props = Props[CollectionFillerActor]
-  
+
   def routerProps(nrOfInstances: Int = 5) =
     RoundRobinPool(nrOfInstances).props(props)
 }
@@ -28,10 +29,10 @@ class CollectionFillerActor extends Actor with ActorLogging {
   import CollectionFillerActor._
 
   def receive = {
-    
-    case ProcessSingle(news,send) =>
+
+    case ProcessSingle(news, send) =>
       val procNews = process(news)
-      sender ! ProcessedSingle(procNews,send)
+      sender ! ProcessedSingle(procNews, send)
 
     case Process(news, send) =>
       val processedNews = news.map(n => process(n))
@@ -39,93 +40,90 @@ class CollectionFillerActor extends Actor with ActorLogging {
   }
 
   def process(news: News): News = {
-    val crimeCollection = fillCollection(news.nlpTitle, "B-CRIME", "I-CRIME") ++ fillCollection(news.nlpSummary, "B-CRIME", "I-CRIME") ++
-      fillCollection(news.nlpCorpus, "B-CRIME", "I-CRIME")
-    val addressCollection = fillCollection(news.nlpTitle, "B-ADDRESS", "I-ADDRESS") ++ fillCollection(news.nlpSummary, "B-ADDRESS", "I-ADDRESS") ++
-      fillCollection(news.nlpCorpus, "B-ADDRESS", "I-ADDRESS")
-    val personCollection = fillCollection(news.nlpTitle, "B-PER", "I-PER") ++ fillCollection(news.nlpSummary, "B-PER", "I-PER") ++
-      fillCollection(news.nlpCorpus, "B-PER", "I-PER")
-    val locationCollection = fillCollection(news.nlpTitle, "B-CITY", "I-CITY") ++ fillCollection(news.nlpSummary, "B-CITY", "I-CITY") ++
-      fillCollection(news.nlpCorpus, "B-CITY", "I-CITY")
-    val dateCollection = fillCollection(news.nlpTitle, "B-DATE", "I-DATE") ++ fillCollection(news.nlpSummary, "B-DATE", "I-DATE") ++
-      fillCollection(news.nlpCorpus, "B-DATE", "I-DATE")
-    val organizationCollection = fillCollection(news.nlpTitle, "B-ORG", "I-ORG") ++ fillCollection(news.nlpSummary, "B-ORG", "I-ORG") ++
-      fillCollection(news.nlpCorpus, "B-ORG", "I-ORG") ++ fillCollection(news.nlpTitle, "B-GPE", "I-GPE") ++ fillCollection(news.nlpSummary, "B-GPE", "I-GPE") ++
-      fillCollection(news.nlpCorpus, "B-GPE", "I-GPE")
+    
+    val minLenght = (x: String) => x.length() > 3
+    val acceptAll = (x: String) => true
+    val startWithUpperCase = (x: String) => x(0).isUpper
+    
+    val crimeCollection = fillCollection(news.nlpTitle, EntityType.stringValue(EntityType.B_CRIME), EntityType.stringValue(EntityType.I_CRIME), minLenght, acceptAll) ++
+      fillCollection(news.nlpSummary, EntityType.stringValue(EntityType.B_CRIME), EntityType.stringValue(EntityType.I_CRIME), minLenght, acceptAll) ++
+      fillCollection(news.nlpCorpus, EntityType.stringValue(EntityType.B_CRIME), EntityType.stringValue(EntityType.I_CRIME), minLenght, acceptAll)
 
-    news.copy(crimes = Option(crimeCollection), locations = Option(locationCollection),
+    val addressCollection = fillCollection(news.nlpTitle, EntityType.stringValue(EntityType.B_ADDRESS), EntityType.stringValue(EntityType.I_ADDRESS), minLenght, acceptAll) ++
+      fillCollection(news.nlpSummary, EntityType.stringValue(EntityType.B_ADDRESS), EntityType.stringValue(EntityType.I_ADDRESS), minLenght, acceptAll) ++
+      fillCollection(news.nlpCorpus, EntityType.stringValue(EntityType.B_ADDRESS), EntityType.stringValue(EntityType.I_ADDRESS), minLenght, acceptAll)
+
+    val personCollection = fillCollection(news.nlpTitle, EntityType.stringValue(EntityType.B_PER), EntityType.stringValue(EntityType.I_PER), minLenght, startWithUpperCase) ++
+      fillCollection(news.nlpSummary, EntityType.stringValue(EntityType.B_PER), EntityType.stringValue(EntityType.I_PER), minLenght, startWithUpperCase) ++
+      fillCollection(news.nlpCorpus, EntityType.stringValue(EntityType.B_PER), EntityType.stringValue(EntityType.I_PER), minLenght, startWithUpperCase)
+
+    val locationCollection = fillCollection(news.nlpTitle, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase) ++
+      fillCollection(news.nlpSummary, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase) ++
+      fillCollection(news.nlpCorpus, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase) ++
+      fillCollection(news.nlpTitle, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase) ++
+      fillCollection(news.nlpSummary, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase) ++
+      fillCollection(news.nlpCorpus, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase)
+
+    val dateCollection = fillCollection(news.nlpTitle, EntityType.stringValue(EntityType.B_DATE), EntityType.stringValue(EntityType.I_DATE), minLenght, acceptAll) ++
+      fillCollection(news.nlpSummary, EntityType.stringValue(EntityType.B_DATE), EntityType.stringValue(EntityType.I_DATE), minLenght, acceptAll) ++
+      fillCollection(news.nlpCorpus, EntityType.stringValue(EntityType.B_DATE), EntityType.stringValue(EntityType.I_DATE), minLenght, acceptAll)
+
+    val organizationCollection = fillCollection(news.nlpTitle, EntityType.stringValue(EntityType.B_ORG), EntityType.stringValue(EntityType.I_ORG),minLenght, startWithUpperCase) ++
+      fillCollection(news.nlpSummary, EntityType.stringValue(EntityType.B_ORG), EntityType.stringValue(EntityType.I_ORG),minLenght, startWithUpperCase) ++
+      fillCollection(news.nlpCorpus, EntityType.stringValue(EntityType.B_ORG), EntityType.stringValue(EntityType.I_ORG),minLenght, startWithUpperCase)
+
+      //crimes cannot contain locations
+      //val cleanedCrimes = crimeCollection.filter(c => !locationCollection.exists(l => l.equals(c)))
+      val cleanedCrimes = crimeCollection.diff(locationCollection.union(personCollection))
+      
+      //organizations cannot contain cities
+      val cleanedOrganizations = organizationCollection.diff(locationCollection.union(personCollection))
+      
+      //persons cannot be organizations or cities
+      val cleanedPersons = personCollection.diff(locationCollection)
+      
+    news.copy(crimes = Option(cleanedCrimes), locations = Option(locationCollection),
       addresses = Option(addressCollection), dates = Option(dateCollection),
-      organizations = Option(organizationCollection), persons = Option(personCollection))
+      organizations = Option(cleanedOrganizations), persons = Option(cleanedPersons))
   }
 
-  def fillCollection(words: Option[Seq[Word]], bEncoding: String, iEncoding: String): Seq[String] = {
+  def fillCollection(words: Option[Seq[Word]], bEncoding: String, iEncoding: String,
+      lenghtFilter: String => Boolean, valueFilter: String => Boolean): Seq[String] = {
 
     @tailrec
-    def findCollection0(acc: Seq[String], lastElem: Option[String], words: Seq[Word]): Seq[String] = {
+    def findCollection0(acc: Seq[String], current: Option[String], words: Seq[Word]): Seq[String] = {
 
       if (words.isEmpty)
-        if (lastElem.isDefined) acc.+:(lastElem.get) else acc
+        if (current.isDefined) acc.+:(current.get) else acc
       else {
         val h = words.head
         val (list, newElem) = h match {
           //case is a bEncoding
           case w if (w.iobEntity.contains(bEncoding)) =>
-            val list = if (lastElem.isDefined) acc.+:(lastElem.get) else acc
+            val list = if (current.isDefined) acc.+:(current.get) else acc
             val newElem = Option(h.token)
             (list, newElem) //return the element to add to the collection and the new element
 
           //case is a iEncoding
           case w if (w.iobEntity.contains(iEncoding)) =>
-            val updateElem = lastElem.map(_ + " " + h.token)
+            val updateElem = current.map(t => s"$t ${h.token}")
             (acc, updateElem) //return the element to add to the collection and the new element
 
           case _ =>
-             val list = if (lastElem.isDefined) acc.+:(lastElem.get) else acc
+            val list = if (current.isDefined) acc.+:(current.get) else acc
             (list, Option.empty[String])
         }
         findCollection0(list, newElem, words.tail)
       }
     }
 
-    if (words.isEmpty)
+    val result = if (words.isEmpty)
       Seq.empty[String]
     else {
       val filteredWords = words.get.filter(_.iobEntity.size > 0)
       findCollection0(Seq.empty[String], Option.empty[String], filteredWords).reverse
     }
+
+    result.filter(lenghtFilter).filter(valueFilter)
   }
-
-  def fillCollection2(sentence: Seq[Word], bEncoding: String, eEncoding: String): Seq[String] = {
-
-    var collection = Seq.empty[String]
-    //val nlpCorpus = news.nlpCorpus.get
-    var word: Option[String] = None
-    sentence.foreach { f =>
-      if (f.iobEntity.contains(bEncoding)) {
-        //se il lemma non esiste viene messo il token
-        f.lemma match {
-          case Some(lemma) => word = Some(lemma)
-          case None => word = Some(f.token)
-        }
-
-      } else if (f.iobEntity.contains("I-CRIME")) {
-        f.lemma match {
-          case Some(lemma) => word.get.concat(" " + lemma)
-          case None => word.get.concat(" " + f.token)
-        }
-      } else {
-        word match {
-          case Some(w) => {
-            collection = collection :+ w
-            word = None
-          }
-          case None =>
-        }
-
-      }
-
-    }
-    collection
-  }
-
 }
