@@ -11,6 +11,7 @@ import it.dtk.nlp.detector._
 import it.dtk.nlp.db.Word
 import akka.actor.ActorRef
 import akka.actor.PoisonPill
+import scala.util.Success
 
 object Controller {
   case class Process(news: News)
@@ -34,7 +35,7 @@ class Controller extends Actor with ActorLogging {
   //  val tokenizerActor = context.actorOf(TokenizerActor.routerProps(), "tokenizerRouter")
 
   val textProRouter = context.actorOf(FromConfig.props(Props[TextProActor]), "textProActorPool")
-  val collectionFilterActor = context.actorOf(CollectionFillerActor.routerProps(5),"collectionFilterPool")
+  val collectionFilterActor = context.actorOf(CollectionFillerActor.routerProps(5), "collectionFilterPool")
 
   def receive = {
     case Process(news) =>
@@ -59,7 +60,7 @@ class Controller extends Actor with ActorLogging {
 
     case NamedEntitiesExtractor.Processed(news) =>
       sender ! PoisonPill
-      
+
       val send = mapNewsIdSender.get(news.id)
       if (send.isDefined)
         collectionFilterActor ! CollectionFillerActor.ProcessSingle(news, send.get)
@@ -118,31 +119,44 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
     processing += 4
   }
 
+  //process date from url
+  dateActor ! DateDetectorActor.ExtractDate(news.urlNews)
+  processing += 1
+
   def receive = {
+
     case Detector.Result(news.id, words, NewsPart.Title) =>
       val merge = mergeIOBEntity(news.nlpTitle.get, words)
       processedNews = processedNews.copy(nlpTitle = Option(merge))
-      processing -= 1
-      if (processing == 0)
-        context.parent ! Processed(processedNews)
+      decreaseAndCheck()
 
     case Detector.Result(news.id, words, NewsPart.Summary) =>
       val merge = mergeIOBEntity(news.nlpSummary.get, words)
       processedNews = processedNews.copy(nlpSummary = Option(merge))
-      processing -= 1
-      if (processing == 0)
-        context.parent ! Processed(processedNews)
+      decreaseAndCheck()
 
     case Detector.Result(news.id, words, NewsPart.Corpus) =>
       val merge = mergeIOBEntity(news.nlpCorpus.get, words)
       processedNews = processedNews.copy(nlpCorpus = Option(merge))
-      processing -= 1
-      if (processing == 0)
-        context.parent ! Processed(processedNews)
+      decreaseAndCheck()
+
+    case DateDetectorActor.ExtractedDate(date) =>
+
+      date match {
+        case Some(d) =>
+          val updateDates = processedNews.dates.map(_ :+ d.toString())
+          processedNews = processedNews.copy(dates = updateDates)
+        case None =>
+      }
+      decreaseAndCheck()
 
     case Detector.Failure(newsId, part, ex) =>
       log.error("Detector Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
-      processing -= 1
+      decreaseAndCheck()
+  }
+  
+  def decreaseAndCheck(): Unit = {
+     processing -= 1
       if (processing == 0)
         context.parent ! Processed(processedNews)
   }

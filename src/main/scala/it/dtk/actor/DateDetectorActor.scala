@@ -6,6 +6,7 @@ import akka.actor.Props
 import it.dtk.nlp.detector.Detector
 import scala.util._
 import akka.routing.RoundRobinPool
+import org.joda.time.DateTime
 
 object DateDetectorActor {
   def props = Props(classOf[DateDetectorActor])
@@ -16,6 +17,9 @@ object DateDetectorActor {
    */
   def routerProps(nrOfInstances: Int = 10) =
     RoundRobinPool(nrOfInstances).props(props)
+    
+    case class ExtractDate(url: String)
+    case class ExtractedDate(date: Option[DateTime])
 }
 
 /**

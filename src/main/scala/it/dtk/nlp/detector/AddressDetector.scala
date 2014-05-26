@@ -44,7 +44,7 @@ object AddressDetector {
     "corso|contrada|vicolo|largo|numero|circonvallazione|strada|ss){1,1}"
 
   private val log = LoggerFactory.getLogger("AddressDetector")
-
+  
   def detect(words: IndexedSeq[Word], cityName: Option[String] = None): Try[Seq[Word]] = Try {
 
     def normalizeToken(word: Word): Word = {
