@@ -26,6 +26,8 @@ private object TextProCaller {
   private val baseCommand = envPath + "textpro.pl -l ita -c token+tokenid+tokenstart+tokenend+pos+sentence+lemma+comp_morpho+keywords+entity+chunk -y -verbose -o "
 
   def tagText(text: String): Try[String] = {
+    
+    require(text.length() > 0)
 
     //create input file
     val inputfile = s"file$count"
