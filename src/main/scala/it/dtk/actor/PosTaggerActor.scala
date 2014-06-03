@@ -6,7 +6,6 @@ import it.dtk.nlp.TreeTagger
 import scala.util.{ Failure, Success }
 import scala.concurrent.ExecutionContext.Implicits.global
 import it.dtk.nlp.db.Word
-import akka.routing.RoundRobinRouter
 import it.dtk.nlp.detector.NewsPart._
 import akka.routing.RoundRobinPool
 

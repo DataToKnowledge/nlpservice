@@ -3,7 +3,6 @@ package it.dtk.actor
 import akka.actor.{ Actor, ActorLogging }
 import it.dtk.nlp.TextPreprocessor
 import akka.actor.Props
-import akka.routing.RoundRobinRouter
 import it.dtk.nlp.detector.NewsPart._
 import akka.routing.RoundRobinPool
 

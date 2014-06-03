@@ -20,8 +20,7 @@ object MongoDBMapper {
       "comMorpho" -> word.compMorpho,
       "stem" -> word.stem,
       "iobEntity" -> word.iobEntity,
-      "chunk" -> word.chunk
-    )
+      "chunk" -> word.chunk)
   }
 
   implicit def dBOToWord(dbo: DBObject): Word = {
@@ -40,11 +39,6 @@ object MongoDBMapper {
       dbo._id.map(_.toString()).get)
   }
 
-//  implicit def sentenceToDBO(sentence: Seq[Word]): DBObject = {
-//    DBObject(
-//      "words" -> sentence.map(wordToDBO)
-//    )
-//  }
 
   implicit def dBOToSentence(dbo: DBObject): Seq[Word] = {
     val seqDBO = dbo.getAs[Seq[DBObject]]("words")
@@ -67,8 +61,7 @@ object MongoDBMapper {
       dbo.getAs[String]("metaDescription"),
       dbo.getAs[String]("metaKeyword"),
       dbo.getAs[String]("canonicalUrl"),
-      dbo.getAs[String]("topImage")
-    )
+      dbo.getAs[String]("topImage"))
   }
 
   implicit def newsToDBO(news: News): DBObject = {
@@ -85,35 +78,38 @@ object MongoDBMapper {
       "metaKeyword" -> news.metaKeyword,
       "canonicalUrl" -> news.canonicalUrl,
       "topImage" -> news.topImage,
-      "nlpTitle" -> news.nlpTitle.map(_.map(wordToDBO(_))),
-      "nlpSummary" -> news.nlpSummary.map(_.map(wordToDBO(_))),
-      "nlpCorpus" -> news.nlpCorpus.map(_.map(wordToDBO(_))),
-      "crimes" -> news.crimes,
-      "addresses" -> news.addresses,
-      "persons" -> news.persons,
-      "locations" -> news.locations,
-      "dates" -> news.dates,
-      "organizations" -> news.organizations,
-      //FIXME remember to restore the dots
-      "nlpTags" -> news.nlpTags.map(_.map(kw => (kw._1.replace(".", "_dot_") -> kw._2)))
-    )
+      "nlp" -> news.nlp.map(nlpToDBO))
   }
+
+  implicit def nlpToDBO(nlp: Nlp): DBObject =
+    DBObject(
+      "_id" -> new ObjectId(),
+      "title" -> nlp.title.map(_.map(wordToDBO(_))),
+      "summary" -> nlp.summary.map(_.map(wordToDBO(_))),
+      "corpus" -> nlp.corpus.map(_.map(wordToDBO(_))),
+      "description" -> nlp.description.map(_.map(wordToDBO(_))), 
+      "crimes" -> nlp.crimes,
+      "addresses" -> nlp.addresses,
+      "persons" -> nlp.persons,
+      "locations" -> nlp.locations,
+      "dates" -> nlp.dates,
+      "organizations" -> nlp.organizations,
+      //FIXME remember to restore the dots
+      "nlpTags" -> nlp.nlpTags.map(_.map(kw => (kw._1.replace(".", "_dot_") -> kw._2))))
 
   implicit def dBOtoLemma(dbo: DBObject): Lemma = {
     Lemma(
       dbo._id.map(_.toString).get,
       dbo.getAs[String]("word").get,
       dbo.getAs[String]("lemma"),
-      dbo.getAs[String]("features")
-    )
+      dbo.getAs[String]("features"))
   }
 
-  implicit  def lemmaToDBO(lemma: Lemma): DBObject = {
+  implicit def lemmaToDBO(lemma: Lemma): DBObject = {
     DBObject(
       "word" -> lemma.word,
       "lemma" -> lemma.lemma,
-      "features" -> lemma.features
-    )
+      "features" -> lemma.features)
   }
 
   implicit def dBOtoCity(dbo: DBObject): City = {
@@ -125,8 +121,7 @@ object MongoDBMapper {
       dbo.getAs[String]("province_code"),
       dbo.getAs[String]("region"),
       dbo.getAs[String]("region_code"),
-      dbo.getAs[String]("state")
-    )
+      dbo.getAs[String]("state"))
   }
 
   implicit def cityToDBO(city: City): DBObject = {
@@ -137,8 +132,7 @@ object MongoDBMapper {
       "province_code" -> city.province_code,
       "region" -> city.region,
       "region_code" -> city.region_code,
-      "state" -> city.state
-    )
+      "state" -> city.state)
   }
 
   implicit def dBOtoCrime(dbo: DBObject): Crime = {
@@ -147,8 +141,7 @@ object MongoDBMapper {
       dbo.getAs[String]("word").get,
       dbo.getAs[String]("lemma"),
       dbo.getAs[String]("stem"),
-      dbo.getAs[String]("tipo")
-    )
+      dbo.getAs[String]("tipo"))
   }
 
   implicit def crimeToDBO(crime: Crime): DBObject = {
@@ -156,8 +149,7 @@ object MongoDBMapper {
       "word" -> crime.word,
       "lemma" -> crime.lemma,
       "stem" -> crime.stem,
-      "type" -> crime.tipo
-    )
+      "type" -> crime.tipo)
   }
 
   implicit def dBOtoAddress(dbo: DBObject): Address = {
@@ -168,8 +160,7 @@ object MongoDBMapper {
       dbo.getAs[String]("city"),
       dbo.getAs[String]("province"),
       dbo.getAs[String]("state"),
-      dbo.getAs[String]("region")
-    )
+      dbo.getAs[String]("region"))
   }
 
 }

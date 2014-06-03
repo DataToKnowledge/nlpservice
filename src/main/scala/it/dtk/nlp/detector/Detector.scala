@@ -5,15 +5,9 @@ import scala.util.Try
 
 object NewsPart extends Enumeration {
   type NewsPart = Value
-  val Title, Summary, Corpus = Value
+  val Title, Summary, Corpus, Description = Value
 }
 
-object Detector {
-  import NewsPart._
-  case class Process(newsId: String, sentences: Seq[Word], value: NewsPart)
-  case class Result(newsId: String, sentences: Seq[Word], value: NewsPart)
-  case class Failure(newsId: String, part: NewsPart, ex: Throwable)
-}
 
 object EntityType extends Enumeration {
   type EntityType = Value
@@ -24,16 +18,4 @@ object EntityType extends Enumeration {
 
   def enumValue(str: String): EntityType =
     EntityType.Value(str.replace("-", "_"))
-}
-
-/**
- * Entry point for detector classes
- *
- * @author Michele Damiano Torelli <daniele@datatoknowledge.it>
- *
- */
-trait Detector {
-
-  def detect(sentence: Seq[Word]): Try[Seq[Word]]
-
 }

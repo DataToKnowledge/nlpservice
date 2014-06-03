@@ -12,6 +12,7 @@ import it.dtk.nlp.db.Word
 import akka.actor.ActorRef
 import akka.actor.PoisonPill
 import scala.util.Success
+import it.dtk.nlp.detector.NewsPart._
 
 object Controller {
   case class Process(news: News)
@@ -38,6 +39,7 @@ class Controller extends Actor with ActorLogging {
   val collectionFilterActor = context.actorOf(CollectionFillerActor.routerProps(5), "collectionFilterPool")
 
   def receive = {
+
     case Process(news) =>
       log.info("processing news with title {}", news.title.getOrElse(news.id))
       mapNewsIdSender += (news.id -> sender)
@@ -88,80 +90,126 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
   import NamedEntitiesExtractor._
 
   var processing = 0
-  var processedNews = news
+  val processedNews = news
+  var processedNlp = news.nlp.get
 
   val addressActor = context.actorOf(AddressDetectorActor.props, s"addressActor$id")
   val cityActor = context.actorOf(CityDetectorActor.props, s"cityActor$id")
   val crimeActor = context.actorOf(CrimeDetectorActor.props, s"crimeActor$id")
   val dateActor = context.actorOf(DateDetectorActor.props, s"dateActor$id")
 
-  if (news.nlpTitle.isDefined) {
-    addressActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
-    cityActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
-    crimeActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
-    dateActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Title)
-    processing += 4
-  }
+  news.nlp.foreach { nlp =>
 
-  if (news.nlpSummary.isDefined) {
-    addressActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Summary)
-    cityActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Summary)
-    crimeActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Summary)
-    dateActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Summary)
-    processing += 4
-  }
+    nlp.title.foreach { title =>
+      addressActor ! AddressDetectorActor.Process(news.id, title, NewsPart.Title)
+      cityActor ! CityDetectorActor.Process(news.id, title, NewsPart.Title)
+      crimeActor ! CrimeDetectorActor.Process(news.id, title, NewsPart.Title)
+      dateActor ! DateDetectorActor.Process(news.id, title, NewsPart.Title)
+      processing += 4
+    }
 
-  if (news.nlpCorpus.isDefined) {
-    addressActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Corpus)
-    cityActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Corpus)
-    crimeActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Corpus)
-    dateActor ! Detector.Process(news.id, news.nlpTitle.get, NewsPart.Corpus)
-    processing += 4
-  }
+    nlp.summary.foreach { summary =>
+      addressActor ! AddressDetectorActor.Process(news.id, summary, NewsPart.Summary)
+      cityActor ! CityDetectorActor.Process(news.id, summary, NewsPart.Summary)
+      crimeActor ! CrimeDetectorActor.Process(news.id, summary, NewsPart.Summary)
+      dateActor ! DateDetectorActor.Process(news.id, summary, NewsPart.Summary)
+      processing += 4
+    }
 
-  //process date from url
-  dateActor ! DateDetectorActor.ExtractDate(news.urlNews)
-  processing += 1
+    nlp.corpus.foreach { corpus =>
+      addressActor ! AddressDetectorActor.Process(news.id, corpus, NewsPart.Corpus)
+      cityActor ! CityDetectorActor.Process(news.id, corpus, NewsPart.Corpus)
+      crimeActor ! CrimeDetectorActor.Process(news.id, corpus, NewsPart.Corpus)
+      dateActor ! DateDetectorActor.Process(news.id, corpus, NewsPart.Corpus)
+      processing += 4
+    }
+
+    //process date from url
+    dateActor ! DateDetectorActor.ExtractDate(news.urlNews)
+    processing += 1
+
+    //extract named entities from meta description
+    nlp.description.foreach { description =>
+
+      addressActor ! AddressDetectorActor.Process(news.id, description, NewsPart.Description)
+      cityActor ! CityDetectorActor.Process(news.id, description, NewsPart.Description)
+      crimeActor ! CrimeDetectorActor.Process(news.id, description, NewsPart.Description)
+      dateActor ! DateDetectorActor.Process(news.id, description, NewsPart.Description)
+      processing += 4
+    }
+
+  }
 
   def receive = {
 
-    case Detector.Result(news.id, words, NewsPart.Title) =>
-      val merge = mergeIOBEntity(news.nlpTitle.get, words)
-      processedNews = processedNews.copy(nlpTitle = Option(merge))
+    case AddressDetectorActor.Result(news.id, words, part) =>
+      updateData(words, part)
+
+    case CityDetectorActor.Result(news.id, words, part) =>
+      updateData(words, part)
+
+    case CrimeDetectorActor.Result(news.id, words, part) =>
+      updateData(words, part)
+
+    case DateDetectorActor.Result(news.id, words, part) =>
+      updateData(words, part)
+
+    case AddressDetectorActor.Failed(newsId, part, ex) =>
+      log.error("AddressDetectorActor Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
       decreaseAndCheck()
 
-    case Detector.Result(news.id, words, NewsPart.Summary) =>
-      val merge = mergeIOBEntity(news.nlpSummary.get, words)
-      processedNews = processedNews.copy(nlpSummary = Option(merge))
+    case CityDetectorActor.Failed(newsId, part, ex) =>
+      log.error("CityDetectorActor Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
       decreaseAndCheck()
 
-    case Detector.Result(news.id, words, NewsPart.Corpus) =>
-      val merge = mergeIOBEntity(news.nlpCorpus.get, words)
-      processedNews = processedNews.copy(nlpCorpus = Option(merge))
+    case CrimeDetectorActor.Failed(newsId, part, ex) =>
+      log.error("CrimeDetectorActor Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
+      decreaseAndCheck()
+
+    case DateDetectorActor.Failed(newsId, part, ex) =>
+      log.error("DateDetectorActor Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
       decreaseAndCheck()
 
     case DateDetectorActor.ExtractedDate(date) =>
 
       date match {
         case Some(d) =>
-          val updateDates = processedNews.dates.map(_ :+ d.toString())
-          processedNews = processedNews.copy(dates = updateDates)
+          val updateDates = processedNlp.dates.map(_ :+ d.toString())
+          processedNlp = processedNlp.copy(dates = updateDates)
         case None =>
       }
       decreaseAndCheck()
 
-    case Detector.Failure(newsId, part, ex) =>
-      log.error("Detector Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
-      decreaseAndCheck()
-  }
-  
-  def decreaseAndCheck(): Unit = {
-     processing -= 1
-      if (processing == 0)
-        context.parent ! Processed(processedNews)
   }
 
-  private def mergeIOBEntity(sentences: Seq[Word], annotated: Seq[Word]): Seq[Word] = {
+  def updateData(words: IndexedSeq[Word], part: NewsPart): Unit = {
+
+    part match {
+      case Title =>
+        val merge = mergeIOBEntity(processedNlp.title.get, words)
+        processedNlp = processedNlp.copy(title = Option(merge))
+      case Summary =>
+        val merge = mergeIOBEntity(processedNlp.summary.get, words)
+        processedNlp = processedNlp.copy(summary = Option(merge))
+
+      case Corpus =>
+        val merge = mergeIOBEntity(processedNlp.corpus.get, words)
+        processedNlp = processedNlp.copy(corpus = Option(merge))
+
+      case Description =>
+        val merge = mergeIOBEntity(processedNlp.description.get, words)
+        processedNlp = processedNlp.copy(description = Option(merge))
+    }
+    decreaseAndCheck()
+  }
+
+  def decreaseAndCheck(): Unit = {
+    processing -= 1
+    if (processing == 0)
+      context.parent ! Processed(processedNews)
+  }
+
+  private def mergeIOBEntity(sentences: IndexedSeq[Word], annotated: IndexedSeq[Word]): IndexedSeq[Word] = {
     sentences.zip(annotated).map(w => w._1.copy(iobEntity = w._1.iobEntity ++ w._2.iobEntity))
   }
 }

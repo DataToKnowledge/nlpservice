@@ -24,7 +24,7 @@ object CityDetector {
 
   private val log = LoggerFactory.getLogger("CityDetector")
 
-  def detect(words: IndexedSeq[Word]): Try[Seq[Word]] = Try {
+  def detect(words: IndexedSeq[Word]): Try[IndexedSeq[Word]] = Try {
 
     //create a map of words ordered by tokenId
     var mapWords = words.map(w => w.tokenId.get -> w).toMap

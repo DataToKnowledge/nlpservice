@@ -3,10 +3,12 @@ package it.dtk.actor
 import akka.actor.{ Actor, ActorLogging }
 import it.dtk.nlp.detector.DateDetector
 import akka.actor.Props
-import it.dtk.nlp.detector.Detector
 import scala.util._
 import akka.routing.RoundRobinPool
 import org.joda.time.DateTime
+import it.dtk.nlp.detector.NewsPart._
+import it.dtk.nlp.db.Word
+import java.net.URL
 
 object DateDetectorActor {
   def props = Props(classOf[DateDetectorActor])
@@ -17,9 +19,13 @@ object DateDetectorActor {
    */
   def routerProps(nrOfInstances: Int = 10) =
     RoundRobinPool(nrOfInstances).props(props)
-    
-    case class ExtractDate(url: String)
-    case class ExtractedDate(date: Option[DateTime])
+
+  case class ExtractDate(url: String)
+  case class ExtractedDate(date: Option[DateTime])
+
+  case class Process(newsId: String, words: IndexedSeq[Word], value: NewsPart)
+  case class Result(newsId: String, words: IndexedSeq[Word], value: NewsPart)
+  case class Failed(newsId: String, part: NewsPart, ex: Throwable)
 }
 
 /**
@@ -28,17 +34,23 @@ object DateDetectorActor {
  */
 class DateDetectorActor extends Actor with ActorLogging {
 
+  import DateDetectorActor._
+  
   def receive = {
 
-    case Detector.Process(newsId, sentences, part) =>
-      val result = DateDetector.detect(sentences)
+    case Process(newsId, words, part) =>
+      val result = DateDetector.detect(words)
       result match {
         case Success(sents) =>
-          sender ! Detector.Result(newsId, sents, part)
+          sender ! Result(newsId, sents, part)
 
         case Failure(ex) =>
-          sender ! Detector.Failure(newsId, part, ex)
+          sender ! Failed(newsId, part, ex)
       }
+      
+    case ExtractDate(url) =>
+      val result = DateDetector.getDateFromURL(new URL(url))
+      sender ! ExtractedDate(result)
   }
 
 }

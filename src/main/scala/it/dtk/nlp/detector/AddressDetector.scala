@@ -45,7 +45,7 @@ object AddressDetector {
 
   private val log = LoggerFactory.getLogger("AddressDetector")
   
-  def detect(words: IndexedSeq[Word], cityName: Option[String] = None): Try[Seq[Word]] = Try {
+  def detect(words: IndexedSeq[Word], cityName: Option[String] = None): Try[IndexedSeq[Word]] = Try {
 
     def normalizeToken(word: Word): Word = {
       val result = SANIFICATION_R.foldLeft(Option.empty[String]) { (opt, r) =>

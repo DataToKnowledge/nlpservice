@@ -3,10 +3,11 @@ package it.dtk.actor
 import akka.actor.{ Actor, ActorLogging }
 import it.dtk.nlp.detector.CrimeDetector
 import akka.actor.Props
-import it.dtk.nlp.detector.Detector
 import scala.util.Success
 import scala.util.Failure
 import akka.routing.RoundRobinPool
+import it.dtk.nlp.detector.NewsPart._
+import it.dtk.nlp.db.Word
 
 object CrimeDetectorActor {
   def props = Props(classOf[CrimeDetectorActor])
@@ -17,6 +18,10 @@ object CrimeDetectorActor {
    */
   def routerProps(nrOfInstances: Int = 5) =
     RoundRobinPool(nrOfInstances).props(props)
+
+  case class Process(newsId: String, words: IndexedSeq[Word], value: NewsPart)
+  case class Result(newsId: String, words: IndexedSeq[Word], value: NewsPart)
+  case class Failed(newsId: String, part: NewsPart, ex: Throwable)
 }
 
 /**
@@ -24,18 +29,20 @@ object CrimeDetectorActor {
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
 class CrimeDetectorActor extends Actor with ActorLogging {
+  
+  import CrimeDetectorActor._
 
   def receive = {
 
-    case Detector.Process(newsId, sentences, part) =>
-      val result = CrimeDetector.detect(sentences.toIndexedSeq)
+    case Process(newsId, words, part) =>
+      val result = CrimeDetector.detect(words)
 
       result match {
         case Success(sents) =>
-          sender ! Detector.Result(newsId, sents, part)
+          sender ! Result(newsId, sents, part)
 
         case Failure(ex) =>
-          sender ! Detector.Failure(newsId, part, ex)
+          sender ! Failed(newsId, part, ex)
       }
   }
 

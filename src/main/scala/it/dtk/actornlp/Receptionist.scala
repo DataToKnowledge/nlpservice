@@ -57,6 +57,7 @@ class Receptionist extends Actor with ActorLogging {
       val newsSeq = newsIterator.next
 
       newsSeq.foreach { n =>
+        
         nextCall += waitTime
         if (DBManager.findNlpNews(n.id).isEmpty) {
           context.system.scheduler.scheduleOnce(nextCall.seconds, controllerActor, Controller.Process(n))
@@ -65,8 +66,11 @@ class Receptionist extends Actor with ActorLogging {
         } else {
           log.info("skipping processed news with id {} and title {}", n.id, n.title)
         }
-
       }
+      
+      if (countProcessing == 0)
+        self ! Next
+      
       if (newsSeq.isEmpty) {
         log.info("Processed {} news", count)
         self ! PoisonPill
@@ -89,7 +93,9 @@ class Receptionist extends Actor with ActorLogging {
         } else {
           log.info("skipping processed news with id {} and title {}", h.id, h.title)
         }
-
+        
+        if (countProcessing == 0)
+          self ! Next
       }
 
     case Controller.Processed(news) =>

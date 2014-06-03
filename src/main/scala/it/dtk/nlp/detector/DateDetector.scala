@@ -48,7 +48,7 @@ object DateDetector {
     ???
   }
   
-  def detect(sentence: Seq[Word]): Try[Seq[Word]] = Try {
+  def detect(sentence: Seq[Word]): Try[IndexedSeq[Word]] = Try {
     var nextIndex = 0
     var result = Vector.empty[Word]
 
@@ -74,7 +74,7 @@ object DateDetector {
         nextIndex += 1
       }
     }
-    result.toSeq
+    result
   }
 
   def toDate(dateToken: String): Option[DateTime] = {

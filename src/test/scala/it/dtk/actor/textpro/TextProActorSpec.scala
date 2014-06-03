@@ -37,7 +37,8 @@ class TextProActorSpec(_system: ActorSystem) extends MySpec(_system) {
         'nlpTags ('defined))
 
       import org.scalatest.OptionValues._
-      result.news.nlpTags.value.size should be > 1
+      if (result.news.nlp.isDefined)
+    	  result.news.nlp.get.nlpTags.value.size should be > 1
     }
 
   }
