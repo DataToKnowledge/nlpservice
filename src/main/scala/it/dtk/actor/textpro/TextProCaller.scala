@@ -27,7 +27,7 @@ private object TextProCaller {
 
   def tagText(text: String): Try[String] = {
     
-    require(text.length() > 0)
+    if (text.length() == 0) throw new Error("empty string")
 
     //create input file
     val inputfile = s"file$count"
