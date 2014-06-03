@@ -24,13 +24,13 @@ object CityDetector {
 
   private val log = LoggerFactory.getLogger("CityDetector")
 
-  def detect(words: IndexedSeq[Word]): Try[IndexedSeq[Word]] = Try {
+  def detect(words: Seq[Word]): Try[Seq[Word]] = Try {
 
     //create a map of words ordered by tokenId
     var mapWords = words.map(w => w.tokenId.get -> w).toMap
     var taggedTokenId = Set.empty[Int]
 
-    def tag(slice: IndexedSeq[Word], pos: Int, value: EntityType): Option[Word] = {
+    def tag(slice: Seq[Word], pos: Int, value: EntityType): Option[Word] = {
       val tokenId = slice(pos).tokenId.get
       mapWords.get(tokenId).map(w => w.copy(iobEntity = w.iobEntity :+ EntityType.stringValue(value)))
     }

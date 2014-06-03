@@ -48,7 +48,7 @@ object DateDetector {
     ???
   }
   
-  def detect(sentence: Seq[Word]): Try[IndexedSeq[Word]] = Try {
+  def detect(sentence: Seq[Word]): Try[Seq[Word]] = Try {
     var nextIndex = 0
     var result = Vector.empty[Word]
 

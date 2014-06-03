@@ -15,10 +15,10 @@ case class News(id: String, urlWebSite: String, urlNews: String, title: Option[S
   metaDescription: Option[String] = None, metaKeyword: Option[String] = None, canonicalUrl: Option[String] = None,
   topImage: Option[String] = None, nlp: Option[Nlp] = None)
 
-case class Nlp(title: Option[IndexedSeq[Word]], summary: Option[IndexedSeq[Word]], corpus: Option[IndexedSeq[Word]], 
-  description: Option[IndexedSeq[Word]], crimes: Option[IndexedSeq[String]] = None, addresses: Option[IndexedSeq[String]] = None,
-  persons: Option[IndexedSeq[String]] = None, locations: Option[IndexedSeq[String]] = None, dates: Option[IndexedSeq[String]] = None,
-  organizations: Option[IndexedSeq[String]] = None, nlpTags: Option[Map[String, Double]] = None)
+case class Nlp(title: Option[Seq[Word]], summary: Option[Seq[Word]], corpus: Option[Seq[Word]], 
+  description: Option[Seq[Word]], crimes: Option[Seq[String]] = None, addresses: Option[Seq[String]] = None,
+  persons: Option[Seq[String]] = None, locations: Option[Seq[String]] = None, dates: Option[Seq[String]] = None,
+  organizations: Option[Seq[String]] = None, nlpTags: Option[Map[String, Double]] = None)
 
 case class Lemma(id: String, word: String, lemma: Option[String] = None, features: Option[String] = None)
 

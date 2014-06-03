@@ -45,7 +45,7 @@ object AddressDetector {
 
   private val log = LoggerFactory.getLogger("AddressDetector")
   
-  def detect(words: IndexedSeq[Word], cityName: Option[String] = None): Try[IndexedSeq[Word]] = Try {
+  def detect(words: Seq[Word], cityName: Option[String] = None): Try[Seq[Word]] = Try {
 
     def normalizeToken(word: Word): Word = {
       val result = SANIFICATION_R.foldLeft(Option.empty[String]) { (opt, r) =>
@@ -68,7 +68,7 @@ object AddressDetector {
     var taggedTokenId = Set.empty[Int]
     //var entities = Vector.empty[String]
 
-    def tag(slide: IndexedSeq[Word], pos: Int, value: EntityType): Option[Word] = {
+    def tag(slide: Seq[Word], pos: Int, value: EntityType): Option[Word] = {
       val tokenId = slide(pos).tokenId.get
       mapWords.get(tokenId).map(w => w.copy(iobEntity = w.iobEntity :+ EntityType.stringValue(value)))
     }

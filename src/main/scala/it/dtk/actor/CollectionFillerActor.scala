@@ -100,7 +100,7 @@ class CollectionFillerActor extends Actor with ActorLogging {
   }
 
   def fillCollection(words: Option[Seq[Word]], bEncoding: String, iEncoding: String,
-    lenghtFilter: String => Boolean, valueFilter: String => Boolean): IndexedSeq[String] = {
+    lenghtFilter: String => Boolean, valueFilter: String => Boolean): Seq[String] = {
 
     @tailrec
     def findCollection0(acc: Seq[String], current: Option[String], words: Seq[Word]): Seq[String] = {
@@ -136,6 +136,6 @@ class CollectionFillerActor extends Actor with ActorLogging {
       findCollection0(Seq.empty[String], Option.empty[String], filteredWords).reverse
     }
 
-    result.filter(lenghtFilter).filter(valueFilter).toIndexedSeq
+    result.filter(lenghtFilter).filter(valueFilter)
   }
 }

@@ -182,7 +182,7 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
 
   }
 
-  def updateData(words: IndexedSeq[Word], part: NewsPart): Unit = {
+  def updateData(words: Seq[Word], part: NewsPart): Unit = {
 
     part match {
       case Title =>
@@ -209,7 +209,7 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
       context.parent ! Processed(processedNews)
   }
 
-  private def mergeIOBEntity(sentences: IndexedSeq[Word], annotated: IndexedSeq[Word]): IndexedSeq[Word] = {
+  private def mergeIOBEntity(sentences: Seq[Word], annotated: Seq[Word]): Seq[Word] = {
     sentences.zip(annotated).map(w => w._1.copy(iobEntity = w._1.iobEntity ++ w._2.iobEntity))
   }
 }

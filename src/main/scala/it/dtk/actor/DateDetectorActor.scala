@@ -23,8 +23,8 @@ object DateDetectorActor {
   case class ExtractDate(url: String)
   case class ExtractedDate(date: Option[DateTime])
 
-  case class Process(newsId: String, words: IndexedSeq[Word], value: NewsPart)
-  case class Result(newsId: String, words: IndexedSeq[Word], value: NewsPart)
+  case class Process(newsId: String, words: Seq[Word], value: NewsPart)
+  case class Result(newsId: String, words: Seq[Word], value: NewsPart)
   case class Failed(newsId: String, part: NewsPart, ex: Throwable)
 }
 
