@@ -5,7 +5,7 @@ import it.dtk.nlp.db.{Lemma, DBManager, Word}
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
-object Lemmatizer {
+class Lemmatizer {
 
   /**
    * Lemmatiza a given token using morph-it

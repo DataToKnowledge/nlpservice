@@ -32,10 +32,12 @@ class AddressDetectorActor extends Actor with ActorLogging {
 
   import AddressDetectorActor._
   
+  val detector = new AddressDetector
+  
   def receive = {
 
     case Process(newsId, sentences, part) =>
-      val result = AddressDetector.detect(sentences)
+      val result = detector.detect(sentences)
 
       result match {
         case Success(sents) =>

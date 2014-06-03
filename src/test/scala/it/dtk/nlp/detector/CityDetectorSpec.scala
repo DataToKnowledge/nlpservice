@@ -20,14 +20,17 @@ class CityDetectorSpec extends BaseTestClass {
   import CityDetectorSpec._
 
   "A CityDetector" when {
+    
+    val detector = new CityDetector
+        val textPreprocessor = new TextPreprocessor
 
     "finds cities" should {
 
       "tag a compound-city" in {
 
-        whenReady(TreeTagger.tag(TextPreprocessor(sentence))) {
+        whenReady(TreeTagger.tag(textPreprocessor(sentence))) {
           sentence =>
-            val result = CityDetector.detect(sentence.toIndexedSeq)
+            val result = detector.detect(sentence.toIndexedSeq)
             result match {
               case Success(res) =>
                 //res.foreach(w => println(w.token + " " + w.iobEntity))
@@ -41,9 +44,9 @@ class CityDetectorSpec extends BaseTestClass {
 
       "tag a city" in {
 
-        whenReady(TreeTagger.tag(TextPreprocessor.apply(city))) {
+        whenReady(TreeTagger.tag(textPreprocessor.apply(city))) {
           sentence =>
-            val result = CityDetector.detect(sentence.toIndexedSeq)
+            val result = detector.detect(sentence.toIndexedSeq)
 
             result match {
               case Success(res) =>

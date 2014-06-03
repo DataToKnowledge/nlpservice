@@ -31,11 +31,13 @@ object CityDetectorActor {
 class CityDetectorActor extends Actor with ActorLogging {
   
   import CityDetectorActor._
+  
+  val detector = new CityDetector
 
   def receive = {
 
     case Process(newsId, word, part) =>
-      val result = CityDetector.detect(word)
+      val result = detector.detect(word)
       result match {
         case Success(sents) =>
           sender ! Result(newsId, sents, part)

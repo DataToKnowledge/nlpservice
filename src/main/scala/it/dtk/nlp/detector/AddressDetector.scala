@@ -42,6 +42,12 @@ object AddressDetector {
 
   private val PREFIX_R = "(via|viale|piazza|piazzale|piazzetta|vico|" +
     "corso|contrada|vicolo|largo|numero|circonvallazione|strada|ss){1,1}"
+  
+}
+
+class AddressDetector {
+  
+  import AddressDetector._
 
   private val log = LoggerFactory.getLogger("AddressDetector")
   

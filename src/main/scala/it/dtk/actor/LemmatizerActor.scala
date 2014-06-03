@@ -6,6 +6,7 @@ import akka.actor.Props
 import akka.routing.RoundRobinPool
 import it.dtk.nlp.detector.NewsPart._
 import it.dtk.nlp.db.Word
+import it.dtk.nlp.Lemmatizer
 
 object LemmatizerActor {
 
@@ -30,11 +31,13 @@ object LemmatizerActor {
 class LemmatizerActor extends Actor with ActorLogging {
 
   import LemmatizerActor._
+  
+  val detector = new Lemmatizer
 
   def receive = {
     case Process(newsId, sentences, part) =>
 
-      val result = sentences.map(Lemmatizer.lemma)
+      val result = sentences.map(detector.lemma)
       sender ! Result(newsId, result, part)
 
   }

@@ -27,17 +27,19 @@ object SentenceDetectorActor {
 class SentenceDetectorActor extends Actor with ActorLogging {
 
   import SentenceDetectorActor._
+  
+  val detector = new TextPreprocessor
 
   def receive = {
 
     case Process(newsId, text, Title) =>
-      sender ! Result(newsId, TextPreprocessor.getSentences(text), Title)
+      sender ! Result(newsId, detector.getSentences(text), Title)
 
     case Process(newsId, text, Summary) =>
-      sender ! Result(newsId, TextPreprocessor.getSentences(text), Summary)
+      sender ! Result(newsId, detector.getSentences(text), Summary)
 
     case Process(newsId, text, Corpus) =>
-      sender ! Result(newsId, TextPreprocessor.getSentences(text), Corpus)
+      sender ! Result(newsId, detector.getSentences(text), Corpus)
 
   }
 

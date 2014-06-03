@@ -9,7 +9,7 @@ import scala.collection.immutable.TreeMap
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
-object CityDetector {
+class CityDetector {
 
   /**
    * Maximum number of tokens for a city

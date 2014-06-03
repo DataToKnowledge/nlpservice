@@ -28,17 +28,19 @@ object TokenizerActor {
 class TokenizerActor extends Actor with ActorLogging {
 
   import TokenizerActor._
-
+  
+  val detector = new TextPreprocessor
+  
   def receive = {
 
     case Process(newsId, text, Title) =>
-      sender ! Result(newsId, TextPreprocessor.getTokens(text), Title)
+      sender ! Result(newsId, detector.getTokens(text), Title)
 
     case Process(newsId, text, Summary) =>
-      sender ! Result(newsId, TextPreprocessor.getTokens(text), Summary)
+      sender ! Result(newsId, detector.getTokens(text), Summary)
 
     case Process(newsId, text, Corpus) =>
-      sender ! Result(newsId, TextPreprocessor.getTokens(text), Corpus)
+      sender ! Result(newsId, detector.getTokens(text), Corpus)
 
   }
 

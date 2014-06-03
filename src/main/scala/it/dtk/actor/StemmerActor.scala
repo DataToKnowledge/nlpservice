@@ -26,17 +26,19 @@ object StemmerActor {
 class StemmerActor extends Actor with ActorLogging {
 
   import StemmerActor._
+  
+  val detector = new WordStemmer
 
   def receive = {
 
     case Process(newsId, sentences, Title) =>
-      sender ! Result(newsId, sentences.map(WordStemmer.stem), Title)
+      sender ! Result(newsId, sentences.map(detector.stem), Title)
 
     case Process(newsId, sentences, Summary) =>
-      sender ! Result(newsId, sentences.map(WordStemmer.stem), Summary)
+      sender ! Result(newsId, sentences.map(detector.stem), Summary)
 
     case Process(newsId, sentences, Corpus) =>
-      sender ! Result(newsId, sentences.map(WordStemmer.stem), Corpus)
+      sender ! Result(newsId, sentences.map(detector.stem), Corpus)
 
   }
 

@@ -21,11 +21,14 @@ class CrimeDetectorSpec extends BaseTestClass {
 
   "A CrimeDetector" when {
 
+    val detector = new CrimeDetector
+    val textPreprocessor = new TextPreprocessor
+
     "finds crimes" should {
 
       "tag a compound-compound" in {
 
-        val result = CrimeDetector.detect(sentence2Crimes)
+        val result = detector.detect(sentence2Crimes)
 
         result match {
           case Success(res) =>
@@ -39,7 +42,7 @@ class CrimeDetectorSpec extends BaseTestClass {
 
       }
       "be case insensitive" in {
-        val result = CrimeDetector.detect(sentenceCaseInsensitive)
+        val result = detector.detect(sentenceCaseInsensitive)
 
         result match {
           case Success(res) =>
@@ -53,9 +56,9 @@ class CrimeDetectorSpec extends BaseTestClass {
     }
 
     "tag crimes in the give text" in {
-      whenReady(TreeTagger.tag(TextPreprocessor.apply(text))) { s =>
+      whenReady(TreeTagger.tag(textPreprocessor.apply(text))) { s =>
 
-        val result = CrimeDetector.detect(s.toIndexedSeq)
+        val result = detector.detect(s.toIndexedSeq)
         result.foreach(_.foreach(println))
       }
     }

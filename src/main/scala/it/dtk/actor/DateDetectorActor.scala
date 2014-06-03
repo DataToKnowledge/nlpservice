@@ -9,6 +9,7 @@ import org.joda.time.DateTime
 import it.dtk.nlp.detector.NewsPart._
 import it.dtk.nlp.db.Word
 import java.net.URL
+import it.dtk.nlp.detector.DateDetector
 
 object DateDetectorActor {
   def props = Props(classOf[DateDetectorActor])
@@ -35,11 +36,13 @@ object DateDetectorActor {
 class DateDetectorActor extends Actor with ActorLogging {
 
   import DateDetectorActor._
-  
+
+  val detector = new DateDetector
+
   def receive = {
 
     case Process(newsId, words, part) =>
-      val result = DateDetector.detect(words)
+      val result = detector.detect(words)
       result match {
         case Success(sents) =>
           sender ! Result(newsId, sents, part)
@@ -47,9 +50,9 @@ class DateDetectorActor extends Actor with ActorLogging {
         case Failure(ex) =>
           sender ! Failed(newsId, part, ex)
       }
-      
+
     case ExtractDate(url) =>
-      val result = DateDetector.getDateFromURL(new URL(url))
+      val result = detector.getDateFromURL(new URL(url))
       sender ! ExtractedDate(result)
   }
 

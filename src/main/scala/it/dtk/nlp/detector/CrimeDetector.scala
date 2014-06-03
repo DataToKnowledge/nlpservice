@@ -7,7 +7,7 @@ import it.dtk.nlp.db.Word
 import EntityType._
 import scala.collection.immutable.TreeMap
 
-object CrimeDetector {
+class CrimeDetector {
 
   val range = 3
 

@@ -31,11 +31,13 @@ object CrimeDetectorActor {
 class CrimeDetectorActor extends Actor with ActorLogging {
   
   import CrimeDetectorActor._
+  
+  val detector = new CrimeDetector
 
   def receive = {
 
     case Process(newsId, words, part) =>
-      val result = CrimeDetector.detect(words)
+      val result = detector.detect(words)
 
       result match {
         case Success(sents) =>

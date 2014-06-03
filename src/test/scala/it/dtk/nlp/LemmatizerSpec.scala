@@ -24,20 +24,22 @@ class LemmatizerSpec extends BaseTestClass {
   import LemmatizerSpec._
 
   "A Lemmatizer" when {
+    
+    val detector = new Lemmatizer
 
     "lemmatize a word" should {
 
       words.foreach {
         w =>
           s"return the corrent lemma for '${w._1}'" in {
-            Lemmatizer.lemma(w._1) should be(w._2)
+            detector.lemma(w._1) should be(w._2)
           }
       }
 
       wrong.foreach {
         w =>
           s"recognize the wrong lemma for '${w._1}'" in {
-            Lemmatizer.lemma(w._1) should not be w._2
+            detector.lemma(w._1) should not be w._2
           }
       }
     }

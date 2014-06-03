@@ -7,7 +7,7 @@ import it.dtk.nlp.db.Word
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
-object WordStemmer {
+class WordStemmer {
 
   private val stemmer: SnowballStemmer = new italianStemmer
 

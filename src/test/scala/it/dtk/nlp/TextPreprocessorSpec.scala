@@ -32,20 +32,23 @@ class TextPreprocessorSpec extends BaseTestClass {
   import TextPreprocessorSpec._
 
   "The TextPreprocessing" when {
+    
+    val detector = new TextPreprocessor
+    
     "is called the method removeHtmlTags" should {
       "correctly remove html tags" in {
-        val result = TextPreprocessor.removeHtmlTags(docWithHtml)
+        val result = detector.removeHtmlTags(docWithHtml)
         result should be(expectedDocNoHtml)
       }
 
       "do not modify a correct document" in {
-        TextPreprocessor.removeHtmlTags(expectedDocNoHtml) should be(expectedDocNoHtml)
+        detector.removeHtmlTags(expectedDocNoHtml) should be(expectedDocNoHtml)
       }
     }
 
     "is called the method get sentence" should {
       "correctly split a document into sentences" in {
-        val res = TextPreprocessor.getSentences(expectedDocNoHtml)
+        val res = detector.getSentences(expectedDocNoHtml)
         //todo this is only for output printing
         //val str = res.mkString("\n")
         //println(str)
@@ -53,31 +56,31 @@ class TextPreprocessorSpec extends BaseTestClass {
       }
 
       "return an empty sequence for an empty string" in {
-        val res = TextPreprocessor.getSentences("")
+        val res = detector.getSentences("")
         res should have size 0
       }
 
       "return a sentence for a document containing only a sentence" in {
-        val res = TextPreprocessor.getSentences(oneSentenceDocument)
+        val res = detector.getSentences(oneSentenceDocument)
         res should have size 1
       }
     }
 
     "is called the method get Words" should {
       "for a sentence with 9 words should return 9 words" in {
-        val res = TextPreprocessor.getTokens(nineWordsSentence)
+        val res = detector.getTokens(nineWordsSentence)
         res should have size 9
       }
 
       "for a sentence with 9 words and tabs should return 9 words" in {
-        val res = TextPreprocessor.getTokens(nineWordsSentence)
+        val res = detector.getTokens(nineWordsSentence)
         res should have size 9
       }
     }
     
     "is called the method TextPreprocessing" should {
       "return a document with sentences and words" in {
-        val sentences = TextPreprocessor(expectedDocNoHtml)
+        val sentences = detector(expectedDocNoHtml)
         sentences.size should be > 0
       }
     }

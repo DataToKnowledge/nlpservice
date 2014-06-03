@@ -4,7 +4,7 @@ import java.util.Locale
 import java.text.BreakIterator
 import it.dtk.nlp.db.Word
 
-object TextPreprocessor {
+class TextPreprocessor {
 
   /**
    * @param text

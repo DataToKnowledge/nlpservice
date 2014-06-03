@@ -20,11 +20,14 @@ class AddressDetectorSpec extends BaseTestClass {
   import AddressDetectorSpec._
 
   "An AddressDetector" should {
+    
+    val detector = new AddressDetector
+    val textPreprocessor = new TextPreprocessor
 
     "tag an address" in {
-      whenReady(TreeTagger.tag(TextPreprocessor.apply(sentence))) {
+      whenReady(TreeTagger.tag(textPreprocessor.apply(sentence))) {
         s =>
-          val result = AddressDetector.detect(s.toIndexedSeq)
+          val result = detector.detect(s.toIndexedSeq)
           result match {
             case Success(res) =>
               //res.foreach(w => println(w.token + " " + w.iobEntity))
@@ -37,9 +40,9 @@ class AddressDetectorSpec extends BaseTestClass {
     }
 
     "tag an address of a defined city" in {
-      whenReady(TreeTagger.tag(TextPreprocessor.apply(sentence))) {
+      whenReady(TreeTagger.tag(textPreprocessor.apply(sentence))) {
         s =>
-          val result = AddressDetector.detect(s.toIndexedSeq, city)
+          val result = detector.detect(s.toIndexedSeq, city)
 
           result match {
             case Success(res) =>
