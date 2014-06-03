@@ -34,3 +34,4 @@ libraryDependencies ++= Seq(
 //"io.argonaut" %% "argonaut" % "6.0.3"
 //atmosSettings
 
+javaOptions += "-Xms512m -Xmx2G"

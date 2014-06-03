@@ -4,6 +4,8 @@ import it.dtk.nlp.BaseTestClass
 import it.dtk.nlp.db.Word
 import scala.util.Success
 import scala.util.Failure
+import it.dtk.nlp.TreeTagger
+import it.dtk.nlp.TextPreprocessor
 
 object CrimeDetectorSpec {
   val sentence2Crimes = Vector(new Word(token = "oggi", tokenId = Option(0)), new Word(token = "illegale", tokenId = Option(1)),
@@ -12,6 +14,7 @@ object CrimeDetectorSpec {
     new Word(token = "tutto", tokenId = Option(2)), new Word(token = "Illegale", tokenId = Option(3)))
   // val sentence0Crimes = Vector(new Word(token = "oggi"), new Word(token = "è"), new Word(token = "tutto"), new Word(token = "ok"), new Word(token = "contratto"))
 
+  val text = "BARI - Agguato giovedì sera in piazza Santa Maria del campo a Ceglie alla periferia di Bari. Luigi Boffo 21 anni è stato ferito con almeno sei colpi di pistola fatti esplodere. Il giovane, con precedenti per droga - è stato anche arrestato nel settembre 2010 (con altre quattro persone per spaccio davanti a una discoteca di Castellaneta Marina) - è ritenuto vicino al clan Di Cosola.\n\nLA SITUAZIONE - Il ragazzo è arrivato al pronto soccorso dell'ospedale Di Venere intorno a mezzanotte. Il 21enne è ancora ricoverato in prognosi riservata in gravi condizioni nel reparto di rianimazione. La polizia indaga sull'episodio. Secondo una ricostruzione fatta dalla polizia, il sicario ha raggiunto la piazza dove si trovava Boffo a bordo di un'automobile condotta da un'altra persona. Ha quindi sparato con una pistola a tamburo per poi fuggire. L'agguato è stato ripreso da alcune telecamere di sicurezza che si trovano nella zona, che di sera è un luogo di ritrovo frequentato da giovani."
 }
 class CrimeDetectorSpec extends BaseTestClass {
   import CrimeDetectorSpec._
@@ -46,6 +49,14 @@ class CrimeDetectorSpec extends BaseTestClass {
           case Failure(ex) =>
             ex.printStackTrace()
         }
+      }
+    }
+
+    "tag crimes in the give text" in {
+      whenReady(TreeTagger.tag(TextPreprocessor.apply(text))) { s =>
+
+        val result = CrimeDetector.detect(s.toIndexedSeq)
+        result.foreach(_.foreach(println))
       }
     }
 
