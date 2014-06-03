@@ -42,35 +42,29 @@ class TextProActor extends Actor with ActorLogging {
 
       val send = sender
 
-      val titleTry = TextProCaller.tagText(news.title.getOrElse("")).
+      val titleTry = TextProCaller.tagText(news.title).
         flatMap(TextProResultProcessor.parseText).map(filterWrongWords(_, send))
 
-      val summaryTry = TextProCaller.tagText(news.summary.getOrElse("")).
+      val summaryTry = TextProCaller.tagText(news.summary).
         flatMap(TextProResultProcessor.parseText).map(filterWrongWords(_, send))
 
-      val corpusTry = TextProCaller.tagText(news.corpus.getOrElse("")).
+      val corpusTry = TextProCaller.tagText(news.corpus).
         flatMap(TextProResultProcessor.parseText).map(filterWrongWords(_, send))
 
-      val descriptionTry = TextProCaller.tagText(news.metaDescription.getOrElse("")).
+      val descriptionTry = TextProCaller.tagText(news.metaDescription).
         flatMap(TextProResultProcessor.parseText).map(filterWrongWords(_, send))
 
-      //TODO to remove because we do not need to do nlp on keyword and metatags
-      //      val metaKeywords = TextProCaller.tagText(news.metaKeyword.getOrElse("")).
-      //        flatMap(TextProResultProcessor.parseText).map(filterWrongWords(_, send))
-      //        
-      //      val metaTags = TextProCaller.tagText(news.tags.getOrElse(Set.empty[String]).mkString(" ")).
-      //        flatMap(TextProResultProcessor.parseText).map(filterWrongWords(_, send))
 
-      val nlpNews = Nlp(title = titleTry.map(_.words.toIndexedSeq).toOption,
-        summary = summaryTry.map(_.words.toIndexedSeq).toOption,
-        corpus = corpusTry.map(_.words.toIndexedSeq).toOption,
-        description = descriptionTry.map(_.words.toIndexedSeq).toOption,
+      val nlpNews = Nlp(title = titleTry.map(_.words).toOption,
+        summary = summaryTry.map(_.words).toOption,
+        corpus = corpusTry.map(_.words).toOption,
+        description = descriptionTry.map(_.words).toOption,
         nlpTags = corpusTry.map(_.keywords).toOption)
 
       val modNews = news.copy(nlp = Option(nlpNews))
 
       send ! Result(modNews)
-
+      
       if (corpusTry.isFailure)
         send ! Fail(news.id, corpusTry.failed.get)
   }

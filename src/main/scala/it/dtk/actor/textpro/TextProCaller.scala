@@ -25,20 +25,23 @@ private object TextProCaller {
 
   private val baseCommand = envPath + "textpro.pl -l ita -c token+tokenid+tokenstart+tokenend+pos+sentence+lemma+comp_morpho+keywords+entity+chunk -y -verbose -o "
 
-  def tagText(text: String): Try[String] = {
-    
-    //create input file
-    val inputfile = s"file$count"
-    count += 1
+  def tagText(text: Option[String]): Try[String] = {
 
-    val nameFileCreated = createInputFile(inputfile, text)
-    val nameOutputFile = nameFileCreated.flatMap(fileName => processFile(fileName))
-    //delete the input file
-    nameFileCreated.map(name => deleteFile(inputFolder + name))
-    val content = nameOutputFile.flatMap(name => getContent(outputFolder + name))
-    nameOutputFile.map(name => deleteFile(outputFolder + name))
+    if (text.isEmpty)
+      Try { "" }
+    else {
+      //create input file
+      val inputfile = s"file$count"
+      count += 1
 
-    content
+      val nameFileCreated = createInputFile(inputfile, text.get)
+      val nameOutputFile = nameFileCreated.flatMap(fileName => processFile(fileName))
+      //delete the input file
+      nameFileCreated.map(name => deleteFile(inputFolder + name))
+      val content = nameOutputFile.flatMap(name => getContent(outputFolder + name))
+      nameOutputFile.map(name => deleteFile(outputFolder + name))
+      content
+    }
   }
 
   private def getContent(path: String): Try[String] = Try {
