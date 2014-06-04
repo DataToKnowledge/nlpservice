@@ -35,18 +35,21 @@ class CrimeDetectorActor extends Actor with ActorLogging {
   val detector = new CrimeDetector
 
   def receive = {
-
+    
     case Process(newsId, words, part) =>
+      
+      val send = sender
+      
       log.info("START CrimeDetectorActor {} with part {}", newsId, part)
       val result = detector.detect(words)
 
       result match {
         case Success(sents) =>
-          sender ! Result(newsId, sents, part)
+          send ! Result(newsId, sents, part)
           log.info("END CrimeDetectorActor {} with part {}", newsId, part)
 
         case Failure(ex) =>
-          sender ! Failed(newsId, part, ex)
+          send ! Failed(newsId, part, ex)
           log.info("END CrimeDetectorActor {} with part {}", newsId, part)
       }
   }

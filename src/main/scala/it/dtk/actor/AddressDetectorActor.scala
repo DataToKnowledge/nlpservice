@@ -31,22 +31,23 @@ object AddressDetectorActor {
 class AddressDetectorActor extends Actor with ActorLogging {
 
   import AddressDetectorActor._
-  
+
   val detector = new AddressDetector
-  
+
   def receive = {
 
     case Process(newsId, sentences, part) =>
       log.info("START AddressDetect {} with part {}", newsId, part)
+      val send = sender
       val result = detector.detect(sentences)
 
       result match {
         case Success(sents) =>
-          sender ! Result(newsId, sents, part)
+          send ! Result(newsId, sents, part)
           log.info("END AddressDetect {} with part {}", newsId, part)
 
         case Failure(ex) =>
-          sender ! Failed(newsId, part, ex)
+          send ! Failed(newsId, part, ex)
           log.info("END AddressDetect {} with part {}", newsId, part)
 
       }

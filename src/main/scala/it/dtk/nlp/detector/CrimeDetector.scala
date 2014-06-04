@@ -29,6 +29,7 @@ class CrimeDetector {
         val candidate = slide.map(_.token).mkString(" ")
 
         DBManager.findCrime(candidate).foreach { city =>
+          
           for (j <- 0 until slide.size) {
             val word = if (j == 0)
               tag(slide, j, EntityType.B_CRIME)

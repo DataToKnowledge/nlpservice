@@ -38,14 +38,16 @@ class CityDetectorActor extends Actor with ActorLogging {
 
     case Process(newsId, word, part) =>
       log.info("START CityDetectorActor {} with part {}", newsId, part)
+      val send = sender
       val result = detector.detect(word)
+
       result match {
         case Success(sents) =>
-          sender ! Result(newsId, sents, part)
+          send ! Result(newsId, sents, part)
           log.info("END CityDetectorActor {} with part {}", newsId, part)
 
         case Failure(ex) =>
-          sender ! Failed(newsId, part, ex)
+          send ! Failed(newsId, part, ex)
           log.info("END CityDetectorActor {} with part {}", newsId, part)
       }
   }

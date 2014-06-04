@@ -63,7 +63,9 @@ class Controller extends Actor with ActorLogging {
       log.info("error in TextPro parsing the result with exception {}", ex.getStackTrace().mkString("\t"))
 
     case NamedEntitiesExtractor.Processed(news) =>
-      
+
+      sender ! PoisonPill
+
       val send = mapNewsIdSender.get(news.id)
       if (send.isDefined)
         collectionFilterActor ! CollectionFillerActor.ProcessSingle(news, send.get)
@@ -93,7 +95,7 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
   var processing = 0
   val processedNews = news
   var processedNlp = news.nlp.get
-  
+
   context.setReceiveTimeout(60.seconds)
 
   val addressActor = context.actorOf(AddressDetectorActor.props, s"addressActor$id")
@@ -182,7 +184,7 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
         case None =>
       }
       decreaseAndCheck()
-      
+
     case ReceiveTimeout =>
       log.info("Receive Timeout")
       decreaseAndCheck()
@@ -213,11 +215,14 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
   def decreaseAndCheck(): Unit = {
     processing -= 1
     if (processing == 0)
-      context.parent ! Processed(processedNews)
-      context.stop(self)
+      context.parent ! Processed(processedNews.copy(nlp = Option(processedNlp)))
   }
 
   private def mergeIOBEntity(sentences: Seq[Word], annotated: Seq[Word]): Seq[Word] = {
-    sentences.zip(annotated).map(w => w._1.copy(iobEntity = w._1.iobEntity ++ w._2.iobEntity))
+    sentences.zip(annotated).map { pair =>
+      val entities = pair._1.iobEntity ++ pair._2.iobEntity
+      val filtered = entities.groupBy(w => w).keys.toVector
+      pair._1.copy(iobEntity = filtered)
+    }
   }
 }
