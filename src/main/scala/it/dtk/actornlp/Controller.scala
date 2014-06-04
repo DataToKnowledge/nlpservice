@@ -63,8 +63,7 @@ class Controller extends Actor with ActorLogging {
       log.info("error in TextPro parsing the result with exception {}", ex.getStackTrace().mkString("\t"))
 
     case NamedEntitiesExtractor.Processed(news) =>
-      sender ! PoisonPill
-
+      
       val send = mapNewsIdSender.get(news.id)
       if (send.isDefined)
         collectionFilterActor ! CollectionFillerActor.ProcessSingle(news, send.get)
@@ -95,7 +94,7 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
   val processedNews = news
   var processedNlp = news.nlp.get
   
-  context.setReceiveTimeout(80.seconds)
+  context.setReceiveTimeout(60.seconds)
 
   val addressActor = context.actorOf(AddressDetectorActor.props, s"addressActor$id")
   val cityActor = context.actorOf(CityDetectorActor.props, s"cityActor$id")
@@ -215,6 +214,7 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
     processing -= 1
     if (processing == 0)
       context.parent ! Processed(processedNews)
+      context.stop(self)
   }
 
   private def mergeIOBEntity(sentences: Seq[Word], annotated: Seq[Word]): Seq[Word] = {

@@ -42,11 +42,6 @@ class DateDetector {
   val FULL_DATE_R = COMPACT_DATE_R + "|((" + DAY_OF_WEEK_R + "(,)?\\s+)?" + DATE_R + ")"
 
   val log = LoggerFactory.getLogger("DateDetector")
-
-  def detectNew(words: IndexedSeq[Word]): Try[Seq[Word]] = Try {
-
-    ???
-  }
   
   def detect(sentence: Seq[Word]): Try[Seq[Word]] = Try {
     var nextIndex = 0
