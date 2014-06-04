@@ -13,6 +13,8 @@ import akka.actor.ActorRef
 import akka.actor.PoisonPill
 import scala.util.Success
 import it.dtk.nlp.detector.NewsPart._
+import scala.concurrent.duration._
+import akka.actor.ReceiveTimeout
 
 object Controller {
   case class Process(news: News)
@@ -46,7 +48,7 @@ class Controller extends Actor with ActorLogging {
       textProRouter ! TextProActor.Parse(news)
 
     case TextProActor.Result(news) =>
-      log.debug("calling nlpActors for the news with title {}", news.title.getOrElse(news.id))
+      log.info("calling nlpActors for the news with title {}", news.title.getOrElse(news.id))
       val worker = context.actorOf(NamedEntitiesExtractor.props(news, counter), s"NamedEntityExtractor$counter")
       counter += 1
 
@@ -58,7 +60,7 @@ class Controller extends Actor with ActorLogging {
         log.error("sender not defined for news {}", newsId)
 
     case TextProActor.FailProcessingLine(ex) =>
-      log.error("error in TextPro parsing the result with exception {}", ex.getStackTrace().mkString("\t"))
+      log.info("error in TextPro parsing the result with exception {}", ex.getStackTrace().mkString("\t"))
 
     case NamedEntitiesExtractor.Processed(news) =>
       sender ! PoisonPill
@@ -92,6 +94,8 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
   var processing = 0
   val processedNews = news
   var processedNlp = news.nlp.get
+  
+  context.setReceiveTimeout(80.seconds)
 
   val addressActor = context.actorOf(AddressDetectorActor.props, s"addressActor$id")
   val cityActor = context.actorOf(CityDetectorActor.props, s"cityActor$id")
@@ -155,19 +159,19 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
       updateData(words, part)
 
     case AddressDetectorActor.Failed(newsId, part, ex) =>
-      log.error("AddressDetectorActor Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
+      log.info("AddressDetectorActor Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
       decreaseAndCheck()
 
     case CityDetectorActor.Failed(newsId, part, ex) =>
-      log.error("CityDetectorActor Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
+      log.info("CityDetectorActor Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
       decreaseAndCheck()
 
     case CrimeDetectorActor.Failed(newsId, part, ex) =>
-      log.error("CrimeDetectorActor Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
+      log.info("CrimeDetectorActor Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
       decreaseAndCheck()
 
     case DateDetectorActor.Failed(newsId, part, ex) =>
-      log.error("DateDetectorActor Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
+      log.info("DateDetectorActor Failed for news {}, part {}, exception {}", newsId, part, ex.getStackTrace().mkString("  "))
       decreaseAndCheck()
 
     case DateDetectorActor.ExtractedDate(date) =>
@@ -178,6 +182,10 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
           processedNlp = processedNlp.copy(dates = updateDates)
         case None =>
       }
+      decreaseAndCheck()
+      
+    case ReceiveTimeout =>
+      log.info("Receive Timeout")
       decreaseAndCheck()
 
   }

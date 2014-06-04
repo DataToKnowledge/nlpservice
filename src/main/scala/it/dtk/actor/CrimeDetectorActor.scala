@@ -29,22 +29,25 @@ object CrimeDetectorActor {
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
 class CrimeDetectorActor extends Actor with ActorLogging {
-  
+
   import CrimeDetectorActor._
-  
+
   val detector = new CrimeDetector
 
   def receive = {
 
     case Process(newsId, words, part) =>
+      log.info("START CrimeDetectorActor {} with part {}", newsId, part)
       val result = detector.detect(words)
 
       result match {
         case Success(sents) =>
           sender ! Result(newsId, sents, part)
+          log.info("END CrimeDetectorActor {} with part {}", newsId, part)
 
         case Failure(ex) =>
           sender ! Failed(newsId, part, ex)
+          log.info("END CrimeDetectorActor {} with part {}", newsId, part)
       }
   }
 

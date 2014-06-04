@@ -42,13 +42,17 @@ class DateDetectorActor extends Actor with ActorLogging {
   def receive = {
 
     case Process(newsId, words, part) =>
+      log.info("START DateDetectorActor {} with part {}", newsId, part)
       val result = detector.detect(words)
+      
       result match {
         case Success(sents) =>
           sender ! Result(newsId, sents, part)
+          log.info("END DateDetectorActor {} with part {}", newsId, part)
 
         case Failure(ex) =>
           sender ! Failed(newsId, part, ex)
+          log.info("END DateDetectorActor {} with part {}", newsId, part)
       }
 
     case ExtractDate(url) =>
