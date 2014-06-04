@@ -17,8 +17,8 @@ case class News(id: String, urlWebSite: String, urlNews: String, title: Option[S
 
 case class Nlp(title: Option[Seq[Word]], summary: Option[Seq[Word]], corpus: Option[Seq[Word]], 
   description: Option[Seq[Word]], crimes: Option[Seq[String]] = None, addresses: Option[Seq[String]] = None,
-  persons: Option[Seq[String]] = None, locations: Option[Seq[String]] = None, dates: Option[Seq[String]] = None,
-  organizations: Option[Seq[String]] = None, nlpTags: Option[Map[String, Double]] = None)
+  persons: Option[Seq[String]] = None, locations: Option[Seq[String]] = None, geopoliticals: Option[Seq[String]] = None, 
+  dates: Option[Seq[String]] = None, organizations: Option[Seq[String]] = None, nlpTags: Option[Map[String, Double]] = None)
 
 case class Lemma(id: String, word: String, lemma: Option[String] = None, features: Option[String] = None)
 

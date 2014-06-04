@@ -64,8 +64,9 @@ class CollectionFillerActor extends Actor with ActorLogging {
       val locationCollection = fillCollection(nlp.title, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase) ++
         fillCollection(nlp.summary, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase) ++
         fillCollection(nlp.corpus, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase) ++
-        fillCollection(nlp.description, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase) ++
-        fillCollection(nlp.title, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase) ++
+        fillCollection(nlp.description, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase)
+
+      val geopoliticalCollection = fillCollection(nlp.title, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase) ++
         fillCollection(nlp.summary, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase) ++
         fillCollection(nlp.corpus, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase) ++
         fillCollection(nlp.description, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase)
@@ -81,7 +82,7 @@ class CollectionFillerActor extends Actor with ActorLogging {
         fillCollection(nlp.corpus, EntityType.stringValue(EntityType.B_ORG), EntityType.stringValue(EntityType.I_ORG), minLenght, startWithUpperCase) ++
         fillCollection(nlp.description, EntityType.stringValue(EntityType.B_ORG), EntityType.stringValue(EntityType.I_ORG), minLenght, startWithUpperCase)
 
-      //crimes cannot contain locations
+      //crimes cannot contain locations and person
       //val cleanedCrimes = crimeCollection.filter(c => !locationCollection.exists(l => l.equals(c)))
       val cleanedCrimes = crimeCollection.diff(locationCollection.union(personCollection))
 
@@ -90,10 +91,12 @@ class CollectionFillerActor extends Actor with ActorLogging {
 
       //persons cannot be organizations or cities
       val cleanedPersons = personCollection.diff(locationCollection)
+      
+      val cleanedGeopolicals = geopoliticalCollection.diff(personCollection.union(locationCollection))
 
       nlp.copy(crimes = Option(cleanedCrimes), locations = Option(locationCollection),
         addresses = Option(addressCollection), dates = Option(dateCollection),
-        organizations = Option(cleanedOrganizations), persons = Option(cleanedPersons))
+        organizations = Option(cleanedOrganizations), persons = Option(cleanedPersons), geopoliticals = Option(cleanedGeopolicals))
     }
 
     news.copy(nlp = modNlp)
