@@ -29,11 +29,11 @@ libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.10" % "2.1.2" % "test",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
   "com.github.nscala-time" %% "nscala-time" % "0.8.0",
-  "ch.qos.logback" % "logback-classic" % "1.1.2",
-  "io.kamon" % "kamon-core" % "0.3.0"
+  "ch.qos.logback" % "logback-classic" % "1.1.2" 
 )
 
 //"io.argonaut" %% "argonaut" % "6.0.3"
 //atmosSettings
+//"io.kamon" % "kamon-core" % "0.3.0"
 
 javaOptions += "-Xms512m -Xmx2G"

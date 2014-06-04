@@ -13,7 +13,7 @@
 		<file>error.log</file>
 
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>log/app.%d{dd-MM-yyyy}.log</fileNamePattern>
+			<fileNamePattern>app.%d{dd-MM-yyyy}.log</fileNamePattern>
 			<maxHistory>60</maxHistory>
 		</rollingPolicy>
 		
