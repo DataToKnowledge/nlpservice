@@ -8,10 +8,18 @@ import java.nio.file.Paths
 import java.io.BufferedWriter
 import java.io.FileWriter
 import scala.sys.process.Process
+import scala.util.Random
 
 case class TextProFailure(msg: String) extends Throwable
 
-private object TextProCaller {
+object TextProCaller {
+  
+  val random = new Random(1234L)
+}
+
+class  TextProCaller {
+  
+  private val instanceId = TextProCaller.random.nextInt()
 
   private var count = 0L
 
@@ -31,7 +39,7 @@ private object TextProCaller {
       Try { "" }
     else {
       //create input file
-      val inputfile = s"file$count"
+      val inputfile = s"file$instanceId$count"
       count += 1
 
       val nameFileCreated = createInputFile(inputfile, text.get)

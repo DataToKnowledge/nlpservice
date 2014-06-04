@@ -36,24 +36,25 @@ class TextProActor extends Actor with ActorLogging {
 
   import TextProActor._
 
+  val textProCaller = new TextProCaller
+
   def receive: Receive = {
 
     case Parse(news) =>
 
       val send = sender
 
-      val titleTry = TextProCaller.tagText(news.title).
+      val titleTry = textProCaller.tagText(news.title).
         flatMap(TextProResultProcessor.parseText).map(filterWrongWords(_, send))
 
-      val summaryTry = TextProCaller.tagText(news.summary).
+      val summaryTry = textProCaller.tagText(news.summary).
         flatMap(TextProResultProcessor.parseText).map(filterWrongWords(_, send))
 
-      val corpusTry = TextProCaller.tagText(news.corpus).
+      val corpusTry = textProCaller.tagText(news.corpus).
         flatMap(TextProResultProcessor.parseText).map(filterWrongWords(_, send))
 
-      val descriptionTry = TextProCaller.tagText(news.metaDescription).
+      val descriptionTry = textProCaller.tagText(news.metaDescription).
         flatMap(TextProResultProcessor.parseText).map(filterWrongWords(_, send))
-
 
       val nlpNews = Nlp(title = titleTry.map(_.words).toOption,
         summary = summaryTry.map(_.words).toOption,
@@ -64,7 +65,7 @@ class TextProActor extends Actor with ActorLogging {
       val modNews = news.copy(nlp = Option(nlpNews))
 
       send ! Result(modNews)
-      
+
       if (corpusTry.isFailure)
         send ! Fail(news.id, corpusTry.failed.get)
   }
