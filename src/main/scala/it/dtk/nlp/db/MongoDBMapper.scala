@@ -94,6 +94,7 @@ object MongoDBMapper {
       "locations" -> nlp.locations,
       "dates" -> nlp.dates,
       "organizations" -> nlp.organizations,
+      "geopoliticals" -> nlp.geopoliticals,
       //FIXME remember to restore the dots
       "nlpTags" -> nlp.nlpTags.map(_.map(kw => (kw._1.replace(".", "_dot_") -> kw._2))))
 

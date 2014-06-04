@@ -46,38 +46,45 @@ class CollectionFillerActor extends Actor with ActorLogging {
 
     val modNlp = news.nlp.map { nlp =>
 
-      val crimeCollection = fillCollection(nlp.title, EntityType.stringValue(EntityType.B_CRIME), EntityType.stringValue(EntityType.I_CRIME), minLenght, acceptAll) ++
+      val crimeCollection = nlp.crimes.getOrElse(Seq.empty[String]) ++
+        fillCollection(nlp.title, EntityType.stringValue(EntityType.B_CRIME), EntityType.stringValue(EntityType.I_CRIME), minLenght, acceptAll) ++
         fillCollection(nlp.summary, EntityType.stringValue(EntityType.B_CRIME), EntityType.stringValue(EntityType.I_CRIME), minLenght, acceptAll) ++
         fillCollection(nlp.corpus, EntityType.stringValue(EntityType.B_CRIME), EntityType.stringValue(EntityType.I_CRIME), minLenght, acceptAll) ++
         fillCollection(nlp.description, EntityType.stringValue(EntityType.B_CRIME), EntityType.stringValue(EntityType.I_CRIME), minLenght, acceptAll)
 
-      val addressCollection = fillCollection(nlp.title, EntityType.stringValue(EntityType.B_ADDRESS), EntityType.stringValue(EntityType.I_ADDRESS), minLenght, acceptAll) ++
+      val addressCollection = nlp.addresses.getOrElse(Seq.empty[String]) ++
+        fillCollection(nlp.title, EntityType.stringValue(EntityType.B_ADDRESS), EntityType.stringValue(EntityType.I_ADDRESS), minLenght, acceptAll) ++
         fillCollection(nlp.summary, EntityType.stringValue(EntityType.B_ADDRESS), EntityType.stringValue(EntityType.I_ADDRESS), minLenght, acceptAll) ++
         fillCollection(nlp.corpus, EntityType.stringValue(EntityType.B_ADDRESS), EntityType.stringValue(EntityType.I_ADDRESS), minLenght, acceptAll) ++
         fillCollection(nlp.description, EntityType.stringValue(EntityType.B_ADDRESS), EntityType.stringValue(EntityType.I_ADDRESS), minLenght, acceptAll)
 
-      val personCollection = fillCollection(nlp.title, EntityType.stringValue(EntityType.B_PER), EntityType.stringValue(EntityType.I_PER), minLenght, startWithUpperCase) ++
+      val personCollection = nlp.persons.getOrElse(Seq.empty[String]) ++
+        fillCollection(nlp.title, EntityType.stringValue(EntityType.B_PER), EntityType.stringValue(EntityType.I_PER), minLenght, startWithUpperCase) ++
         fillCollection(nlp.summary, EntityType.stringValue(EntityType.B_PER), EntityType.stringValue(EntityType.I_PER), minLenght, startWithUpperCase) ++
         fillCollection(nlp.corpus, EntityType.stringValue(EntityType.B_PER), EntityType.stringValue(EntityType.I_PER), minLenght, startWithUpperCase) ++
         fillCollection(nlp.description, EntityType.stringValue(EntityType.B_PER), EntityType.stringValue(EntityType.I_PER), minLenght, startWithUpperCase)
 
-      val locationCollection = fillCollection(nlp.title, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase) ++
+      val locationCollection = nlp.locations.getOrElse(Seq.empty[String]) ++
+        fillCollection(nlp.title, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase) ++
         fillCollection(nlp.summary, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase) ++
         fillCollection(nlp.corpus, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase) ++
         fillCollection(nlp.description, EntityType.stringValue(EntityType.B_CITY), EntityType.stringValue(EntityType.I_CITY), minLenght, startWithUpperCase)
 
-      val geopoliticalCollection = fillCollection(nlp.title, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase) ++
+      val geopoliticalCollection = nlp.geopoliticals.getOrElse(Seq.empty[String]) ++
+        fillCollection(nlp.title, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase) ++
         fillCollection(nlp.summary, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase) ++
         fillCollection(nlp.corpus, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase) ++
         fillCollection(nlp.description, EntityType.stringValue(EntityType.B_GPE), EntityType.stringValue(EntityType.I_GPE), minLenght, startWithUpperCase)
 
-      val dateCollection = fillCollection(nlp.title, EntityType.stringValue(EntityType.B_DATE), EntityType.stringValue(EntityType.I_DATE), minLenght, acceptAll) ++
+      val dateCollection = nlp.dates.getOrElse(Seq.empty[String]) ++
+        fillCollection(nlp.title, EntityType.stringValue(EntityType.B_DATE), EntityType.stringValue(EntityType.I_DATE), minLenght, acceptAll) ++
         fillCollection(nlp.summary, EntityType.stringValue(EntityType.B_DATE), EntityType.stringValue(EntityType.I_DATE), minLenght, acceptAll) ++
         fillCollection(nlp.corpus, EntityType.stringValue(EntityType.B_DATE), EntityType.stringValue(EntityType.I_DATE), minLenght, acceptAll) ++
         fillCollection(nlp.corpus, EntityType.stringValue(EntityType.B_DATE), EntityType.stringValue(EntityType.I_DATE), minLenght, acceptAll) ++
         fillCollection(nlp.description, EntityType.stringValue(EntityType.B_DATE), EntityType.stringValue(EntityType.I_DATE), minLenght, acceptAll)
 
-      val organizationCollection = fillCollection(nlp.title, EntityType.stringValue(EntityType.B_ORG), EntityType.stringValue(EntityType.I_ORG), minLenght, startWithUpperCase) ++
+      val organizationCollection = nlp.organizations.getOrElse(Seq.empty[String]) ++
+        fillCollection(nlp.title, EntityType.stringValue(EntityType.B_ORG), EntityType.stringValue(EntityType.I_ORG), minLenght, startWithUpperCase) ++
         fillCollection(nlp.summary, EntityType.stringValue(EntityType.B_ORG), EntityType.stringValue(EntityType.I_ORG), minLenght, startWithUpperCase) ++
         fillCollection(nlp.corpus, EntityType.stringValue(EntityType.B_ORG), EntityType.stringValue(EntityType.I_ORG), minLenght, startWithUpperCase) ++
         fillCollection(nlp.description, EntityType.stringValue(EntityType.B_ORG), EntityType.stringValue(EntityType.I_ORG), minLenght, startWithUpperCase)
@@ -91,7 +98,7 @@ class CollectionFillerActor extends Actor with ActorLogging {
 
       //persons cannot be organizations or cities
       val cleanedPersons = personCollection.diff(locationCollection)
-      
+
       val cleanedGeopolicals = geopoliticalCollection.diff(personCollection.union(locationCollection))
 
       nlp.copy(crimes = Option(cleanedCrimes), locations = Option(locationCollection),

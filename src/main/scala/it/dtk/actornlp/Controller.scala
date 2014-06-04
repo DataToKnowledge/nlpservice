@@ -15,6 +15,7 @@ import scala.util.Success
 import it.dtk.nlp.detector.NewsPart._
 import scala.concurrent.duration._
 import akka.actor.ReceiveTimeout
+import org.joda.time.format.DateTimeFormat
 
 object Controller {
   case class Process(news: News)
@@ -95,6 +96,7 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
   var processing = 0
   val processedNews = news
   var processedNlp = news.nlp.get
+  val fmt = DateTimeFormat.forPattern("dd/MM/yyyy")
 
   context.setReceiveTimeout(60.seconds)
 
@@ -179,8 +181,8 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
 
       date match {
         case Some(d) =>
-          val updateDates = processedNlp.dates.map(_ :+ d.toString())
-          processedNlp = processedNlp.copy(dates = updateDates)
+          val updateDates = processedNlp.dates.getOrElse(Seq.empty[String]) :+ fmt.print(d)
+          processedNlp = processedNlp.copy(dates = Option(updateDates))
         case None =>
       }
       decreaseAndCheck()
