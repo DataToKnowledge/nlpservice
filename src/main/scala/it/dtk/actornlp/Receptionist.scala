@@ -116,7 +116,7 @@ class Receptionist extends Actor with ActorLogging {
       ex.printStackTrace()
 
     case ReceiveTimeout =>
-      log.error("timeout from text pro actor")
+      log.error(s"timeout from text pro actor, with running actors {}", countProcessing)
       shouldIProcess()
   }
 

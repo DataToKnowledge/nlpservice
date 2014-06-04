@@ -12,7 +12,8 @@ scalacOptions ++= Seq(
 resolvers ++= Seq(
   "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
   "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository",
-  "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases"
+  "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases",
+  "Kamon Repository" at "http://repo.kamon.io"
 )
 
 libraryDependencies ++= Seq(
@@ -28,7 +29,9 @@ libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.10" % "2.1.2" % "test",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
   "com.github.nscala-time" %% "nscala-time" % "0.8.0",
-  "ch.qos.logback" % "logback-classic" % "1.1.2"
+  "ch.qos.logback" % "logback-classic" % "1.1.2",
+  "io.kamon" % "kamon-core" % "0.3.0",
+  "kamon" %%  "kamon-spray" % "0.0.11",
 )
 
 //"io.argonaut" %% "argonaut" % "6.0.3"
