@@ -30,8 +30,7 @@ libraryDependencies ++= Seq(
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
   "com.github.nscala-time" %% "nscala-time" % "0.8.0",
   "ch.qos.logback" % "logback-classic" % "1.1.2",
-  "io.kamon" % "kamon-core" % "0.3.0",
-  "kamon" %%  "kamon-spray" % "0.0.11"
+  "io.kamon" % "kamon-core" % "0.3.0"
 )
 
 //"io.argonaut" %% "argonaut" % "6.0.3"
