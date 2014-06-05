@@ -114,7 +114,7 @@ class Receptionist extends Actor with ActorLogging {
     case Controller.FailProcess(newsId, ex) =>
       log.error("fail process news with id {} with exception {}", newsId, ex.getStackTrace().mkString("  "))
       shouldIProcess()
-      //ex.printStackTrace()
+    //ex.printStackTrace()
 
     case ReceiveTimeout =>
       log.error(s"timeout from text pro actor, with running actors {}", countProcessing)
@@ -125,7 +125,10 @@ class Receptionist extends Actor with ActorLogging {
     countProcessing -= 1
     if (countProcessing == 0)
       self ! Start
-    else
+    else {
       self ! Next
+      self ! Next
+    }
+
   }
 }
