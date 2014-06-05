@@ -36,7 +36,7 @@ class Receptionist extends Actor with ActorLogging {
   val waitTime = conf.getLong("nlp.wait.call")
   val time = conf.getLong("nlp.wait.timeout")
   val timeout = time.seconds
-  //context.setReceiveTimeout(timeout)
+  context.setReceiveTimeout(timeout)
 
   def db = "dbNews"
   var countProcessing = 0
@@ -113,7 +113,8 @@ class Receptionist extends Actor with ActorLogging {
 
     case Controller.FailProcess(newsId, ex) =>
       log.error("fail process news with id {} with exception {}", newsId, ex.getStackTrace().mkString("  "))
-      ex.printStackTrace()
+      shouldIProcess()
+      //ex.printStackTrace()
 
     case ReceiveTimeout =>
       log.error(s"timeout from text pro actor, with running actors {}", countProcessing)
