@@ -126,8 +126,9 @@ class Receptionist extends Actor with ActorLogging {
     if (countProcessing == 0)
       self ! Start
     else {
-      self ! Next
-      self ! Next
+      for (i <- 1 to 5) {
+        self ! Next
+      }
     }
 
   }
