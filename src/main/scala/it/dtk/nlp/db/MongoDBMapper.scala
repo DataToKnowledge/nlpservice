@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 import scala.language.implicitConversions
 
 object MongoDBMapper {
+  RegisterJodaTimeConversionHelpers()
 
   implicit def wordToDBO(word: Word): DBObject = {
     DBObject(
@@ -39,7 +40,6 @@ object MongoDBMapper {
       dbo._id.map(_.toString()).get)
   }
 
-
   implicit def dBOToSentence(dbo: DBObject): Seq[Word] = {
     val seqDBO = dbo.getAs[Seq[DBObject]]("words")
     //convert to words
@@ -48,7 +48,7 @@ object MongoDBMapper {
   }
 
   implicit def dBOToNews(dbo: DBObject): News = {
-    RegisterJodaTimeConversionHelpers()
+
     News(
       dbo._id.map(_.toString).get,
       dbo.getAs[String]("urlWebSite").get,
@@ -87,7 +87,7 @@ object MongoDBMapper {
       "title" -> nlp.title.map(_.map(wordToDBO(_))),
       "summary" -> nlp.summary.map(_.map(wordToDBO(_))),
       "corpus" -> nlp.corpus.map(_.map(wordToDBO(_))),
-      "description" -> nlp.description.map(_.map(wordToDBO(_))), 
+      "description" -> nlp.description.map(_.map(wordToDBO(_))),
       "crimes" -> nlp.crimes,
       "addresses" -> nlp.addresses,
       "persons" -> nlp.persons,
