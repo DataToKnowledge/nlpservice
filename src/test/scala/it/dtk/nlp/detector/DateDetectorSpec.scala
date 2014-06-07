@@ -14,7 +14,7 @@ import scala.util.Failure
  */
 class DateDetectorSpec extends FlatSpec with Matchers with Futures with ScalaFutures {
 
-  val detector = new DateDetector
+  val detector = DateDetector
   val textPreprocessor = new TextPreprocessor
 
   "A DateDetector" should "tag all detected dates in a sentence" in {

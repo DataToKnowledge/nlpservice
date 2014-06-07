@@ -14,7 +14,7 @@ import EntityType._
  * @author Michele Damiano Torelli <daniele@datatoknowledge.it>
  *
  */
-class DateDetector {
+object DateDetector {
 
   /* Maximum number of tokens for a date */
   val OFFSET = 6

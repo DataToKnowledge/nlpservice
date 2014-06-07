@@ -37,7 +37,7 @@ class DateDetectorActor extends Actor with ActorLogging {
 
   import DateDetectorActor._
 
-  val detector = new DateDetector
+  val detector = DateDetector
 
   def receive = {
 
