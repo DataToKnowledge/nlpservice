@@ -41,6 +41,8 @@ class Controller extends Actor with ActorLogging {
   val textProRouter = context.actorOf(FromConfig.props(Props[TextProActor]), "textProActorPool")
   val collectionFilterActor = context.actorOf(CollectionFillerActor.routerProps(5), "collectionFilterPool")
 
+  context.setReceiveTimeout(250.seconds)
+
   def receive = {
 
     case Process(news) =>
