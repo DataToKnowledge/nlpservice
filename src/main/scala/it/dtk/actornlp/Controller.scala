@@ -41,8 +41,6 @@ class Controller extends Actor with ActorLogging {
   val textProRouter = context.actorOf(FromConfig.props(Props[TextProActor]), "textProActorPool")
   val collectionFilterActor = context.actorOf(CollectionFillerActor.routerProps(5), "collectionFilterPool")
 
-  context.setReceiveTimeout(250.seconds)
-
   def receive = {
 
     case Process(news) =>
@@ -100,7 +98,7 @@ class NamedEntitiesExtractor(news: News, id: Long) extends Actor with ActorLoggi
   var processedNlp = news.nlp.get
   val fmt = DateTimeFormat.forPattern("dd/MM/yyyy")
 
-  context.setReceiveTimeout(60.seconds)
+  context.setReceiveTimeout(80.seconds)
 
   val addressActor = context.actorOf(AddressDetectorActor.props, s"addressActor$id")
   val cityActor = context.actorOf(CityDetectorActor.props, s"cityActor$id")
