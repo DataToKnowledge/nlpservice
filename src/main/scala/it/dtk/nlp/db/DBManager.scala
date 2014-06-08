@@ -59,7 +59,8 @@ object DBManager {
   }
 
   def findCrimeText(word: String): List[Crime] = {
-    val result = crime.find($text(word) $language "italian")
+    val str = "\"" + word + "\""
+    val result = crime.find($text(str) $language "italian")
     result.toList.map(MongoDBMapper.dBOtoCrime(_))
   }
 
