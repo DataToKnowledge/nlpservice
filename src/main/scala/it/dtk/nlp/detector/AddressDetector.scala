@@ -79,7 +79,7 @@ class AddressDetector {
       mapWords.get(tokenId).map(w => w.copy(iobEntity = w.iobEntity :+ EntityType.stringValue(value)))
     }
 
-    for (sizeNGram <- range to 1 by -1) {
+    for (sizeNGram <- range to 2 by -1) {
       val sliding = words.sliding(sizeNGram)
 
       for (slide <- sliding) {
