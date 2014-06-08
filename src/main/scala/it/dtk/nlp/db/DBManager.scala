@@ -64,13 +64,13 @@ object DBManager {
     result.toList.map(MongoDBMapper.dBOtoCrime(_))
   }
 
-  def findAddressText(street: String, city: Option[String] = None): List[DBObject] = {
+  def findAddressText(street: String, city: Option[String] = None): List[Address] = {
     val str = "\"" + street + "\""
     val query = if (city.isDefined)
       ($text(str) $language ("italian")) ++ MongoDBObject("city" -> city.get)
     else
       $text(str) $language "italian"
-    address.find(query).toList
+    address.find(query).toList.map(dBOtoAddress)
   }
 
   /**

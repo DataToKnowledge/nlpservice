@@ -86,8 +86,10 @@ class AddressDetector {
 
         if (slide(0).token.matches("(?i)" + PREFIX_R + "$")) {
           val candidate = slide.map(_.token).mkString(" ")
+          
+          val result = DBManager.findAddressText(candidate).filter(a => a.street.split(" ").length == candidate.length())
 
-          if (DBManager.findAddressText(candidate).nonEmpty) {
+          if (result.nonEmpty) {
 
             var entity = ""
 

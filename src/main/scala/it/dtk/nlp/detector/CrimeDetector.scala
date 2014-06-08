@@ -27,8 +27,10 @@ object CrimeDetector {
 
       for (slide <- sliding) {
         val candidate = slide.map(_.token).mkString(" ")
+        
+        val result = DBManager.findCrimeText(candidate).filter(c => c.word.split(" ").length == slide.length)
 
-        DBManager.findCrime(candidate).foreach {crime =>
+        if (result.nonEmpty) {
 
           for (j <- 0 until slide.size) {
             val word = if (j == 0)
