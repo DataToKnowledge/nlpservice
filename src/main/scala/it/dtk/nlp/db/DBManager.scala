@@ -6,6 +6,7 @@ import com.mongodb.casbah.Imports._
 import MongoDBMapper._
 import com.mongodb.casbah.MongoCursor
 import com.mongodb.casbah.commons.MongoDBObject
+import com.mongodb.DBObject
 
 /**
  *
@@ -57,6 +58,20 @@ object DBManager {
     //crime.findOne(MongoDBObject("word" -> regex.r)).map(r => r)
   }
 
+  def findCrimeText(word: String): List[Crime] = {
+    val result = crime.find($text(word) $language "italian")
+    result.toList.map(MongoDBMapper.dBOtoCrime(_))
+  }
+
+  def findAddressText(street: String, city: Option[String] = None): List[DBObject] = {
+    val str = "\"" + street + "\""
+    val query = if (city.isDefined)
+      ($text(str) $language ("italian")) ++ MongoDBObject("city" -> city.get)
+    else
+      $text(str) $language "italian"
+    address.find(query).toList
+  }
+
   /**
    * Search for an address in the DB. Case-insensitive search.
    *
@@ -66,7 +81,7 @@ object DBManager {
   def findAddress(street: String, city: Option[String] = None): Option[Address] = {
     val regexAddr = "(?i)^" + street.replace("(", "").replace(")", "") + "$"
     val regexCity = if (city.isDefined) Some("(?i)^" + city.get.replace("(", "").replace(")", "") + "$") else None
-    val query = if (city.isDefined) 
+    val query = if (city.isDefined)
       MongoDBObject("street" -> regexAddr.r, "city" -> regexCity.get.r)
     else
       MongoDBObject("street" -> regexAddr.r)

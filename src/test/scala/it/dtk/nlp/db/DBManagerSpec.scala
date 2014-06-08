@@ -12,6 +12,8 @@ object DBManagerSpec {
 
   val crime = "rapina"
 
+  val crimeText = "omicidio"
+
 }
 
 /**
@@ -41,6 +43,26 @@ class DBManagerSpec extends BaseTestClass {
         addr.get.city shouldBe a[Some[_]]
       }
 
+      "return an address in text search" in {
+        val addrs = DBManager.findAddressText(address)
+        addrs.size should be > 0
+      }
+
+      "return an address in text search with city " in {
+        val addrs = DBManager.findAddressText(address, Some(city))
+        addrs.size should be > 0
+      }
+
+      "do not return an address in text search with city " in {
+        val addrs = DBManager.findAddressText(address, Some("Fandomia"))
+        addrs.size == 0
+      }
+
+      "do not return an address in text search" in {
+        val addrs = DBManager.findAddressText("falso")
+        addrs.size == 0
+      }
+
       "return an address of a city" in {
         val addr = DBManager.findAddress(address, Some(city))
 
@@ -63,6 +85,17 @@ class DBManagerSpec extends BaseTestClass {
 
       "return a crime" in {
         DBManager.findCrime(crime).get shouldBe a[Crime]
+      }
+
+      "return a crime from a text search" in {
+        val r = DBManager.findCrimeText(crimeText)
+        //r.foreach(println)
+        r.length should be > 0
+      }
+
+      "should no return a crime from wrong a text search" in {
+        val r = DBManager.findCrimeText("wrong")
+        r.length == 0
       }
 
       "return a None when there is no crime" in {

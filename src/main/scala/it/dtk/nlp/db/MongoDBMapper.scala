@@ -142,7 +142,7 @@ object MongoDBMapper {
       dbo.getAs[String]("word").get,
       dbo.getAs[String]("lemma"),
       dbo.getAs[String]("stem"),
-      dbo.getAs[String]("tipo"))
+      dbo.getAs[String]("type"))
   }
 
   implicit def crimeToDBO(crime: Crime): DBObject = {

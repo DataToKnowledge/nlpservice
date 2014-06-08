@@ -28,8 +28,8 @@ object CrimeDetector {
       for (slide <- sliding) {
         val candidate = slide.map(_.token).mkString(" ")
 
-        DBManager.findCrime(candidate).foreach { city =>
-          
+        if (DBManager.findCrimeText(candidate).nonEmpty) {
+
           for (j <- 0 until slide.size) {
             val word = if (j == 0)
               tag(slide, j, EntityType.B_CRIME)
@@ -48,7 +48,6 @@ object CrimeDetector {
     TreeMap(mapWords.toArray: _*).values.toIndexedSeq
   }
 
- 
   //TODO remove if it not needed
   //  /**
   //   * load crime dictionary from file

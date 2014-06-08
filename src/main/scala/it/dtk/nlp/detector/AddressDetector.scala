@@ -42,15 +42,15 @@ object AddressDetector {
 
   private val PREFIX_R = "(via|viale|piazza|piazzale|piazzetta|vico|" +
     "corso|contrada|vicolo|largo|numero|circonvallazione|strada|ss){1,1}"
-  
+
 }
 
 class AddressDetector {
-  
+
   import AddressDetector._
 
   private val log = LoggerFactory.getLogger("AddressDetector")
-  
+
   def detect(words: Seq[Word], cityName: Option[String] = None): Try[Seq[Word]] = Try {
 
     def normalizeToken(word: Word): Word = {
@@ -68,7 +68,7 @@ class AddressDetector {
     }
 
     val normalizedWords = words.map(w => normalizeToken(w))
-    
+
     //create a map of words ordered by tokenId
     var mapWords = normalizedWords.map(w => w.tokenId.get -> w).toMap
     var taggedTokenId = Set.empty[Int]
@@ -87,8 +87,8 @@ class AddressDetector {
         if (slide(0).token.matches("(?i)" + PREFIX_R + "$")) {
           val candidate = slide.map(_.token).mkString(" ")
 
-          DBManager.findAddress(candidate).foreach { address =>
-            
+          if (DBManager.findAddressText(candidate).nonEmpty) {
+
             var entity = ""
 
             for (j <- 0 until slide.size) {
