@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import it.dtk.nlp.db.Word
 import scala.util.Try
 import EntityType._
+import java.util.regex.Pattern
 
 /**
  * Implements recognition of date entities
@@ -20,6 +21,8 @@ object DateDetector {
   val OFFSET = 6
 
   val YEAR_R = "((('''')?(\\s+)?)\\d{4}|\\d{2})"
+  val yearPattern = Pattern.compile("(?i)" + YEAR_R)
+  
   val COMPACT_MONTH_R = "(\\d{1,2})"
   val MONTH_R = "(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)"
   val DAY_R = "(\\d{1,2})"
@@ -37,9 +40,11 @@ object DateDetector {
 
   /* We need this to match the single tokens */
   val DATE_TOKEN_R = YEAR_R + "|" + MONTH_R + "|" + DAY_R + "|" + DAY_OF_WEEK_R
+  val dateTokenPattern = Pattern.compile("(?i)" + DATE_TOKEN_R)
 
   /* Regular expression to match full dates */
   val FULL_DATE_R = COMPACT_DATE_R + "|((" + DAY_OF_WEEK_R + "(,)?\\s+)?" + DATE_R + ")"
+  val datePattern = Pattern.compile("(?i)" + FULL_DATE_R)
 
   val log = LoggerFactory.getLogger("DateDetector")
   
@@ -286,9 +291,8 @@ object DateDetector {
    * @return true if year token matches its regular expression; false otherwise
    */
   private def isValidYear(year: String): Boolean = {
-    val yearPattern = "(?i)" + YEAR_R
 
-    if (year.matches(yearPattern)) {
+    if (yearPattern.matcher(year).matches()) {
       val pYear = if (year.charAt(0) == '\'') year.replaceAll("\\'(\\s+)?", "") else year
 
       if (pYear.length == 2) true
@@ -303,11 +307,8 @@ object DateDetector {
    * @param dateToken date token to check
    * @return true if date token matches its regular expression; false otherwise
    */
-  private def isValidDateToken(dateToken: String): Boolean = {
-    val dateTokenPattern = "(?i)" + DATE_TOKEN_R
-
-    dateToken.matches(dateTokenPattern)
-  }
+  private def isValidDateToken(dateToken: String): Boolean = 
+    dateTokenPattern.matcher(dateToken).matches()
 
   /**
    * Checks if input date matches regular expression
@@ -316,11 +317,9 @@ object DateDetector {
    * @return true if date matches its regular expression; false otherwise
    */
   private def isValidDate(date: String, semanticCheck: Boolean = true): Boolean = {
-    val datePattern = "(?i)" + FULL_DATE_R
-
     // TODO: Semantic check about day, month and year
-    if (semanticCheck) date.matches(datePattern) && toDate(date).isDefined
-    else date.matches(datePattern)
+    if (semanticCheck) dateTokenPattern.matcher(date).matches() && toDate(date).isDefined
+    else dateTokenPattern.matcher(date).matches()
   }
 
   private def toCompactMonth(longMonth: String): Option[String] = {
