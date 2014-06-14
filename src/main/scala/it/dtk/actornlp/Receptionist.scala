@@ -64,7 +64,7 @@ class Receptionist extends Actor with ActorLogging {
           countProcessing += 1
           count += 1
         } else {
-          log.info("skipping processed news with id {} and title {}", n.id, n.title)
+          //log.info("skipping processed news with id {} and title {}", n.id, n.title)
         }
       }
 
