@@ -4,7 +4,7 @@ import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.Imports._
 import MongoDBMapper._
-import com.mongodb.casbah.MongoCursor
+import com.mongodb.casbah.{ MongoCursor, MongoCursorBase }
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.DBObject
 
@@ -17,6 +17,7 @@ object DBManager {
   /**
    * default value
    */
+  //TODO transform to a class and load the parameters via a configuration file
   var dbHost: String = "10.0.0.11"
 
   val options = MongoClientOptions(autoConnectRetry = true, connectTimeout = 240000, socketKeepAlive = true)
@@ -109,6 +110,17 @@ object DBManager {
       news.find().limit(limit).map(n => MongoDBMapper.dBOToNews(n)).toList
     }
   }
+
+  def getNlpNews(limit: Int = 0): List[News] = {
+    if (limit == 0) {
+      nlpNews.find().map(n => MongoDBMapper.dBOToNews(n)).toList
+    } else {
+      nlpNews.find().limit(limit).map(n => MongoDBMapper.dBOToNews(n)).toList
+    }
+  }
+
+  def nlpNewsIterator(batchSize: Int = 50): MongoCursor =
+    nlpNews.find()
 
   def findNlpNews(id: String): Option[News] =
     nlpNews.findOne("_id" $eq new ObjectId(id)).map(r => r)

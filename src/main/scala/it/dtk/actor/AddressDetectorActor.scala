@@ -10,6 +10,8 @@ import it.dtk.nlp.db.Word
 import it.dtk.nlp.detector.NewsPart._
 
 object AddressDetectorActor {
+  
+  
   def props = Props(classOf[AddressDetectorActor])
 
   /**

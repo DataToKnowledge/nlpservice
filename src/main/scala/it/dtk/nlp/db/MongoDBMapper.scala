@@ -48,11 +48,11 @@ object MongoDBMapper {
   }
 
   implicit def dBOToNews(dbo: DBObject): News = {
-
+    //println(s"id news: ${dbo._id.map(_.toString).get}")
     News(
       dbo._id.map(_.toString).get,
-      dbo.getAs[String]("urlWebSite").get,
-      dbo.getAs[String]("urlNews").get,
+      dbo.getAs[String]("urlWebSite").getOrElse(""),
+      dbo.getAs[String]("urlNews").getOrElse(""),
       dbo.getAs[String]("title"),
       dbo.getAs[String]("summary"),
       dbo.getAs[DateTime]("newsDate"),
@@ -61,8 +61,24 @@ object MongoDBMapper {
       dbo.getAs[String]("metaDescription"),
       dbo.getAs[String]("metaKeyword"),
       dbo.getAs[String]("canonicalUrl"),
-      dbo.getAs[String]("topImage"))
+      dbo.getAs[String]("topImage"),
+      dbo.getAs[DBObject]("nlp").map(dBOToNlp))
   }
+
+  implicit def dBOToNlp(dbo: DBObject): Nlp =
+    Nlp(
+      None, //title
+      None, //summary
+      None, //corpus
+      None, //description
+      dbo.getAs[Seq[String]]("crimes"),
+      dbo.getAs[Seq[String]]("addresses"),
+      dbo.getAs[Seq[String]]("persons"),
+      dbo.getAs[Seq[String]]("locations"),
+      dbo.getAs[Seq[String]]("geopoliticals"),
+      dbo.getAs[Seq[String]]("dates"),
+      dbo.getAs[Seq[String]]("organizations"),
+      dbo.getAs[Map[String, Double]]("nlpTags"))
 
   implicit def newsToDBO(news: News): DBObject = {
     DBObject(

@@ -30,11 +30,11 @@ class Receptionist extends Actor with ActorLogging {
   import Receptionist._
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
 
-  val conf = ConfigFactory.load("nlp");
-  val dbHost = conf.getString("nlp.dbHost")
-  val batchNewsSize = conf.getInt("nlp.batch.size")
-  val waitTime = conf.getLong("nlp.wait.call")
-  val time = conf.getLong("nlp.wait.timeout")
+  val conf = ConfigFactory.load("nlpservice");
+  val dbHost = conf.getString("akka.nlp.dbHost")
+  val batchNewsSize = conf.getInt("akka.nlp.batch.size")
+  val waitTime = conf.getLong("akka.nlp.wait.call")
+  val time = conf.getLong("akka.nlp.wait.timeout")
   val timeout = time.seconds
   context.setReceiveTimeout(timeout)
 

@@ -23,7 +23,7 @@ object MainNlp {
     //val s = config.getConfig("akka.actor.deployment")
     //println(config)
 
-    val config = ConfigFactory.load("application")
+    val config = ConfigFactory.load("nlpservice")
 
     val system = ActorSystem("NlpService", config)
 
