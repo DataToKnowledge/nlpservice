@@ -51,7 +51,6 @@ class ElasticIngestActor(node: (Host, Port), indexDocumentPath: String, geocodin
 
           result.onComplete {
             case Success(v) =>
-              //log.info("indexed news id {}", v.getId())
               send ! Indexed(v.getId())
 
             case Failure(e) =>
@@ -59,7 +58,6 @@ class ElasticIngestActor(node: (Host, Port), indexDocumentPath: String, geocodin
           }
 
         case None =>
-          //log.error("error extracting data from the news {}", news.title)
           send ! ErrorConvertingNews(news)
       }
 
