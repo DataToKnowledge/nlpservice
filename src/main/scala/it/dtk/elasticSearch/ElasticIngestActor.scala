@@ -93,14 +93,16 @@ class ElasticReceptionist extends Actor with ActorLogging {
   def receive = {
 
     case Start =>
-      log.info("{} indexed news",countIndexed)
+      log.info("{} indexed news", countIndexed)
       1 until 50 foreach { i =>
-        routerIndexer ! Index(dBOToNews(newsCollection.next()))
-        countRunning += 1
-        countIndexed += 1
+        if (newsCollection.hasNext) {
+          routerIndexer ! Index(dBOToNews(newsCollection.next()))
+          countRunning += 1
+          countIndexed += 1
+        }
       }
 
-      if (countRunning == 0){
+      if (countRunning == 0) {
         log.info("Successfully indexed {} news", countIndexed)
         context.system.shutdown()
       }
@@ -112,7 +114,7 @@ class ElasticReceptionist extends Actor with ActorLogging {
     case ErrorIndexing(title, ex) =>
       log.error("error processing news with title {} with exception {}", title, ex.getStackTrace().mkString(" "))
       decrement()
-      
+
     case ErrorConvertingNews(news) =>
       log.error("error converting news with id {}", news.id)
       decrement()
