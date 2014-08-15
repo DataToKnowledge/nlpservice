@@ -152,7 +152,7 @@ class IndexingUtils(val geocodingCacheAddress: String) {
     val json = parse(body)
 
     try {
-      json.extract[List[Address]]
+      json.extract[List[Address]].distinct
     } catch {
       case t: Throwable =>
         t.printStackTrace()
