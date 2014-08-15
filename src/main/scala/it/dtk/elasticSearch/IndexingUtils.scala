@@ -102,7 +102,7 @@ class IndexingUtils(val geocodingCacheAddress: String) {
 
         if (result.isEmpty)
           locationExtractor(locationsSet.toList)
-        else result
+        else result.distinct
 
       case (None, Some(locs)) =>
 
