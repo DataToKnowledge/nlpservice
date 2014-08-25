@@ -1,11 +1,12 @@
 package it.dtk.nlp
 
-import it.dtk.nlp.db.{Lemma, DBManager, Word}
+import it.dtk.nlp.db.{ Lemma, DBManager, Word }
+import it.dtk.nlp.detector._
 
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
-class Lemmatizer {
+class Lemmatizer extends Detector {
 
   /**
    * Lemmatiza a given token using morph-it
@@ -14,7 +15,7 @@ class Lemmatizer {
    * @return its lemma
    */
   def lemma(word: String): Option[String] = {
-    DBManager.findLemma(word) match {
+    dbManager.findLemma(word) match {
       case Some(lemma: Lemma) =>
         lemma.lemma
       case None =>

@@ -13,11 +13,14 @@ import akka.actor.ReceiveTimeout
 import it.dtk.nlp.db.News
 import akka.actor.ActorRef
 import akka.actor.PoisonPill
+import it.dtk.nlp.db.DBManager
+import it.dtk.nlp.db.MongoDBMapper
+import com.mongodb.casbah.MongoCursorBase
 
 object Receptionist {
-
   case object Start
-  case object Next
+  case object IndexNotAnalyzed
+  private case object IndexBatch
   case class Finished(count: Int)
   def props = Props(classOf[Receptionist])
 }
@@ -36,100 +39,95 @@ class Receptionist extends Actor with ActorLogging {
   val waitTime = conf.getLong("akka.nlp.wait.call")
   val time = conf.getLong("akka.nlp.wait.timeout")
   val timeout = time.seconds
+  val dbManager = new DBManager(dbHost)
   context.setReceiveTimeout(timeout)
 
-  def db = "dbNews"
   var countProcessing = 0
-  var count = 0
+  var countProcessed = 0
+  var receiveTimeout = false
+  var running = false
 
   val controllerActor = context.actorOf(Controller.props(), "controller")
-
-  DBManager.dbHost = dbHost
-  val newsIterator = DBManager.iterateOverNews(batchNewsSize)
-
-  var nextBatch = IndexedSeq.empty[News]
+  var geoNewsIterator = Option.empty[MongoCursorBase]
 
   def receive = {
+
     case Start =>
+      if (running == true)
+        sender ! Finished(0)
+      else {
+        running = true
+        geoNewsIterator = Option(dbManager.geoNewsIterator(batchNewsSize))
+        self ! IndexBatch
+      }
+
+    case IndexNotAnalyzed =>
+      if (running == true)
+        sender ! Finished(0)
+      else {
+        running = true
+        geoNewsIterator = Option(dbManager.geoNewsNotAnalyzedIterator(batchNewsSize))
+        self ! IndexBatch
+      }
+
+    case IndexBatch =>
       log.info("processing {} news from db {}", batchNewsSize, dbHost)
       var nextCall: Long = 0
 
-      val newsSeq = newsIterator.next
-
-      newsSeq.foreach { n =>
-
+      1 to batchNewsSize foreach { i =>
         nextCall += waitTime
-        if (DBManager.findNlpNews(n.id).isEmpty) {
-          context.system.scheduler.scheduleOnce(nextCall.seconds, controllerActor, Controller.Process(n))
-          countProcessing += 1
-          count += 1
-        } else {
-          //log.info("skipping processed news with id {} and title {}", n.id, n.title)
+        if (geoNewsIterator.get.hasNext) {
+          val news: News = MongoDBMapper.dBOToNews(geoNewsIterator.get.next())
+          if (dbManager.findNlpNews(news.id).isEmpty) {
+            context.system.scheduler.scheduleOnce(nextCall.seconds, controllerActor, Controller.Process(news))
+            countProcessing += 1
+          } else {
+            dbManager.setGeoNewsAnalyzed(news)
+          }
         }
       }
 
-      if (countProcessing == 0)
-        self ! Start
-
-      if (newsSeq.isEmpty) {
-        log.info("Processed {} news", count)
-        self ! PoisonPill
-      }
-
-    case Next =>
-
-      nextBatch = if (nextBatch.isEmpty) newsIterator.next else nextBatch
-
-      if (nextBatch.isEmpty) {
-        log.info("Processed {} news", count)
-        self ! PoisonPill
-      } else {
-        val h = nextBatch.head
-        if (DBManager.findNlpNews(h.id).isEmpty) {
-          context.system.scheduler.scheduleOnce(waitTime.seconds, controllerActor, Controller.Process(nextBatch.head))
-          countProcessing += 1
-          count += 1
-          nextBatch = nextBatch.tail
+      if (countProcessing == 0) {
+        running = false
+        if (receiveTimeout) {
+          context.setReceiveTimeout(timeout * 2)
+          self ! IndexNotAnalyzed
         } else {
-          log.info("skipping processed news with id {} and title {}", h.id, h.title)
+          self ! Finished(countProcessed)
         }
-
-        if (countProcessing == 0)
-          self ! Start
       }
 
     case Controller.Processed(news) =>
       try {
-        val r = DBManager.saveNlpNews(news)
+        dbManager.setGeoNewsAnalyzed(news)
+        shouldProcess()
+        val r = dbManager.saveNlpNews(news)
         if (r == 0)
           log.error("error saving news with id {}", news.id)
         log.info("succesfully saved news with id {} and title {}", news.id, news.title)
-        shouldIProcess()
       } catch {
         case ex: Throwable =>
-          log.error("failed saving news with id {}", news.id)
-          ex.printStackTrace()
+          log.error("failed saving news with id {} with exception {}", news.id, ex.getStackTrace().mkString(" %% "))
       }
 
     case Controller.FailProcess(newsId, ex) =>
-      log.error("fail process news with id {} with exception {}", newsId, ex.getStackTrace().mkString("  "))
-      shouldIProcess()
-    //ex.printStackTrace()
+      log.error("fail process news with id {} with exception {}", newsId, ex.getStackTrace().mkString(" %% "))
+      shouldProcess()
 
     case ReceiveTimeout =>
       log.error(s"timeout from text pro actor, with running actors {}", countProcessing)
-      shouldIProcess()
+      receiveTimeout = true
+      shouldProcess()
+      
+    case Finished =>
+      //start processing only notAnalyzed every time it finishes after one hour
+      context.system.scheduler.scheduleOnce(1.hour, self, IndexNotAnalyzed)
   }
 
-  def shouldIProcess(): Unit = {
+  def shouldProcess(): Unit = {
     countProcessing -= 1
-    if (countProcessing == 0)
-      self ! Start
-    else {
-      for (i <- 1 to 2) {
-        self ! Next
-      }
-    }
-
+    countProcessed += 1
+    if (countProcessing == Math.round(batchNewsSize / 4))
+      self ! IndexBatch
   }
 }

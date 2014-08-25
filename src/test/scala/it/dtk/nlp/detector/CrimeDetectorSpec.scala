@@ -21,7 +21,7 @@ class CrimeDetectorSpec extends BaseTestClass {
 
   "A CrimeDetector" when {
 
-    val detector = CrimeDetector
+    val detector = new CrimeDetector
     val textPreprocessor = new TextPreprocessor
 
     "finds crimes" should {

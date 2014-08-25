@@ -12,13 +12,7 @@ import com.mongodb.DBObject
  *
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
-object DBManager {
-
-  /**
-   * default value
-   */
-  //TODO transform to a class and load the parameters via a configuration file
-  var dbHost: String = "10.0.0.11"
+class DBManager(val dbHost: String) {
 
   val options = MongoClientOptions(autoConnectRetry = true, connectTimeout = 240000, socketKeepAlive = true)
   private val mongoClient = MongoClient(dbHost, options)
@@ -30,8 +24,7 @@ object DBManager {
   private val address = db("address")
   private val crime = db("crime")
 
-  private val news = mongoClient("dbNews")("geoNews")
-
+  private val geoNews = mongoClient("dbNews")("geoNews")
   private val nlpNews = mongoClient("dbNews")("nlpNews")
 
   /**
@@ -103,34 +96,30 @@ object DBManager {
     //city.findOne(MongoDBObject("city_name" -> regex.r)).map(r => r)
   }
 
-  def getNews(limit: Int = 0): List[News] = {
-    if (limit == 0) {
-      news.find().map(n => MongoDBMapper.dBOToNews(n)).toList
-    } else {
-      news.find().limit(limit).map(n => MongoDBMapper.dBOToNews(n)).toList
-    }
+  def setGeoNewsAnalyzed(news: News): Int = {
+    val query = MongoDBObject("_id" -> news.id)
+    val update = $set("nlpAnalyzed" -> news.nlpAnalyzed)
+    geoNews.update(query, update, upsert = true).getN
   }
 
-  def getNlpNews(limit: Int = 0): List[News] = {
-    if (limit == 0) {
-      nlpNews.find().map(n => MongoDBMapper.dBOToNews(n)).toList
-    } else {
-      nlpNews.find().limit(limit).map(n => MongoDBMapper.dBOToNews(n)).toList
-    }
-  }
+  def geoNewsIterator(batchSize: Int): MongoCursorBase =
+    geoNews.find().batchSize(batchSize)
 
-  def nlpNewsIterator(batchSize: Int = 50): MongoCursor =
-    nlpNews.find()
+  def geoNewsNotAnalyzedIterator(batchSize: Int): MongoCursorBase =
+    geoNews.find(MongoDBObject("nlpAnalyzed" -> false)).batchSize(batchSize)
+    
+  def nlpNewsIterator(batchSize: Int): MongoCursorBase = 
+    nlpNews.find().batchSize(batchSize)
 
   def findNlpNews(id: String): Option[News] =
     nlpNews.findOne("_id" $eq new ObjectId(id)).map(r => r)
 
-  /**
-   * @param batchSize
-   * @return an collection iterator which allows to iterate of the news collection
-   */
-  def iterateOverNews(batchSize: Int): CollectionIterator =
-    new CollectionIterator(news, batchSize)
+  //  /**
+  //   * @param batchSize
+  //   * @return an collection iterator which allows to iterate of the news collection
+  //   */
+  //  def iterateOverNews(batchSize: Int): CollectionIterator =
+  //    new CollectionIterator(geoNews, batchSize)
 
   /**
    * @param news

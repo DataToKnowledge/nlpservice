@@ -20,9 +20,9 @@ class CityDetectorSpec extends BaseTestClass {
   import CityDetectorSpec._
 
   "A CityDetector" when {
-    
-    val detector = CityDetector
-        val textPreprocessor = new TextPreprocessor
+
+    val detector = new CityDetector
+    val textPreprocessor = new TextPreprocessor
 
     "finds cities" should {
 

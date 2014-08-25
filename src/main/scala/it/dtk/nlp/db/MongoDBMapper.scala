@@ -48,7 +48,6 @@ object MongoDBMapper {
   }
 
   implicit def dBOToNews(dbo: DBObject): News = {
-    //println(s"id news: ${dbo._id.map(_.toString).get}")
     News(
       dbo._id.map(_.toString).get,
       dbo.getAs[String]("urlWebSite").getOrElse(""),
@@ -62,6 +61,7 @@ object MongoDBMapper {
       dbo.getAs[String]("metaKeyword"),
       dbo.getAs[String]("canonicalUrl"),
       dbo.getAs[String]("topImage"),
+      dbo.getAs[Boolean]("nlpAnalyzed"),
       dbo.getAs[DBObject]("nlp").map(dBOToNlp))
   }
 

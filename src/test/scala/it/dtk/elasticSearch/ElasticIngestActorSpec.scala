@@ -16,10 +16,11 @@ object ElasticIngestActorSpec {
   val addressWebServiceUrl = "10.0.0.11:8080"
   val node = ("localhost", 9300)
   val indexDocumentPath = "wheretolive/news"
+  val dbManager = new DBManager("10.0.0.11")
 
-  val seqNews = DBManager.nlpNewsIterator(100)
+  val seqNews = dbManager.nlpNewsIterator(100)
 
-  val singleNews = DBManager.findNlpNews("532886721dbb33b9993dc1db")
+  val singleNews = dbManager.findNlpNews("532886721dbb33b9993dc1db")
 
 }
 
@@ -36,10 +37,10 @@ class ElasticIngestActorSpec extends BaseTestClass {
   "The actor" should {
 
     "index news correctly" in {
-      val actorRef = TestActorRef(new ElasticIngestActor(node, indexDocumentPath, addressWebServiceUrl))      
-      
-      for (n <- seqNews) {
-        val future = actorRef ? Index(MongoDBMapper.dBOToNews(n))
+      val actorRef = TestActorRef(new ElasticIngestActor(node, indexDocumentPath, addressWebServiceUrl))
+
+      while (seqNews.hasNext) {
+        val future = actorRef ? Index(MongoDBMapper.dBOToNews(seqNews.next()))
 
         future.onComplete {
           case Success(v) =>
@@ -48,6 +49,7 @@ class ElasticIngestActorSpec extends BaseTestClass {
             println(e)
         }
       }
+
     }
 
     "index correctly a single news" in {

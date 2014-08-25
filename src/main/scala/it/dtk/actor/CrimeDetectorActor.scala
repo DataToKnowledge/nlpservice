@@ -32,7 +32,7 @@ class CrimeDetectorActor extends Actor with ActorLogging {
 
   import CrimeDetectorActor._
 
-  val detector = CrimeDetector
+  val detector = new CrimeDetector
 
   def receive = {
     

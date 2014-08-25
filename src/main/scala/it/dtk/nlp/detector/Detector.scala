@@ -2,12 +2,13 @@ package it.dtk.nlp.detector
 
 import it.dtk.nlp.db.Word
 import scala.util.Try
+import it.dtk.nlp.db.DBManager
+import com.typesafe.config.ConfigFactory
 
 object NewsPart extends Enumeration {
   type NewsPart = Value
   val Title, Summary, Corpus, Description = Value
 }
-
 
 object EntityType extends Enumeration {
   type EntityType = Value
@@ -18,4 +19,10 @@ object EntityType extends Enumeration {
 
   def enumValue(str: String): EntityType =
     EntityType.Value(str.replace("-", "_"))
+}
+
+trait Detector {
+  val conf = ConfigFactory.load("nlpservice");
+  val dbHost = conf.getString("akka.nlp.dbHost")
+  val dbManager = new DBManager(dbHost)
 }

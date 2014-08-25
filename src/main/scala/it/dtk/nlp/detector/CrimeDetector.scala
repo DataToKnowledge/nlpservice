@@ -7,7 +7,7 @@ import it.dtk.nlp.db.Word
 import EntityType._
 import scala.collection.immutable.TreeMap
 
-object CrimeDetector {
+class CrimeDetector extends Detector {
 
   val range = 3
 
@@ -28,7 +28,7 @@ object CrimeDetector {
       for (slide <- sliding) {
         val candidate = slide.map(_.token).mkString(" ")
         
-        val result = DBManager.findCrimeText(candidate).filter(c => c.word.split(" ").length == slide.length)
+        val result = dbManager.findCrimeText(candidate).filter(c => c.word.split(" ").length == slide.length)
 
         if (result.nonEmpty) {
 

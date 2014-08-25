@@ -13,6 +13,8 @@ object DBManagerSpec {
   val crime = "rapina"
 
   val crimeText = "omicidio"
+  
+  val dbManager = new DBManager("10.0.0.11")
 
 }
 
@@ -28,15 +30,15 @@ class DBManagerSpec extends BaseTestClass {
     "called" should {
 
       "return a lemma" in {
-        DBManager.findLemma(lemma).get shouldBe a[Lemma]
+        dbManager.findLemma(lemma).get shouldBe a[Lemma]
       }
 
       "return a None when there is no lemma" in {
-        DBManager.findLemma("") should be(None)
+        dbManager.findLemma("") should be(None)
       }
 
       "return an address" in {
-        val addr = DBManager.findAddress(address)
+        val addr = dbManager.findAddress(address)
 
         addr.get shouldBe a[Address]
         addr.get.street should be(address)
@@ -44,27 +46,27 @@ class DBManagerSpec extends BaseTestClass {
       }
 
       "return an address in text search" in {
-        val addrs = DBManager.findAddressText(address)
+        val addrs = dbManager.findAddressText(address)
         addrs.size should be > 0
       }
 
       "return an address in text search with city " in {
-        val addrs = DBManager.findAddressText(address, Some(city))
+        val addrs = dbManager.findAddressText(address, Some(city))
         addrs.size should be > 0
       }
 
       "do not return an address in text search with city " in {
-        val addrs = DBManager.findAddressText(address, Some("Fandomia"))
+        val addrs = dbManager.findAddressText(address, Some("Fandomia"))
         addrs.size == 0
       }
 
       "do not return an address in text search" in {
-        val addrs = DBManager.findAddressText("falso")
+        val addrs = dbManager.findAddressText("falso")
         addrs.size == 0
       }
 
       "return an address of a city" in {
-        val addr = DBManager.findAddress(address, Some(city))
+        val addr = dbManager.findAddress(address, Some(city))
 
         addr.get shouldBe a[Address]
         addr.get.street should be(address)
@@ -72,38 +74,34 @@ class DBManagerSpec extends BaseTestClass {
       }
 
       "return a None when there is no address" in {
-        DBManager.findAddress("") should be(None)
+        dbManager.findAddress("") should be(None)
       }
 
       "return a city" in {
-        DBManager.findCity(city).get shouldBe a[City]
+        dbManager.findCity(city).get shouldBe a[City]
       }
 
       "return a None when there is no city" in {
-        DBManager.findCity("") should be(None)
+        dbManager.findCity("") should be(None)
       }
 
       "return a crime" in {
-        DBManager.findCrime(crime).get shouldBe a[Crime]
+        dbManager.findCrime(crime).get shouldBe a[Crime]
       }
 
       "return a crime from a text search" in {
-        val r = DBManager.findCrimeText(crimeText)
+        val r = dbManager.findCrimeText(crimeText)
         //r.foreach(println)
         r.length should be > 0
       }
 
       "should no return a crime from wrong a text search" in {
-        val r = DBManager.findCrimeText("wrong")
+        val r = dbManager.findCrimeText("wrong")
         r.length == 0
       }
 
       "return a None when there is no crime" in {
-        DBManager.findCrime("") should be(None)
-      }
-
-      "return a news" in {
-        DBManager.getNews(1).head shouldBe a[News]
+        dbManager.findCrime("") should be(None)
       }
 
     }

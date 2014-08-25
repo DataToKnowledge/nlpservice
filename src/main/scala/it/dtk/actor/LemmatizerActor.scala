@@ -7,6 +7,7 @@ import akka.routing.RoundRobinPool
 import it.dtk.nlp.detector.NewsPart._
 import it.dtk.nlp.db.Word
 import it.dtk.nlp.Lemmatizer
+import com.typesafe.config.ConfigFactory
 
 object LemmatizerActor {
 
@@ -31,7 +32,7 @@ object LemmatizerActor {
 class LemmatizerActor extends Actor with ActorLogging {
 
   import LemmatizerActor._
-  
+
   val detector = new Lemmatizer
 
   def receive = {

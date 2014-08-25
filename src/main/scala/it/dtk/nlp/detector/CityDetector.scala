@@ -9,7 +9,7 @@ import scala.collection.immutable.TreeMap
 /**
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
  */
-object CityDetector {
+class CityDetector extends Detector {
 
   /**
    * Maximum number of tokens for a city
@@ -41,7 +41,7 @@ object CityDetector {
       for (slide <- sliding) {
         val candidate = slide.map(_.token).mkString(" ")
         if (candidate.matches(CITIES_R)) {
-          DBManager.findCity(candidate).foreach { city =>
+          dbManager.findCity(candidate).foreach { city =>
             for (j <- 0 until slide.size) {
               val word = if (j == 0)
                 tag(slide, j, EntityType.B_CITY)

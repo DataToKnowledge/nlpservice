@@ -32,7 +32,7 @@ class CityDetectorActor extends Actor with ActorLogging {
 
   import CityDetectorActor._
 
-  val detector = CityDetector
+  val detector = new CityDetector
 
   def receive = {
 
