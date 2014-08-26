@@ -81,8 +81,10 @@ class Receptionist extends Actor with ActorLogging {
           if (dbManager.findNlpNews(news.id).isEmpty) {
             context.system.scheduler.scheduleOnce(nextCall.seconds, controllerActor, Controller.Process(news))
             countProcessing += 1
+            log.debug("processing news with id {}", news.id)
           } else {
             dbManager.setGeoNewsAnalyzed(news)
+            log.debug("news already analyzed {}", news.id)
           }
         }
       }
