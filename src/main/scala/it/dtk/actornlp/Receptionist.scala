@@ -54,14 +54,19 @@ class Receptionist extends Actor with ActorLogging {
   def receive = {
 
     case Start =>
+      receiveTimeout = false
       geoNewsIterator = Option(dbManager.geoNewsIterator(batchNewsSize))
       countToProcess = geoNewsIterator.get.count()
+      countProcessed = 0
+      countProcessing = 0
       log.info("start processing {} news", countToProcess)
       self ! IndexBatch
 
     case IndexNotAnalyzed =>
       geoNewsIterator = Option(dbManager.geoNewsNotAnalyzedIterator(batchNewsSize))
       countToProcess = geoNewsIterator.get.count()
+      countProcessed = 0
+      countProcessing = 0
       log.info("start processing {} news", countToProcess)
       self ! IndexBatch
 
@@ -85,7 +90,7 @@ class Receptionist extends Actor with ActorLogging {
           }
         }
       }
-      
+
       if (countProcessing == 0) {
         if (geoNewsIterator.get.hasNext)
           self ! IndexBatch

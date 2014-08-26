@@ -101,7 +101,7 @@ class IndexingUtils(val geocodingCacheAddress: String) {
         } yield new GeoPoint(value.latitude, value.longitude)
 
         if (result.isEmpty)
-          locationExtractor(locationsSet.toList)
+          cityExtractor(locationsSet.toList)
         else result.distinct
 
       case (None, Some(locs)) =>
@@ -122,7 +122,7 @@ class IndexingUtils(val geocodingCacheAddress: String) {
    * @param strLocations
    * @return
    */
-  private def locationExtractor(strLocations: Seq[String]): Seq[GeoPoint] = {
+  private def cityExtractor(strLocations: Seq[String]): Seq[GeoPoint] = {
 
     val locations = for {
       tryLocations <- strLocations.map(findCity)
