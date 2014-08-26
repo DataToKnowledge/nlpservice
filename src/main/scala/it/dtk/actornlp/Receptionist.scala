@@ -132,7 +132,7 @@ class Receptionist extends Actor with ActorLogging {
   def shouldProcess(): Unit = {
     countProcessing -= 1
     countProcessed += 1
-    if (countProcessing == Math.round(batchNewsSize / 4))
+    if (countProcessing <= Math.round(batchNewsSize / 4))
       self ! IndexBatch
   }
 }
