@@ -16,6 +16,7 @@ import akka.actor.PoisonPill
 import it.dtk.nlp.db.DBManager
 import it.dtk.nlp.db.MongoDBMapper
 import com.mongodb.casbah.MongoCursorBase
+import org.joda.time.DateTime
 
 object Receptionist {
   case object Start
@@ -117,6 +118,7 @@ class Receptionist extends Actor with ActorLogging {
     case Finished(processed) =>
       log.info("processed {} news", processed)
       //start processing only notAnalyzed every time it finishes after one hour
+      log.info("scheduling the next iteration at {}", DateTime.now().plus(1.hour.toMillis))
       context.system.scheduler.scheduleOnce(1.hour, self, IndexNotAnalyzed)
   }
 
