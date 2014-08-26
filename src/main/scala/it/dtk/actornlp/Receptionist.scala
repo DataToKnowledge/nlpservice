@@ -84,7 +84,6 @@ class Receptionist extends Actor with ActorLogging {
           }
         }
       }
-
       if (countProcessing == 0) {
         if (geoNewsIterator.get.hasNext)
           self ! IndexBatch
