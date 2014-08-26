@@ -8,8 +8,6 @@ import akka.actor.Inbox
 object MainNlp {
 
   def main(args: Array[String]) {
-
-    println("don't forget to add dbhost and batch news size to the nlp.conf file under resources forlder")
     startup();
   }
 
