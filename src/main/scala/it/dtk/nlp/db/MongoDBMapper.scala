@@ -47,7 +47,7 @@ object MongoDBMapper {
     seqWords.getOrElse(Vector.empty)
   }
 
-  implicit def dBOToNews(dbo: DBObject): News = {
+  implicit def dBOToNews(dbo: DBObject): News = {    
     News(
       dbo._id.map(_.toString).get,
       dbo.getAs[String]("urlWebSite").getOrElse(""),

@@ -42,10 +42,10 @@ class Receptionist extends Actor with ActorLogging {
   val dbManager = new DBManager(dbHost)
   context.setReceiveTimeout(timeout)
 
-  var countProcessing = 0
+  var countToProcess = 0
   var countProcessed = 0
+  var countProcessing = 0
   var receiveTimeout = false
-  var running = false
 
   val controllerActor = context.actorOf(Controller.props(), "controller")
   var geoNewsIterator = Option.empty[MongoCursorBase]
@@ -53,50 +53,52 @@ class Receptionist extends Actor with ActorLogging {
   def receive = {
 
     case Start =>
-      if (running == true)
-        sender ! Finished(0)
-      else {
-        running = true
-        geoNewsIterator = Option(dbManager.geoNewsIterator(batchNewsSize))
-        self ! IndexBatch
-      }
+      geoNewsIterator = Option(dbManager.geoNewsIterator(batchNewsSize))
+      countToProcess = geoNewsIterator.get.count()
+      log.info("start processing {} news", countToProcess)
+      self ! IndexBatch
 
     case IndexNotAnalyzed =>
-      if (running == true)
-        sender ! Finished(0)
-      else {
-        running = true
-        geoNewsIterator = Option(dbManager.geoNewsNotAnalyzedIterator(batchNewsSize))
-        self ! IndexBatch
-      }
+      geoNewsIterator = Option(dbManager.geoNewsNotAnalyzedIterator(batchNewsSize))
+      countToProcess = geoNewsIterator.get.count()
+      log.info("start processing {} news", countToProcess)
+      self ! IndexBatch
 
     case IndexBatch =>
-      log.info("processing {} news from db {}", batchNewsSize, dbHost)
+      log.info("processing from {} to {} news from db of {}", countProcessed, countProcessed + batchNewsSize, countToProcess)
       var nextCall: Long = 0
 
       1 to batchNewsSize foreach { i =>
         nextCall += waitTime
         if (geoNewsIterator.get.hasNext) {
-          val news: News = MongoDBMapper.dBOToNews(geoNewsIterator.get.next())
+          val dbo = geoNewsIterator.get.next()
+
+          //FIXME bug in the mongodbIterator sometimes it does not return the dbo
+          val news: News = try {
+            MongoDBMapper.dBOToNews(dbo)
+          } catch {
+            case ex: NoSuchElementException =>
+              dbManager.findGeoNews(dbo.get("_id").toString()).get
+          }
+
           if (dbManager.findNlpNews(news.id).isEmpty) {
             context.system.scheduler.scheduleOnce(nextCall.seconds, controllerActor, Controller.Process(news))
             countProcessing += 1
             log.debug("processing news with id {}", news.id)
           } else {
             dbManager.setGeoNewsAnalyzed(news)
+            countProcessed += 1
             log.debug("news already analyzed {}", news.id)
           }
         }
       }
 
       if (countProcessing == 0) {
-        running = false
-        if (receiveTimeout) {
-          context.setReceiveTimeout(timeout * 2)
-          self ! IndexNotAnalyzed
-        } else {
+        if (geoNewsIterator.get.hasNext)
+          self ! IndexBatch
+        else
           self ! Finished(countProcessed)
-        }
+
       }
 
     case Controller.Processed(news) =>
@@ -120,8 +122,9 @@ class Receptionist extends Actor with ActorLogging {
       log.error(s"timeout from text pro actor, with running actors {}", countProcessing)
       receiveTimeout = true
       shouldProcess()
-      
-    case Finished =>
+
+    case Finished(processed) =>
+      log.info("processed {} news", processed)
       //start processing only notAnalyzed every time it finishes after one hour
       context.system.scheduler.scheduleOnce(1.hour, self, IndexNotAnalyzed)
   }
