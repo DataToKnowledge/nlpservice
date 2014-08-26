@@ -69,13 +69,13 @@ class Receptionist extends Actor with ActorLogging {
       var nextCall: Long = 0
 
       1 to batchNewsSize foreach { i =>
-        nextCall += waitTime
         if (geoNewsIterator.get.hasNext) {
           val news: News = MongoDBMapper.dBOToNews(geoNewsIterator.get.next())
 
           if (dbManager.findNlpNews(news.id).isEmpty) {
             context.system.scheduler.scheduleOnce(nextCall.seconds, controllerActor, Controller.Process(news))
             countProcessing += 1
+            nextCall += waitTime
             log.debug("processing news with id {}", news.id)
           } else {
             dbManager.setGeoNewsAnalyzed(news)
