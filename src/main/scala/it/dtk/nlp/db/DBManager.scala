@@ -7,6 +7,7 @@ import MongoDBMapper._
 import com.mongodb.casbah.{ MongoCursor, MongoCursorBase }
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.DBObject
+import org.ietf.jgss.Oid
 
 /**
  *
@@ -97,8 +98,8 @@ class DBManager(val dbHost: String) {
   }
 
   def setGeoNewsAnalyzed(news: News): Int = {
-    val query = MongoDBObject("_id" -> news.id)
-    val update = $set("nlpAnalyzed" -> news.nlpAnalyzed)
+    val query = MongoDBObject("_id" -> new ObjectId(news.id))
+    val update = $set("nlpAnalyzed" -> true)
     geoNews.update(query, update, upsert = true).getN
   }
 
