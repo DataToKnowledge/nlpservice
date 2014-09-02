@@ -102,6 +102,8 @@ class ElasticReceptionist extends Actor with ActorLogging {
         if (newsCollection.hasNext) {
           system.scheduler.scheduleOnce(timer.second, routerIndexer,Index(dBOToNews(newsCollection.next())))
           timer+=1
+          if (timer == 25)
+            timer = 1
           //routerIndexer ! Index(dBOToNews(newsCollection.next()))
           countRunning += 1
           countIndexed += 1
