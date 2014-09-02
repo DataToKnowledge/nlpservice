@@ -86,7 +86,7 @@ class ElasticReceptionist extends Actor with ActorLogging {
   val batchSize = conf.getInt("akka.nlp.batch.size") * 10
   val dbHost = conf.getString("akka.nlp.dbHost")
 
-  val routerIndexer = actorOf(ElasticIngestActor.routerProps(5, node, indexDocumentPath, geoCondingCacheUrl))
+  val routerIndexer = actorOf(ElasticIngestActor.routerProps(1, node, indexDocumentPath, geoCondingCacheUrl))
   val dbManager = new DBManager(dbHost)
   val newsCollection = dbManager.nlpNewsIterator(batchSize)
 
@@ -97,9 +97,11 @@ class ElasticReceptionist extends Actor with ActorLogging {
 
     case Start =>
       log.info("{} indexed news", countIndexed)
+      var time = 2
       1 until 50 foreach { i =>
         if (newsCollection.hasNext) {
-          system.scheduler.scheduleOnce(2.second, routerIndexer,Index(dBOToNews(newsCollection.next())))
+          system.scheduler.scheduleOnce(time.second, routerIndexer,Index(dBOToNews(newsCollection.next())))
+          time +=2
           //routerIndexer ! Index(dBOToNews(newsCollection.next()))
           countRunning += 1
           countIndexed += 1
