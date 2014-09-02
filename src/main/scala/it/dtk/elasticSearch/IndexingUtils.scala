@@ -22,7 +22,7 @@ object IndexingUtils {
 case class Address(latitude: Double, longitude: Double, country: String, city: Option[String], state: String, zipcode: Option[String],
   streetName: Option[String], streetNumber: Option[String], countryCode: String)
 
-class IndexingUtils(val geocodingCacheAddress: String) {
+class IndexingUtils(val geocodingcacheAddress: String) {
 
   import IndexingUtils._
   val printDateFormatter = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm").withZoneUTC() //ISODateTimeFormat.basicDateTime().withZoneUTC()
@@ -33,7 +33,7 @@ class IndexingUtils(val geocodingCacheAddress: String) {
    */
   def newsToNewsEs(n: News): Option[NewsES] =
     if (n.title.isEmpty || n.nlp.isEmpty)
-      None
+      Option.empty[NewsES]
     else n.nlp.map { nlp =>
       NewsES(n.urlWebSite, n.canonicalUrl.getOrElse(n.urlNews), n.title, n.summary, n.corpus, dateExtractorAsString(nlp.dates, n.newsDate),
         nlp.crimes, nlp.persons, nlp.locations, nlp.organizations, nlp.geopoliticals, positionsExtractor(nlp.addresses, nlp.locations),
@@ -143,9 +143,10 @@ class IndexingUtils(val geocodingCacheAddress: String) {
 
   def findAddress(address: String): Try[List[Address]] = webServiceCall("address", address)
 
-  def webServiceCall(service: String, param: String): Try[List[Address]] = Try {
+  def webServiceCall(service: String, queryString: String): Try[List[Address]] = Try {
+
     //get the json
-    val url: HttpUrl = (Http / geocodingCacheAddress / "google" / s"?$service=${param.replace(" ", "+")}")
+    val url: HttpUrl = (Http / geocodingcacheAddress / service / queryString.replace(" ", "+"))
     val body = url.slurp[Char]
 
     //convert the json to address
