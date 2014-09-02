@@ -97,13 +97,9 @@ class ElasticReceptionist extends Actor with ActorLogging {
 
     case Start =>
       log.info("{} indexed news", countIndexed)
-      var timer = 1
       1 until 50 foreach { i =>
         if (newsCollection.hasNext) {
-          system.scheduler.scheduleOnce(timer.second, routerIndexer,Index(dBOToNews(newsCollection.next())))
-          timer+=1
-          if (timer == 15)
-            timer = 1
+          system.scheduler.scheduleOnce(2.second, routerIndexer,Index(dBOToNews(newsCollection.next())))
           //routerIndexer ! Index(dBOToNews(newsCollection.next()))
           countRunning += 1
           countIndexed += 1
