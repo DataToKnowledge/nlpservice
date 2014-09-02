@@ -19,7 +19,7 @@ object IndexingUtils {
   val dateFormatter = DateTimeFormat.forPattern("dd/MM/yyyy").withLocale(Locale.ITALY).withZoneUTC()
 }
 
-case class Address(latitude: Double, longitude: Double, country: String, city: Option[String], state: String, zipcode: Option[String],
+case class Address(latitude: String, longitude: String, country: String, city: Option[String], state: String, zipcode: Option[String],
   streetName: Option[String], streetNumber: Option[String], countryCode: String)
 
 class IndexingUtils(val geocodingcacheAddress: String) {
@@ -98,7 +98,7 @@ class IndexingUtils(val geocodingcacheAddress: String) {
           value <- addresses
           if (value.city.isDefined)
           if (locationsSet.contains(value.city.get.toLowerCase()))
-        } yield new GeoPoint(value.latitude, value.longitude)
+        } yield new GeoPoint(value.latitude.toDouble, value.longitude.toDouble)
 
         if (result.isEmpty)
           cityExtractor(locationsSet.toList)
@@ -110,7 +110,7 @@ class IndexingUtils(val geocodingcacheAddress: String) {
           loc <- locs.map(findCity)
           if (loc.isSuccess)
           l <- loc.get
-        } yield new GeoPoint(l.latitude, l.longitude)
+        } yield new GeoPoint(l.latitude.toDouble, l.longitude.toDouble)
 
       case (_, _) =>
         Seq.empty[GeoPoint]
@@ -131,7 +131,7 @@ class IndexingUtils(val geocodingcacheAddress: String) {
       if (loc.countryCode == "IT")
     } yield loc
 
-    locations.map(l => new GeoPoint(l.latitude, l.longitude)).toSeq
+    locations.map(l => new GeoPoint(l.latitude.toDouble, l.longitude.toDouble)).toSeq
 
   }
 
