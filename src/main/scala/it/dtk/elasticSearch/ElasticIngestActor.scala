@@ -11,6 +11,7 @@ import akka.routing.RoundRobinPool
 import scala.util.{ Failure, Success }
 import com.sksamuel.elastic4s.source.ObjectSource
 import com.typesafe.config.ConfigFactory
+import scala.concurrent.duration._
 
 object ElasticIngestActor {
 
@@ -29,9 +30,9 @@ object ElasticIngestActor {
   case class ErrorConvertingNews(news: News)
 }
 
-class ElasticIngestActor(node: (Host, Port), indexDocumentPath: String, geocodingCacheAddress: String) extends Actor with ActorLogging {
+class ElasticIngestActor(node: (Host, Port), indexDocumentPath: String, geocodingcacheAddress: String) extends Actor with ActorLogging {
 
-  val indexUtil = new IndexingUtils(geocodingCacheAddress)
+  val indexUtil = new IndexingUtils(geocodingcacheAddress)
 
   implicit val executor = context.dispatcher
 
@@ -96,9 +97,12 @@ class ElasticReceptionist extends Actor with ActorLogging {
 
     case Start =>
       log.info("{} indexed news", countIndexed)
+      var timer = 1
       1 until 50 foreach { i =>
         if (newsCollection.hasNext) {
-          routerIndexer ! Index(dBOToNews(newsCollection.next()))
+          system.scheduler.scheduleOnce(timer.second, routerIndexer,Index(dBOToNews(newsCollection.next())))
+          timer+=1
+          //routerIndexer ! Index(dBOToNews(newsCollection.next()))
           countRunning += 1
           countIndexed += 1
         }
