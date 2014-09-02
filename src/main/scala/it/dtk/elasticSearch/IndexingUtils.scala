@@ -146,7 +146,7 @@ class IndexingUtils(val geocodingcacheAddress: String) {
   def webServiceCall(service: String, queryString: String): Try[List[Address]] = Try {
 
     //get the json
-    val url: HttpUrl = (Http / geocodingcacheAddress / service / queryString.replace(" ", "+"))
+    val url: HttpUrl = (Http / geocodingcacheAddress / service / queryString) //.replace(" ", "%20")
     val body = url.slurp[Char]
 
     //convert the json to address
