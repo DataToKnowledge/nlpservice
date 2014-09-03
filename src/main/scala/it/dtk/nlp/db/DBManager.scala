@@ -1,13 +1,10 @@
 package it.dtk.nlp.db
 
-import com.mongodb.casbah.MongoClient
-import com.mongodb.casbah.commons.MongoDBObject
-import com.mongodb.casbah.Imports._
-import MongoDBMapper._
-import com.mongodb.casbah.{ MongoCursor, MongoCursorBase }
-import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.DBObject
-import org.ietf.jgss.Oid
+import com.mongodb.casbah.{MongoClient, MongoCursorBase}
+import com.mongodb.casbah.Imports._
+import com.mongodb.casbah.commons.MongoDBObject
+import it.dtk.nlp.db.MongoDBMapper._
 
 /**
  *
@@ -111,6 +108,10 @@ class DBManager(val dbHost: String) {
 
   def nlpNewsIterator(batchSize: Int): MongoCursorBase =
     nlpNews.find().batchSize(batchSize)
+
+  def nlpNewsIteratorNotIndexed(batchSize: Int): MongoCursorBase =
+    nlpNews.find("indexed" $eq false).batchSize(batchSize).sort(MongoDBObject("_id" -> -1))
+
 
   def findNlpNews(id: String): Option[News] =
     nlpNews.findOne("_id" $eq new ObjectId(id)).map(r => r)

@@ -9,8 +9,7 @@ object MainNlp {
 
   def main(args: Array[String]) {
 
-    println("you can start to IndexAll or IndexNotAnalyzed")
-
+    println("you can start to IndexAll or IndexNotAnalyzed, by default run IndexNotAnalyzed")
     val indexMethod = if (args.size > 0) args(0) else "IndexNotAnalyzed"
 
     startup(indexMethod);

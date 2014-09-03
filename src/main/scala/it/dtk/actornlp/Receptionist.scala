@@ -1,28 +1,26 @@
 package it.dtk.actornlp
 
-import akka.actor.Actor
-import akka.actor.ActorLogging
-import akka.actor.Props
-import it.dtk.nlp.db.DBManager
-import com.typesafe.config.ConfigFactory
-import java.util.concurrent.TimeUnit
-import scala.concurrent.duration._
 import java.util.concurrent.Executor
-import scala.concurrent.ExecutionContext
-import akka.actor.ReceiveTimeout
-import it.dtk.nlp.db.News
-import akka.actor.ActorRef
-import akka.actor.PoisonPill
-import it.dtk.nlp.db.DBManager
-import it.dtk.nlp.db.MongoDBMapper
+
+import akka.actor.{Actor, ActorLogging, Props, ReceiveTimeout}
 import com.mongodb.casbah.MongoCursorBase
+import com.typesafe.config.ConfigFactory
+import it.dtk.nlp.db.{DBManager, MongoDBMapper, News}
 import org.joda.time.DateTime
 
+import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
+
 object Receptionist {
+
   case object Start
+
   case object IndexNotAnalyzed
+
   private case object IndexBatch
+
   case class Finished(count: Int)
+
   def props = Props(classOf[Receptionist])
 }
 
@@ -31,7 +29,9 @@ object Receptionist {
  *
  */
 class Receptionist extends Actor with ActorLogging {
-  import Receptionist._
+
+  import it.dtk.actornlp.Receptionist._
+
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
 
   val conf = ConfigFactory.load("nlpservice");

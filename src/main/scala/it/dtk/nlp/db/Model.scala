@@ -14,7 +14,7 @@ import org.joda.time.LocalDate
 case class News(id: String, urlWebSite: String, urlNews: String, title: Option[String], summary: Option[String],
   newsDate: Option[DateTime], corpus: Option[String] = None, tags: Option[Set[String]] = None,
   metaDescription: Option[String] = None, metaKeyword: Option[String] = None, canonicalUrl: Option[String] = None,
-  topImage: Option[String] = None, nlpAnalyzed: Option[Boolean], nlp: Option[Nlp] = None)
+  topImage: Option[String] = None, nlpAnalyzed: Option[Boolean], indexed: Boolean = false,  nlp: Option[Nlp] = None)
 
 case class Nlp(title: Option[Seq[Word]], summary: Option[Seq[Word]], corpus: Option[Seq[Word]],
   description: Option[Seq[Word]], crimes: Option[Seq[String]] = None, addresses: Option[Seq[String]] = None,

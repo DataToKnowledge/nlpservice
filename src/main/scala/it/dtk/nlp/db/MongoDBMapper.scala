@@ -62,6 +62,7 @@ object MongoDBMapper {
       dbo.getAs[String]("canonicalUrl"),
       dbo.getAs[String]("topImage"),
       dbo.getAs[Boolean]("nlpAnalyzed"),
+      dbo.getAs[Boolean]("indexed").getOrElse(false),
       dbo.getAs[DBObject]("nlp").map(dBOToNlp))
   }
 
