@@ -146,11 +146,11 @@ class ElasticIndexerWorker(dbManager: DBManager, newsIterator: MongoCursorBase, 
   override def receive: Receive = {
 
     case Start =>
-      var time = 2
+      var time = 4
       1 until 50 foreach { i =>
         if (newsIterator.hasNext) {
           context.system.scheduler.scheduleOnce(time.second, routerIndexer, Index(dBOToNews(newsIterator.next())))
-          time += 1
+          time += 4
           countRunning += 1
           countIndexed += 1
         }
