@@ -6,6 +6,8 @@ import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
 import it.dtk.nlp.db.MongoDBMapper._
 
+import scala.tools.nsc.doc.model.Object
+
 /**
  *
  * @author Andrea Scarpino <andrea@datatoknowledge.it>
@@ -97,7 +99,12 @@ class DBManager(val dbHost: String) {
   def setGeoNewsAnalyzed(news: News): Int = {
     val query = MongoDBObject("_id" -> new ObjectId(news.id))
     val update = $set("nlpAnalyzed" -> true)
-    geoNews.update(query, update, upsert = true).getN
+    geoNews.update(query, update, upsert = false, multi = true).getN
+  }
+
+  def setNlpNewsIndexed(id: String) ={
+    val query = MongoDBObject("_id" -> new ObjectId(id))
+    nlpNews.update(query, $set("indexed" -> true), multi = true, upsert = false).getN
   }
 
   def geoNewsIterator(batchSize: Int): MongoCursorBase =

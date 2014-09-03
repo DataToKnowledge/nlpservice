@@ -104,12 +104,12 @@ class ElasticReceptionist extends Actor with ActorLogging {
 
     case IndexAll =>
       val newsIterator = dbManager.nlpNewsIterator(batchSize)
-      val worker = context.actorOf(ElasticIndexerWorker.props(newsIterator,routerIndexer))
+      val worker = context.actorOf(ElasticIndexerWorker.props(dbManager, newsIterator, routerIndexer))
       worker ! ElasticIndexerWorker.Start
 
     case IndexNotAnalyzed =>
       val newsIterator = dbManager.nlpNewsIteratorNotIndexed(batchSize)
-      val worker = context.actorOf(ElasticIndexerWorker.props(newsIterator,routerIndexer))
+      val worker = context.actorOf(ElasticIndexerWorker.props(dbManager, newsIterator, routerIndexer))
       worker ! ElasticIndexerWorker.Start
 
 
@@ -126,8 +126,8 @@ class ElasticReceptionist extends Actor with ActorLogging {
 
 object ElasticIndexerWorker {
 
-  def props(newsIterator: MongoCursorBase, routerIndexer: ActorRef) =
-    Props(classOf[ElasticIndexerWorker], newsIterator, routerIndexer)
+  def props(dbManager: DBManager, newsIterator: MongoCursorBase, routerIndexer: ActorRef) =
+    Props(classOf[ElasticIndexerWorker], dbManager, newsIterator, routerIndexer)
 
   case object Start
 
@@ -135,7 +135,7 @@ object ElasticIndexerWorker {
 
 }
 
-class ElasticIndexerWorker(newsIterator: MongoCursorBase, routerIndexer: ActorRef) extends Actor with ActorLogging {
+class ElasticIndexerWorker(dbManager: DBManager, newsIterator: MongoCursorBase, routerIndexer: ActorRef) extends Actor with ActorLogging {
 
   import it.dtk.elasticSearch.ElasticIndexerWorker._
   import context.dispatcher
@@ -148,7 +148,7 @@ class ElasticIndexerWorker(newsIterator: MongoCursorBase, routerIndexer: ActorRe
     case Start =>
       var time = 2
       1 until 50 foreach { i =>
-        if (newsIterator.hasNext){
+        if (newsIterator.hasNext) {
           context.system.scheduler.scheduleOnce(time.second, routerIndexer, Index(dBOToNews(newsIterator.next())))
           time += 1
           countRunning += 1
@@ -163,6 +163,7 @@ class ElasticIndexerWorker(newsIterator: MongoCursorBase, routerIndexer: ActorRe
 
     case Indexed(id) =>
       log.info("indexed news with id {}", id)
+      dbManager.setNlpNewsIndexed(id)
       decrement()
 
     case ErrorIndexing(title, ex) =>
