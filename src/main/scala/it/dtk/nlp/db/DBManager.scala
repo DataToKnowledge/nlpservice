@@ -117,7 +117,7 @@ class DBManager(val dbHost: String) {
     nlpNews.find().batchSize(batchSize)
 
   def nlpNewsIteratorNotIndexed(batchSize: Int): MongoCursorBase =
-    nlpNews.find("indexed" $eq false).batchSize(batchSize).sort($sort("_id" -> -1))
+    nlpNews.find("indexed" $eq false).batchSize(batchSize).sort(MongoDBObject("_id" -> -1))
 
 
   def findNlpNews(id: String): Option[News] =
