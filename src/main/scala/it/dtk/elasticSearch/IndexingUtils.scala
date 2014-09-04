@@ -20,11 +20,12 @@ object IndexingUtils {
 }
 
 case class Address(latitude: String, longitude: String, country: String, city: Option[String], state: String, zipcode: Option[String],
-  streetName: Option[String], streetNumber: Option[String], countryCode: String)
+                   streetName: Option[String], streetNumber: Option[String], countryCode: String)
 
 class IndexingUtils(val geocodingcacheAddress: String) {
 
   import IndexingUtils._
+
   val printDateFormatter = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm").withZoneUTC() //ISODateTimeFormat.basicDateTime().withZoneUTC()
 
   /**
@@ -48,7 +49,7 @@ class IndexingUtils(val geocodingcacheAddress: String) {
    * @param strDates
    * @return the most recent date from strDates or date
    *
-   * prende come data o la data di estrazione o una data rilevata nel testo se precendente a quella di estrazione
+   *         prende come data o la data di estrazione o una data rilevata nel testo se precendente a quella di estrazione
    */
   def dateExtractor(strDates: Option[Seq[String]], date: Option[DateTime]): Option[DateTime] = {
 
@@ -106,11 +107,13 @@ class IndexingUtils(val geocodingcacheAddress: String) {
 
       case (None, Some(locs)) =>
 
-        for {
+        val points = for {
           loc <- locs.map(findCity)
           if (loc.isSuccess)
           l <- loc.get
         } yield new GeoPoint(l.latitude.toDouble, l.longitude.toDouble)
+
+        points.distinct
 
       case (_, _) =>
         Seq.empty[GeoPoint]
@@ -136,6 +139,7 @@ class IndexingUtils(val geocodingcacheAddress: String) {
   }
 
   import strategy.throwExceptions
+
   implicit val enc = Encodings.`UTF-8`
   implicit val formats = DefaultFormats // Brings in default date formats etc.
 
