@@ -139,7 +139,6 @@ class DBManager(val dbHost: String) {
    */
   def saveNlpNews(news: News): Int = {
     val q = MongoDBObject("urlNews" -> news.urlNews)
-    nlpNews.up
     val result = nlpNews.update[MongoDBObject, DBObject](q, MongoDBMapper.newsToDBO(news), true) //nlpNews.save[DBObject](news)
     result.getN()
   }
