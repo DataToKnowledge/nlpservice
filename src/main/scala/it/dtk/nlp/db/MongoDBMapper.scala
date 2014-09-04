@@ -95,7 +95,8 @@ object MongoDBMapper {
       "metaKeyword" -> news.metaKeyword,
       "canonicalUrl" -> news.canonicalUrl,
       "topImage" -> news.topImage,
-      "nlp" -> news.nlp.map(nlpToDBO))
+      "nlp" -> news.nlp.map(nlpToDBO),
+      "indexed" -> news.indexed)
   }
 
   implicit def nlpToDBO(nlp: Nlp): DBObject =
