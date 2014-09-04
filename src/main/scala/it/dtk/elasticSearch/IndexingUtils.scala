@@ -37,7 +37,7 @@ class IndexingUtils(val geocodingcacheAddress: String) {
       Option.empty[NewsES]
     else n.nlp.map { nlp =>
       NewsES(n.urlWebSite, n.canonicalUrl.getOrElse(n.urlNews), n.title, n.summary, n.corpus, dateExtractorAsString(nlp.dates, n.newsDate),
-        nlp.crimes, nlp.persons, nlp.locations, nlp.organizations, nlp.geopoliticals, positionsExtractor(nlp.addresses, nlp.locations),
+        nlp.crimes, nlp.persons, nlp.locations, nlp.organizations, nlp.geopoliticals, positionsExtractor(nlp.addresses, nlp.locations).distinct,
         nlp.nlpTags.map(mapToTag))
     }
 
@@ -107,13 +107,12 @@ class IndexingUtils(val geocodingcacheAddress: String) {
 
       case (None, Some(locs)) =>
 
-        val points = for {
+        for {
           loc <- locs.map(findCity)
           if (loc.isSuccess)
           l <- loc.get
         } yield new GeoPoint(l.latitude.toDouble, l.longitude.toDouble)
 
-        points.distinct
 
       case (_, _) =>
         Seq.empty[GeoPoint]
@@ -134,7 +133,7 @@ class IndexingUtils(val geocodingcacheAddress: String) {
       if (loc.countryCode == "IT")
     } yield loc
 
-    locations.map(l => new GeoPoint(l.latitude.toDouble, l.longitude.toDouble)).toSeq
+    locations.map(l => new GeoPoint(l.latitude.toDouble, l.longitude.toDouble)).distinct.toSeq
 
   }
 
