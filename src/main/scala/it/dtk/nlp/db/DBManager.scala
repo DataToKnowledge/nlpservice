@@ -87,13 +87,12 @@ class DBManager(val dbHost: String) {
   /**
    * Search for a city in the DB. Case-insensitive search.
    *
-   * @param city_name
+   * @param cityName
    * @return
    */
   def findCity(cityName: String): Option[City] = {
     val regex = "(?i)^" + cityName.replace("(", "").replace(")", "") + "$"
     city.findOne("city_name" $regex regex).map(r => r)
-    //city.findOne(MongoDBObject("city_name" -> regex.r)).map(r => r)
   }
 
   def setGeoNewsAnalyzed(news: News): Int = {

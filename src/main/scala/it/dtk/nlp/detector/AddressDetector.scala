@@ -46,6 +46,12 @@ object AddressDetector {
 
 }
 
+/**
+ * it is based on
+ * 1. matching a regular expression
+ * 2. query a db
+ *
+ */
 class AddressDetector extends Detector {
 
   import AddressDetector._

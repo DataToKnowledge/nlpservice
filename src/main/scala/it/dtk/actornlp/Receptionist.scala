@@ -31,7 +31,6 @@ object Receptionist {
 class Receptionist extends Actor with ActorLogging {
 
   import it.dtk.actornlp.Receptionist._
-
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
 
   val conf = ConfigFactory.load("nlpservice");
@@ -94,11 +93,14 @@ class Receptionist extends Actor with ActorLogging {
       }
 
       if (countProcessing == 0) {
-        if (geoNewsIterator.get.hasNext)
-          self ! IndexBatch
-        else
+        if (geoNewsIterator.isEmpty)
           self ! Finished(countProcessed)
-
+        else {
+          if (geoNewsIterator.get.hasNext)
+            self ! IndexBatch
+          else
+            self ! Finished(countProcessed)
+        }
       }
 
     case Controller.Processed(news) =>
