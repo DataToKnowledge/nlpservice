@@ -15,10 +15,9 @@ object ElasticMain extends App{
   val elasticReceptionist = system.actorOf(ElasticReceptionist.props,"ElasticIndexer")
   indexType match {
     case "indexAll" =>
-      elasticReceptionist ! ElasticReceptionist.IndexAll
+      elasticReceptionist ! ElasticReceptionist.Reindex
     case "indexNotAnalyzed" =>
-      elasticReceptionist ! ElasticReceptionist.IndexNotAnalyzed
+      elasticReceptionist ! ElasticReceptionist.Index
   }
 
-  
 }

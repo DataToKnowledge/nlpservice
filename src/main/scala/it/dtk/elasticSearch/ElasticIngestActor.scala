@@ -118,7 +118,7 @@ class ElasticReceptionist extends Actor with ActorLogging {
       log.info("Scheduling the next iteration in {} minutes", schedulingTime)
       //kill the actor and start a news one
       sender ! PoisonPill
-      context.system.scheduler.scheduleOnce(schedulingTime minutes, self, IndexNotAnalyzed)
+      context.system.scheduler.scheduleOnce(schedulingTime minutes, self, Index)
 
   }
 
