@@ -75,9 +75,9 @@ object ElasticReceptionist {
 
   def props = Props(classOf[ElasticReceptionist])
 
-  case object IndexAll
+  case object Reindex
 
-  case object IndexNotAnalyzed
+  case object Index
 
   case class Finished(count: Int)
 
@@ -102,12 +102,12 @@ class ElasticReceptionist extends Actor with ActorLogging {
 
   def receive = {
 
-    case IndexAll =>
+    case Reindex =>
       val newsIterator = dbManager.nlpNewsIterator(batchSize)
       val worker = context.actorOf(ElasticIndexerWorker.props(dbManager, newsIterator, routerIndexer))
       worker ! ElasticIndexerWorker.Start
 
-    case IndexNotAnalyzed =>
+    case Index =>
       val newsIterator = dbManager.nlpNewsIteratorNotIndexed(batchSize)
       val worker = context.actorOf(ElasticIndexerWorker.props(dbManager, newsIterator, routerIndexer))
       worker ! ElasticIndexerWorker.Start

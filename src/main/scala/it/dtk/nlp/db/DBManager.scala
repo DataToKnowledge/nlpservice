@@ -113,6 +113,9 @@ class DBManager(val dbHost: String) {
   def geoNewsNotAnalyzedIterator(batchSize: Int): MongoCursorBase =
     geoNews.find(MongoDBObject("nlpAnalyzed" -> false)).batchSize(batchSize)
 
+  def findGeoNews(id: String): Option[News] =
+    nlpNews.findOne("_id" $eq new ObjectId(id)).map(r => r)
+
   def nlpNewsIterator(batchSize: Int): MongoCursorBase =
     nlpNews.find().batchSize(batchSize)
 
@@ -123,8 +126,6 @@ class DBManager(val dbHost: String) {
   def findNlpNews(id: String): Option[News] =
     nlpNews.findOne("_id" $eq new ObjectId(id)).map(r => r)
 
-  def findGeoNews(id: String): Option[News] =
-    nlpNews.findOne("_id" $eq new ObjectId(id)).map(r => r)
 
   /**
    * @param batchSize
