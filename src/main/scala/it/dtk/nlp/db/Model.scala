@@ -8,7 +8,7 @@ import scala.language.implicitConversions
 import org.joda.time.LocalDate
 
 /**
- * @author Andrea Scarpino <andrea@datatoknowledge.it>
+ * @author Andrea Scarpino <andrea@datatoknowledge.it> and Fabio Fumarola <fabio@datatoknowledge.it>
  */
 
 case class News(id: String, urlWebSite: String, urlNews: String, title: Option[String], summary: Option[String],

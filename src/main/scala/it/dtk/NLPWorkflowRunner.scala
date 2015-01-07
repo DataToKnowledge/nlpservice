@@ -5,7 +5,7 @@ import akka.actor.ActorSystem
 import it.dtk.actornlp.Receptionist
 import akka.actor.Inbox
 
-object MainNlp {
+object NLPWorkflowRunner {
 
   def main(args: Array[String]) {
 

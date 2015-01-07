@@ -33,7 +33,7 @@ class Receptionist extends Actor with ActorLogging {
   import it.dtk.actornlp.Receptionist._
   implicit val exec = context.dispatcher.asInstanceOf[Executor with ExecutionContext]
 
-  val conf = ConfigFactory.load("nlpservice");
+  val conf = context.system.settings.config
   val dbHost = conf.getString("akka.nlp.dbHost")
   val batchNewsSize = conf.getInt("akka.nlp.batch.size")
   val waitTime = conf.getLong("akka.nlp.wait.call")
