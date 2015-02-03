@@ -5,6 +5,7 @@ import akka.actor.Props
 import akka.routing.FromConfig
 import it.dtk.nlp.db.Word
 import akka.actor.{ Actor, ActorLogging, ActorRef }
+import it.wheretolive.akka.pattern.RouteSlip
 import scala.util.{ Success, Failure }
 import it.dtk.nlp.db.Nlp
 
@@ -32,7 +33,7 @@ object TextProActor {
   private case class ElementPair(keywords: Map[String, Double], words: Seq[Word])
 }
 
-class TextProActor extends Actor with ActorLogging {
+class TextProActor extends Actor with ActorLogging with RouteSlip{
 
   import TextProActor._
 

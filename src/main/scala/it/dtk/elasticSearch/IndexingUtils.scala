@@ -4,16 +4,11 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.util.Locale
 import scala.util.Try
-import rapture.net._
-import rapture.core._
-import rapture.uri._
-import rapture.io._
-import rapture.fs._
-import com.typesafe.config.ConfigFactory
+import it.dtk.nlp.db._
+import dispatch._ , Defaults._
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
-import it.dtk.nlp.db._
-import org.joda.time.format.ISODateTimeFormat
+import org.json4s.DefaultFormats
 
 object IndexingUtils {
   val dateFormatter = DateTimeFormat.forPattern("dd/MM/yyyy").withLocale(Locale.ITALY).withZoneUTC()
@@ -91,8 +86,7 @@ class IndexingUtils(val geocodingcacheAddress: String) {
 
         val addresses = for {
           addr <- addrs.map(findAddress)
-          if (addr.isSuccess)
-          ad <- addr.get
+          ad <- addr
         } yield ad
 
         val result = for {
@@ -109,8 +103,7 @@ class IndexingUtils(val geocodingcacheAddress: String) {
 
         for {
           loc <- locs.map(findCity)
-          if (loc.isSuccess)
-          l <- loc.get
+          l <- loc
         } yield new GeoPoint(l.latitude.toDouble, l.longitude.toDouble)
 
 
@@ -125,43 +118,26 @@ class IndexingUtils(val geocodingcacheAddress: String) {
    * @return
    */
   private def cityExtractor(strLocations: Seq[String]): Seq[GeoPoint] = {
-
-    val locations = for {
-      tryLocations <- strLocations.map(findCity)
-      if (tryLocations.isSuccess)
-      loc <- tryLocations.get
-      if (loc.countryCode == "IT")
-    } yield loc
-
-    locations.map(l => new GeoPoint(l.latitude.toDouble, l.longitude.toDouble)).distinct.toSeq
-
+    val italianLocations = strLocations.flatMap(str => findCity(str)).filter(_.countryCode == "IT")
+    italianLocations.map(l => new GeoPoint(l.latitude.toDouble, l.longitude.toDouble)).distinct
   }
 
-  import strategy.throwExceptions
 
-  implicit val enc = Encodings.`UTF-8`
-  implicit val formats = DefaultFormats // Brings in default date formats etc.
+  def findCity(city: String): List[Address] = webServiceCall("city", city)
 
-  def findCity(city: String): Try[List[Address]] = webServiceCall("city", city)
+  def findAddress(address: String): List[Address] = webServiceCall("address", address)
 
-  def findAddress(address: String): Try[List[Address]] = webServiceCall("address", address)
+  def webServiceCall(service: String, queryString: String): List[Address] = {
 
-  def webServiceCall(service: String, queryString: String): Try[List[Address]] = Try {
+    implicit val formats = DefaultFormats // Brings in default date formats etc.
 
-    //get the json
-    val url: HttpUrl = (Http / geocodingcacheAddress / service / queryString) //.replace(" ", "%20")
-    val body = url.slurp[Char]
+    val path = host(geocodingcacheAddress) / service / queryString
+    val response = Http(path OK as.String).completeOption
 
-    //convert the json to address
-    val json = parse(body)
+    response.map (r => {
+       parse(r).extract[List[Address]].distinct
+    }).getOrElse(List[Address]())
 
-    try {
-      json.extract[List[Address]].distinct
-    } catch {
-      case t: Throwable =>
-        t.printStackTrace()
-        throw t
-    }
   }
 
 }

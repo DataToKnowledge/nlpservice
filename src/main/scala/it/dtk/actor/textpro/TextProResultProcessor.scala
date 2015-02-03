@@ -44,14 +44,17 @@ private object TextProResultProcessor {
 
   private def extractWords(lines: List[String]): Try[Seq[Try[Word]]] = Try {
 
-    /**
+    /*
      * this is really hard coded
      * @param line
      * @return 
      */
     def parseLine(line: String): Try[Word] = Try {
 
-      val split = line.split("\t")
+      val split = line.trim.split("\t")
+
+
+
 
       split match {
         case split10 if split10.size == 10 =>

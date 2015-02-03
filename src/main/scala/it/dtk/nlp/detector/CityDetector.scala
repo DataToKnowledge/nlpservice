@@ -35,6 +35,7 @@ class CityDetector extends Detector {
       mapWords.get(tokenId).map(w => w.copy(iobEntity = w.iobEntity :+ EntityType.stringValue(value)))
     }
 
+
     for (sizeNGram <- range to 1 by -1) {
       val sliding = words.sliding(sizeNGram)
 

@@ -6,8 +6,6 @@ import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
 import it.dtk.nlp.db.MongoDBMapper._
 
-import scala.tools.nsc.doc.model.Object
-
 /**
  *
  * @author Andrea Scarpino <andrea@datatoknowledge.it>

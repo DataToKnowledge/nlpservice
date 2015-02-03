@@ -1,0 +1,114 @@
+# FILE: ./examples/example.txt
+# KEYWORDS: fatti accaduti <31.06 1> comuni limitrofi <30.07 1> clan <29.17 2> condanne <29.05 2> criminale <28.58 2> droga <26.4 2> omicidio <26.34 2> avvenuto <24.63 2> capurso <18.02 1> cosola <18.02 1> adelfia <18.02 1> salatino <18.02 1> testone <18.02 1> mazzilli <16.82 1> mafiosa <15.09 1> 
+# FIELDS: token	tokenid	tokenstart	tokenend	sentence	pos	wnpos	lemma	entity	chunk
+Mafia	1	0	5	-	SPN	n	Mafia	B-ORG	B-NP
+e	2	6	7	-	C		e	O	O
+droga	3	8	13	-	SS	n	droga	O	B-NP
+:	4	13	14	<eos>	XPS		colon	O	O
+arresti	5	15	22	-	SP	n	arresto	O	B-NP
+e	6	23	24	-	C		e	O	O
+condanne	7	25	33	-	SP	n	condanna	O	B-NP
+nel	8	34	37	-	ES		in/det	O	O
+clan	9	38	42	-	SN	n	clan	O	B-NP
+Di	10	43	45	-	E		di	O	O
+Cosola	11	46	52	-	SPN	n	Cosola	O	B-NP
+20	12	53	55	-	N	n	20	O	I-NP
+gennaio	13	56	63	-	SS	n	gennaio	O	I-NP
+2015	14	64	68	-	N	n	2015	O	I-NP
+Le	15	69	71	-	RP		det	O	B-NP
+condanne	16	72	80	-	SP	n	condanna	O	I-NP
+riguardano	17	81	91	-	VI	v	riguardare	O	B-VX
+reati	18	92	97	-	SP	n	reato	O	B-NP
+di	19	98	100	-	E		di	O	O
+associazione	20	101	113	-	SS	n	associazione	O	B-NP
+mafiosa	21	114	121	-	AS	a	mafioso	O	I-NP
+e	22	122	123	-	C		e	O	O
+traffico	23	124	132	-	SS	n	traffico	O	B-NP
+di	24	133	135	-	E		di	O	O
+droga	25	136	141	-	SS	n	droga	O	B-NP
+,	26	141	142	-	XPW		,	O	O
+e	27	143	144	-	C		e	O	O
+si	28	145	147	-	PN		rifl	O	B-NP
+riferiscono	29	148	159	-	VI	v	riferire	O	B-VX
+a	30	160	161	-	E		a	O	O
+fatti	31	162	167	-	SP	n	fatto	O	B-NP
+accaduti	32	168	176	-	VPP	v	accadere	O	B-VX
+tra	33	177	180	-	E		tra	O	O
+il	34	181	183	-	RS		det	O	B-NP
+2007	35	184	188	-	N	n	2007	O	I-NP
+e	36	189	190	-	C		e	O	O
+il	37	191	193	-	RS		det	O	B-NP
+2010	38	194	198	-	N	n	2010	O	I-NP
+.	39	198	199	<eos>	XPS		full_stop	O	O
+I	40	200	201	-	RP		det	O	B-NP
+nove	41	202	206	-	N	n	nove	O	I-NP
+arrestati	42	207	216	-	SP	n	arrestato	O	I-NP
+sono	43	217	221	-	VI	v	essere	O	B-VX
+ritenuti	44	222	230	-	AP	a	ritenuto	O	B-NP
+appartenenti	45	231	243	-	SP	n	appartenente	O	B-NP
+al	46	244	246	-	ES		a/det	O	O
+clan	47	247	251	-	SS	n	clan	O	B-NP
+criminale	48	252	261	-	AS	a	criminale	O	I-NP
+operante	49	262	270	-	VSP	v	operare	O	B-VX
+nel	50	271	274	-	ES		in/det	O	O
+quartiere	51	275	284	-	SS	n	quartiere	O	B-NP
+di	52	285	287	-	E		di	O	O
+Ceglie	53	288	294	-	SPN	n	Ceglie	B-PER	B-NP
+del	54	295	298	-	ES		di/det	O	O
+Campo	55	299	304	-	SS	n	Campo	B-PER	B-NP
+e	56	305	306	-	C		e	O	O
+in	57	307	309	-	E		in	O	O
+parecchi	58	310	318	-	AP	a	parecchi	O	B-NP
+Comuni	59	319	325	-	SP	n	comune	O	I-NP
+limitrofi	60	326	335	-	AP	a	limitrofo	O	I-NP
+al	61	336	338	-	ES		a/det	O	O
+capoluogo	62	339	348	-	SS	n	capoluogo	O	B-NP
+.	63	348	349	<eos>	XPS		full_stop	O	O
+Tra	64	350	353	-	E		tra	O	O
+i	65	354	355	-	RP		det	O	B-NP
+fatti	66	356	361	-	SP	n	fatto	O	I-NP
+di	67	362	364	-	E		di	O	O
+sangue	68	365	371	-	SS	n	sangue	O	B-NP
+più	69	372	375	-	B	r	più	O	I-NP
+significativi	70	376	389	-	AP	a	significativo	O	I-NP
+imputati	71	390	398	-	VPP	v	imputare	O	B-VX
+al	72	399	401	-	ES		a/det	O	O
+gruppo	73	402	408	-	SS	n	gruppo	O	B-NP
+criminale	74	409	418	-	AS	a	criminale	O	I-NP
+,	75	418	419	-	XPW		,	O	O
+vi	76	420	422	-	B	r	vi	O	O
+sono	77	423	427	-	VI	v	essere	O	B-VX
+l’	78	428	430	-	B	r	l’	O	O
+omicidio	79	430	438	-	SS	n	omicidio	O	B-NP
+di	80	439	441	-	E		di	O	O
+Martino	81	442	449	-	SPN	n	Martino	B-PER	B-NP
+Salatino	82	450	458	-	SPN	n	Salatino	I-PER	I-NP
+,	83	458	459	-	XPW		,	O	O
+avvenuto	84	460	468	-	VSP	v	avvenire	O	B-VX
+ad	85	469	471	-	E		ad	O	O
+Adelfia	86	472	479	-	SPN	n	Adelfia	B-GPE	B-NP
+il	87	480	482	-	RS		det	O	B-NP
+10	88	483	485	-	N	n	10	O	I-NP
+agosto	89	486	492	-	SS	n	agosto	O	I-NP
+2008	90	493	497	-	N	n	2008	O	I-NP
+e	91	498	499	-	C		e	O	O
+l’	92	500	502	-	B	r	l’	O	O
+omicidio	93	502	510	-	SS	n	omicidio	O	B-NP
+di	94	511	513	-	E		di	O	O
+Nunzio	95	514	520	-	SPN	n	Nunzio	B-PER	B-NP
+Mazzilli	96	521	529	-	SPN	n	Mazzilli	I-PER	I-NP
+,	97	529	530	-	XPW		,	O	O
+detto	98	531	536	-	VSP	v	dire	O	B-VX
+“	99	537	538	-	XPO		“	O	I-NP
+testone	100	538	545	-	SS	n	testone	O	I-NP
+”	101	545	546	-	XPO		”	O	I-NP
+,	102	546	547	-	XPW		,	O	O
+avvenuto	103	548	556	-	VSP	v	avvenire	O	B-VX
+a	104	557	558	-	E		a	O	O
+Capurso	105	559	566	-	SPN	n	Capurso	B-GPE	B-NP
+il	106	567	569	-	RS		det	O	B-NP
+26	107	570	572	-	N	n	26	O	I-NP
+giugno	108	573	579	-	SS	n	giugno	O	I-NP
+2009	109	580	584	-	N	n	2009	O	I-NP
+.	110	584	585	<eos>	XPS		full_stop	O	O
+“	111	585	586	<eos>	XPO		“	O	O

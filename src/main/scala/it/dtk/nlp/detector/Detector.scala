@@ -1,7 +1,5 @@
 package it.dtk.nlp.detector
 
-import it.dtk.nlp.db.Word
-import scala.util.Try
 import it.dtk.nlp.db.DBManager
 import com.typesafe.config.ConfigFactory
 
