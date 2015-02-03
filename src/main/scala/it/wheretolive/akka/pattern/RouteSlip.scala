@@ -35,6 +35,7 @@ case class RouteSlipMessageFailure(originalMessage: AnyRef, failedTask: ActorRef
 
 trait RouteSlipFallible extends RouteSlip {
   def sendToEndTask(routeSlip: Seq[ActorRef], message: AnyRef, failedTask: ActorRef, failure: Throwable): Unit = {
+    failure.printStackTrace()
     val lastTask = routeSlip.last
     lastTask ! RouteSlipMessageFailure(message, failedTask, failure)
   }

@@ -30,7 +30,7 @@ trait NaiveCrimeDetector extends NERDetector with CrimeMongoCollection {
       for (slide <- sliding; if (slide.forall(w => w.chunk != EmptyEntity && w.iobEntity == EmptyEntity))) {
         val candidate = slide.map(_.token).mkString(" ")
 
-        val result = findCrimeText(candidate).filter(c => c.word.split(" ").length == slide.length)
+        val result = findCrimeText(candidate).filter(c => c.name.split(" ").length == slide.length)
 
         if (result.nonEmpty) {
 

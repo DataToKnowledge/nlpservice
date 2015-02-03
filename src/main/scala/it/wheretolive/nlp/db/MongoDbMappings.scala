@@ -26,7 +26,7 @@ trait MongoDbMappings {
         "title" -> news.title,
         "summary" -> news.summary,
         "newsDate" -> news.newsDate,
-        "text" -> news.corpus,
+        "corpus" -> news.corpus,
         "tags" -> news.tags,
         "metaDescription" -> news.metaDescription,
         "metaKeyword" -> news.metaKeyword,
@@ -42,7 +42,7 @@ trait MongoDbMappings {
         title = dbo.getAs[String]("title").getOrElse(""),
         summary = dbo.getAs[String]("summary").getOrElse(""),
         newsDate = dbo.getAs[DateTime]("newsDate"),
-        corpus = dbo.getAs[String]("text").getOrElse(""),
+        corpus = dbo.getAs[String]("corpus").getOrElse(""),
         tags = dbo.getAs[Set[String]]("tags").getOrElse(Set[String]()),
         metaDescription = dbo.getAs[String]("metaDescription").getOrElse(""),
         metaKeyword = dbo.getAs[String]("metaKeyword").getOrElse(""),
@@ -165,16 +165,12 @@ trait MongoDbMappings {
     def fromBSon(dbo: DBObject) =
       Crime(
         id = dbo._id.map(_.toString).get,
-        word = dbo.getAs[String]("word").get,
-        lemma = dbo.getAs[String]("lemma"),
-        stem = dbo.getAs[String]("stem"),
-        tipo = dbo.getAs[String]("type"))
+        name = dbo.getAs[String]("name").get,
+        _type = dbo.getAs[String]("type").get)
 
     def toBSon(crime: Crime) =
       MongoDBObject(
-        "word" -> crime.word,
-        "lemma" -> crime.lemma,
-        "stem" -> crime.stem,
-        "type" -> crime.tipo)
+        "name" -> crime.name,
+        "type" -> crime._type)
   }
 }

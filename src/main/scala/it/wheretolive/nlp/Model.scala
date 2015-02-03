@@ -86,10 +86,8 @@ object Model {
 
   case class Crime(
     id: String,
-    word: String,
-    lemma: Option[String] = None,
-    stem: Option[String] = None,
-    tipo: Option[String] = None)
+    name: String,
+    _type: String)
 
   //  case class NewsToIndex(
   //    urlWebsite: String,

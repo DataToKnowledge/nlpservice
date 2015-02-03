@@ -42,9 +42,9 @@ trait FocusLocationDetector extends GeodataGFossIndex {
     val totalWordsCount = nlp.title.size + nlp.summary.size + nlp.corpus.size
 
     // extract all the tokenStart value for the selected locations
-    val titleLocations = tokenStartFromLocations(nlp.title.filter(w => containsEntity(w.iobEntity)))
-    val summaryLocations = tokenStartFromLocations(nlp.summary.filter(w => containsEntity(w.iobEntity)))
-    val corpusLocations = tokenStartFromLocations(nlp.corpus.filter(w => containsEntity(w.iobEntity)))
+    val titleLocations = tokenStartFromLocations(nlp.title.toList.filter(w => containsEntity(w.iobEntity)))
+    val summaryLocations = tokenStartFromLocations(nlp.summary.toList.filter(w => containsEntity(w.iobEntity)))
+    val corpusLocations = tokenStartFromLocations(nlp.corpus.toList.filter(w => containsEntity(w.iobEntity)))
 
     //compute the position scores for each discovered location
     val titlePosW = positionsScore(titleLocations, totalWordsCount)
@@ -140,10 +140,10 @@ trait FocusLocationDetector extends GeodataGFossIndex {
    * @param words
    * @return this method returns a list of token with their position in the text
    */
-  def tokenStartFromLocations(words: Seq[Word]): List[(String, Int)] = {
+  def tokenStartFromLocations(words: List[Word]): List[(String, Int)] = {
 
       @tailrec
-      def recursion(current: List[String], tokenId: Int, others: Seq[Word], acc: List[(String, Int)]): List[(String, Int)] = {
+      def recursion(current: List[String], tokenId: Int, others: List[Word], acc: List[(String, Int)]): List[(String, Int)] = {
         others match {
           case head :: tail =>
             if (containsEntityB(head.iobEntity))

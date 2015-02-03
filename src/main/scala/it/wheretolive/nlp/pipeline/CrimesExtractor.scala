@@ -48,6 +48,7 @@ class CrimesExtractor extends Actor with ActorLogging with RouteSlipFallible wit
       }
       catch {
         case ex: Throwable =>
+          ex.printStackTrace()
           sendToEndTask(routeSlip, procNews, self, ex)
       }
 
