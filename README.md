@@ -18,7 +18,8 @@ NLP Service
 
     dokku config:set nlpservice DOKKU_BUILDSTEP_IMAGE=wheretolive/dokku-alt-buildstep:cedar-14
 
-
+4. create the dokku branch -> git remote add dokku dokku@datatoknowledge.it:nlpservice
+5. push to the branch -> git push dokku develop:master
 
 ### MongoDB Collections
 
