@@ -42,9 +42,9 @@ trait FocusLocationDetector extends GeodataGFossIndex {
     val totalWordsCount = nlp.title.size + nlp.summary.size + nlp.corpus.size
 
     // extract all the tokenStart value for the selected locations
-    val titleLocations = tokenStartFromLocations(nlp.title.toList.filter(w => containsEntity(w.iobEntity)))
-    val summaryLocations = tokenStartFromLocations(nlp.summary.toList.filter(w => containsEntity(w.iobEntity)))
-    val corpusLocations = tokenStartFromLocations(nlp.corpus.toList.filter(w => containsEntity(w.iobEntity)))
+    val titleLocations = tokenStartFromLocations(nlp.title.toList.filter(w => containsEntity(w.iobEntity) || containsEntityB(w.iobEntity)))
+    val summaryLocations = tokenStartFromLocations(nlp.summary.toList.filter(w => containsEntity(w.iobEntity) || containsEntityB(w.iobEntity)))
+    val corpusLocations = tokenStartFromLocations(nlp.corpus.toList.filter(w => containsEntity(w.iobEntity) || containsEntityB(w.iobEntity)))
 
     //compute the position scores for each discovered location
     val titlePosW = positionsScore(titleLocations, totalWordsCount)
