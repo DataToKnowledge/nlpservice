@@ -6,11 +6,18 @@ NLP Service
 
 ## Dependecies
 
-1. mongodb
-2. elasticsearch
+1. mongodb docker container with name mongodb
+2. elasticsearch docker container with name elastic1
+
+## Init
+
+1. create the app -> dokku create nlpservice
+2. create the link for elasticsearch -> dokku link:create nlpservice elastic1 elastic1
+3. create the link for mongodb -> dokku link:create nlpservice mongodb mongodb
 3. add [Environment variable management](Environment variable management).
 
     dokku config:set nlpservice DOKKU_BUILDSTEP_IMAGE=wheretolive/dokku-alt-buildstep:cedar-14
+
 
 
 ### MongoDB Collections
