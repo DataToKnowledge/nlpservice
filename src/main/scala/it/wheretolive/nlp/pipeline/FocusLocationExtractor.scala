@@ -5,7 +5,7 @@ import akka.routing.FromConfig
 import it.wheretolive.akka.pattern._
 import it.wheretolive.nlp.pipeline.MessageProtocol.ProcessItem
 import it.wheretolive.nlp.pipeline.detector.FocusLocationDetector
-import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.{ISODateTimeFormat, DateTimeFormat}
 
 object FocusLocationExtractor {
   def props = Props[FocusLocationExtractor]
@@ -25,7 +25,7 @@ class FocusLocationExtractor extends Actor with ActorLogging with FocusLocationD
   override def clusterName: Option[String] = Option(conf.getString("clusterName"))
   override def documentPath: String = conf.getString("geodata.gfoss")
 
-  val dateFormatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
+  //val dateFormatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
 
 
   override def receive: Receive = {
@@ -37,8 +37,8 @@ class FocusLocationExtractor extends Actor with ActorLogging with FocusLocationD
       try {
         val locations = detect(procNews.nlp.get)
         val focusLocation = locations.headOption.flatMap(_.locationEntry)
-        val date = procNews.news.newsDate.map(d => dateFormatter.print(d))
-
+        //val date = procNews.news.newsDate.map(d => dateFormatter.print(d))
+          val date = procNews.news.newsDate.map(d => d.toString(ISODateTimeFormat.basicDateTimeNoMillis()))
         sendMessageToNextTask(routeSlip, procNews.copy(focusLocation = focusLocation, focusDate = date))
       }catch {
         case ex: Throwable =>
