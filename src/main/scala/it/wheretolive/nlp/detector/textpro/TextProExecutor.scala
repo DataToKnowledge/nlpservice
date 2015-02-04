@@ -1,7 +1,6 @@
 package it.wheretolive.nlp.detector.textpro
 
 import java.io.{BufferedWriter, File, FileWriter}
-import java.nio.file.{Files, Paths}
 
 import scala.io.Source
 import scala.sys.process._
@@ -58,7 +57,10 @@ class TextProExecutor(basePath: String) {
     }
 
   private def deleteFile(folder: String, path: Try[String]): Boolean =
-    path.map(p => Files.delete(Paths.get(folder + p))).isSuccess
+    path.map{ p =>
+      val file = new File(folder + p)
+      file.delete()
+    }.isSuccess
 
   /**
    * @param inputFile
