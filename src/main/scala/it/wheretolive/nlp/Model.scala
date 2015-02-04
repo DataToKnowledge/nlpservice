@@ -118,7 +118,7 @@ object Model {
     city_name: String,
     province_name: String,
     region_name: String,
-    population: Int,
+    population: String,
     wikipedia_url: String,
     geoname_url: String,
     //type geo_point with lon and lat
