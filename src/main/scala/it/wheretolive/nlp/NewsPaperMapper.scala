@@ -42,6 +42,9 @@ trait NewsPaperMapper {
       case value: String if value.contains("quotidianodipuglia") =>
         "Quotidiano di Puglia"
 
+      case value: String if value.contains("go-bari") =>
+        "Go Bari"
+
       case _ =>
         ""
 
