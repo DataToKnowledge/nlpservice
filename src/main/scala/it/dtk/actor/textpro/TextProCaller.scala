@@ -1,24 +1,20 @@
 package it.dtk.actor.textpro
 
-import java.io.File
-import scala.util.Try
+import java.io.{BufferedWriter, File, FileWriter}
+
 import scala.io.Source
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.io.BufferedWriter
-import java.io.FileWriter
 import scala.sys.process.Process
-import scala.util.Random
+import scala.util.{Random, Try}
 
 case class TextProFailure(msg: String) extends Throwable
 
 object TextProCaller {
-  
+
   val random = new Random(1234L)
 }
 
-class  TextProCaller {
-  
+class TextProCaller {
+
   private val instanceId = TextProCaller.random.nextInt()
 
   private var count = 0L
@@ -36,7 +32,9 @@ class  TextProCaller {
   def tagText(text: Option[String]): Try[String] = {
 
     if (text.isEmpty)
-      Try { "" }
+      Try {
+        ""
+      }
     else {
       //create input file
       val inputfile = s"file$instanceId$count"
@@ -57,7 +55,7 @@ class  TextProCaller {
   }
 
   private def deleteFile(path: String): String = {
-    Files.delete(Paths.get(path))
+    //Files.delete(Paths.get(path))
     "deleted"
   }
 
