@@ -1,13 +1,14 @@
 package it.wheretolive.nlp.pipeline.detector
 
 import it.wheretolive.nlp.Model._
+import it.wheretolive.nlp.detector.StringUtils
 
 import scala.annotation.tailrec
 
 /**
  * Created by fabiofumarola on 11/01/15.
  */
-trait CollectionFiller {
+trait CollectionFiller extends StringUtils {
 
   def fillPersons(words: Seq[Word]) = fill(words, "PER")
 
@@ -27,7 +28,8 @@ trait CollectionFiller {
    */
   private def fill(words: Seq[Word], eType: String) = {
     val filtered = words.filter(_.iobEntity.contains(eType))
-    mergeIOB(filtered, "B-" + eType)
+
+    mergeIOB(filtered, "B-" + eType).map(standardiseName)
   }
 
   def mergeIOB(words: Seq[Word], entityType: String): Seq[String] = {
@@ -47,5 +49,4 @@ trait CollectionFiller {
     else
       mergeIOB0(words.tail,words.head.lemma, Seq())
   }
-
 }

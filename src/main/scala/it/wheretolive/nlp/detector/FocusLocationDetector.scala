@@ -32,6 +32,9 @@ trait FocusLocationDetector extends GeodataGFossIndex {
   private def containsEntityB(element: String) =
     element.contains("B-LOC") || element.contains("B-GPE")
 
+  private def filterEntities(words: List[Word])=
+    words.filter(w => containsEntity(w.iobEntity) || containsEntityB(w.iobEntity))
+
   /**
    * main method to detect the main location in the news
    * @param nlp
@@ -42,9 +45,9 @@ trait FocusLocationDetector extends GeodataGFossIndex {
     val totalWordsCount = nlp.title.size + nlp.summary.size + nlp.corpus.size
 
     // extract all the tokenStart value for the selected locations
-    val titleLocations = tokenStartFromLocations(nlp.title.toList.filter(w => containsEntity(w.iobEntity) || containsEntityB(w.iobEntity)))
-    val summaryLocations = tokenStartFromLocations(nlp.summary.toList.filter(w => containsEntity(w.iobEntity) || containsEntityB(w.iobEntity)))
-    val corpusLocations = tokenStartFromLocations(nlp.corpus.toList.filter(w => containsEntity(w.iobEntity) || containsEntityB(w.iobEntity)))
+    val titleLocations = tokenStartFromLocations(filterEntities(nlp.title.toList))
+    val summaryLocations = tokenStartFromLocations(filterEntities(nlp.summary.toList))
+    val corpusLocations = tokenStartFromLocations(filterEntities(nlp.corpus.toList))
 
     //compute the position scores for each discovered location
     val titlePosW = positionsScore(titleLocations, totalWordsCount)
