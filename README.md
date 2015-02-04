@@ -8,6 +8,10 @@ NLP Service
 
 1. mongodb
 2. elasticsearch
+3. add [Environment variable management](Environment variable management).
+
+    dokku config:set nlpservice DOKKU_BUILDSTEP_IMAGE=wheretolive/dokku-alt-buildstep:cedar-14
+
 
 ### MongoDB Collections
 
