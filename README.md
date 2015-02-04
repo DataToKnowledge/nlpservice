@@ -22,7 +22,7 @@ NLP Service
 ```
 
 4. create the dokku branch -> git remote add dokku dokku@datatoknowledge.it:nlpservice
-5. check system.properties for JDK 1.8
+5. check [system.properties for JDK 1.8](https://devcenter.heroku.com/articles/scala-support#specifying-a-java-version)
 5. push to the branch -> git push dokku develop:master
 
 ### MongoDB Collections
