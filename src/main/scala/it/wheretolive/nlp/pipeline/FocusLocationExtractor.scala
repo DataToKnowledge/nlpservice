@@ -5,6 +5,7 @@ import akka.routing.FromConfig
 import it.wheretolive.akka.pattern._
 import it.wheretolive.nlp.pipeline.MessageProtocol.ProcessItem
 import it.wheretolive.nlp.pipeline.detector.FocusLocationDetector
+import org.joda.time.format.ISODateTimeFormat
 
 object FocusLocationExtractor {
   def props = Props[FocusLocationExtractor]
@@ -34,8 +35,9 @@ class FocusLocationExtractor extends Actor with ActorLogging with FocusLocationD
       try {
         val locations = detect(procNews.nlp.get)
         val focusLocation = locations.headOption.flatMap(_.locationEntry)
+        val date = procNews.news.newsDate.map(_.toString(ISODateTimeFormat.basicDateTimeNoMillis()))
 
-        sendMessageToNextTask(routeSlip, procNews.copy(focusLocation = focusLocation))
+        sendMessageToNextTask(routeSlip, procNews.copy(focusLocation = focusLocation, focusDate = date))
       }catch {
         case ex: Throwable =>
           sendToEndTask(routeSlip,procNews,myself,ex)
