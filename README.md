@@ -22,6 +22,7 @@ NLP Service
 ```
 
 4. create the dokku branch -> git remote add dokku dokku@datatoknowledge.it:nlpservice
+5. check system.properties for JDK 1.8
 5. push to the branch -> git push dokku develop:master
 
 ### MongoDB Collections
