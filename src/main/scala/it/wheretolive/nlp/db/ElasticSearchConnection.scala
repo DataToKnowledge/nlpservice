@@ -41,14 +41,21 @@ trait GeodataGFossIndex extends ElasticSearchConnection {
   def documentPath: String
 
   //TODO change to future
-  def searchLocation(name: String, maxCount: Int = 1): Future[Array[Location]]= {
-    val result = client.execute {
-      search in documentPath limit maxCount query {
-        matchQuery("city_name", name).operator(MatchQueryBuilder.Operator.AND)
-      }
-    }.map(_.getHits.hits().map(r => parse(r.getSourceAsString).extract[Location]))
-    
-    result
+  def searchLocation(name: String, maxCount: Int = 1): Array[Location]= {
+    try {
+      val result = client.execute {
+        search in documentPath limit maxCount query {
+          matchQuery("city_name", name).operator(MatchQueryBuilder.Operator.AND)
+        }
+      }.map(_.getHits.hits().map(r => parse(r.getSourceAsString).extract[Location]))
+
+      result.await
+    } catch {
+      case ex: Throwable =>
+        ex.printStackTrace()
+        Array[Location]()
+    }
+
   }
 }
 
