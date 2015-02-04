@@ -25,7 +25,7 @@ class FocusLocationExtractor extends Actor with ActorLogging with FocusLocationD
   override def clusterName: Option[String] = Option(conf.getString("clusterName"))
   override def documentPath: String = conf.getString("geodata.gfoss")
 
-  val dateFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss");
+  val dateFormatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
 
 
   override def receive: Receive = {
