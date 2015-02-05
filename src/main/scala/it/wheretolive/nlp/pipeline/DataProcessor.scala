@@ -2,6 +2,7 @@ package it.wheretolive.nlp.pipeline
 
 import akka.actor.{Props, Actor, ActorLogging, ActorRef}
 import it.wheretolive.akka.pattern._
+import it.wheretolive.nlp.db.CrawledNewsMongoCollection
 import scala.concurrent.duration._
 
 object DataProcessor {
@@ -28,6 +29,7 @@ class DataProcessor extends Actor with ActorLogging with RouteSlipFallible {
   val namedEntitiesFillerRouter = context.actorOf(NamedEntitiesFiller.routerProps(), "namedEntitiesFillerRouter")
   val focusLocationRouter = context.actorOf(FocusLocationExtractor.routerProps(), "focusLocationExtractorRouter")
   val analyzedNewsSaverRouter = context.actorOf(AnalyzedNewsSaver.props,"analyzedNewsSaverRouter")
+  val crawledNewsSaver = context.actorOf(CrawledNewsSaver.props,"crawledNewsSaver")
   val elasticSearchIndexerRouter = context.actorOf(ElasticSearchIndexer.routerProps(),"elasticSearchIndexerRouter")
 
   var lastIndex = Option.empty[String]
@@ -89,7 +91,7 @@ class DataProcessor extends Actor with ActorLogging with RouteSlipFallible {
 
   def createRouteSlip(): Seq[ActorRef] =
     List(textProRouter,crimesRouter,namedEntitiesFillerRouter,
-      focusLocationRouter,analyzedNewsSaverRouter,elasticSearchIndexerRouter,self)
+      focusLocationRouter,analyzedNewsSaverRouter,crawledNewsSaver,elasticSearchIndexerRouter,self)
 
   def continueProcessing() = {
     val itemProcessed = allProcessedItemsCount + allProcessingError
