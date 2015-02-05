@@ -1,8 +1,12 @@
 package it.wheretolive.nlp.db
+
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
-import com.mongodb.casbah.{ MongoClient, MongoClientOptions }
+import com.mongodb.casbah.{MongoClient, MongoClientOptions}
 import it.wheretolive.nlp.Model._
+import org.bson.types.ObjectId
+
+import scala.util.Try
 
 /**
  * Created by fabiofumarola on 11/01/15.
@@ -10,10 +14,13 @@ import it.wheretolive.nlp.Model._
 trait MongoDBConnection extends MongoDbMappings {
 
   def host: String
+
   def port: Int
+
   def dbName: String
 
   def username: String
+
   def password: String
 
   def collectionName: String
@@ -30,6 +37,7 @@ trait MongoDBConnection extends MongoDbMappings {
 }
 
 trait CrimeMongoCollection extends MongoDBConnection {
+
   import com.mongodb.casbah.Imports._
 
   def findCrimeText(word: String): List[Crime] = {
@@ -51,6 +59,12 @@ trait CrawledNewsMongoCollection extends MongoDBConnection {
 
     result
   }
+
+  def setAnalyzed(id: String): Try[Int] = Try {
+    val query = MongoDBObject("_id" -> new ObjectId(id))
+    val update = $set("nlpAnalyzed" -> true)
+    collection.update(query, update, upsert = false, multi = true).getN
+  }
 }
 
 trait AnalyzedNewsMongoCollection extends MongoDBConnection {
@@ -65,7 +79,7 @@ trait AnalyzedNewsMongoCollection extends MongoDBConnection {
     result
   }
 
-  def save(aNews: AnalyzedNews): Int = {
+  def save(aNews: AnalyzedNews): Try[Int] = Try {
     val query = MongoDBObject("urlNews" -> aNews.news.urlNews)
     val result = collection.update[MongoDBObject, DBObject](query, AnalyzedNewsMapper.toBSon(aNews), true)
     result.getN
