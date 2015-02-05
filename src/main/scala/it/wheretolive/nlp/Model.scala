@@ -121,7 +121,6 @@ object Model {
     population: String,
     wikipedia_url: String,
     geoname_url: String,
-    //type geo_point with lon and lat
     geo_location: String)
 
   object NewsPart extends Enumeration {
