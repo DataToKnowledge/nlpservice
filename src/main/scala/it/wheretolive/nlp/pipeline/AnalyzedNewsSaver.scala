@@ -42,9 +42,10 @@ class AnalyzedNewsSaver extends Actor with ActorLogging with AnalyzedNewsMongoCo
 
       val myself = self
 
+      //FIXME disable saving nlp
       val analyzedNews = AnalyzedNews(
         news = procNews.news,
-        nlp = procNews.nlp,
+        nlp = Option.empty, //procNews.nlp,
         namedEntities = procNews.namedEntities,
         tags = procNews.tags,
         focusLocation = procNews.focusLocation,
