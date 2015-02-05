@@ -8,6 +8,8 @@ import it.wheretolive.nlp.db.AnalyzedNewsMongoCollection
 import it.wheretolive.nlp.pipeline.MessageProtocol.ProcessItem
 import org.joda.time.format.ISODateTimeFormat
 
+import scala.util._
+
 object AnalyzedNewsSaver {
   def props = Props[AnalyzedNewsSaver]
 
@@ -40,22 +42,23 @@ class AnalyzedNewsSaver extends Actor with ActorLogging with AnalyzedNewsMongoCo
 
       val myself = self
 
-      try {
+      val analyzedNews = AnalyzedNews(
+        news = procNews.news,
+        nlp = procNews.nlp,
+        namedEntities = procNews.namedEntities,
+        tags = procNews.tags,
+        focusLocation = procNews.focusLocation,
+        focusDate = procNews.news.newsDate.map(_.toString(ISODateTimeFormat.basicDateTime()))
+      )
 
-        val analyzedNews = AnalyzedNews(
-          news = procNews.news,
-          nlp = procNews.nlp,
-          namedEntities = procNews.namedEntities,
-          tags = procNews.tags,
-          focusLocation = procNews.focusLocation,
-          focusDate = procNews.news.newsDate.map(_.toString(ISODateTimeFormat.basicDateTime()))
-        )
+      val result = save(analyzedNews)
 
-        val result = save(analyzedNews)
-        sendMessageToNextTask(routeSlip, procNews.copy(analyzedNewsSaved = Option(result)))
-      }
-      catch {
-        case ex: Throwable =>
+      result match {
+
+        case Success(res) =>
+          sendMessageToNextTask(routeSlip, procNews.copy(analyzedNewsSaved = Option(res)))
+
+        case Failure(ex) =>
           sendToEndTask(routeSlip, procNews, myself, ex)
       }
   }
