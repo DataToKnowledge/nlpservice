@@ -53,7 +53,9 @@ trait CrawledNewsMongoCollection extends MongoDBConnection {
 
   def fetchBatch(nlpAnalyzed: Boolean = false, batchSize: Int): List[CrawledNews] = {
 
-    val result = collection.find("nlpAnalyzed" $eq nlpAnalyzed).
+    val query = $and("nlpAnalyzed" $eq nlpAnalyzed , "corpus" $ne "")
+
+    val result = collection.find(query).
       sort(MongoDBObject("_id" -> -1)).
       limit(batchSize).map(FetchedNewsMapper.fromBSon).toList
 
