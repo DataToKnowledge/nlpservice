@@ -64,6 +64,8 @@ object Model {
   case class NamedEntities(
     crimes: Seq[String] = Seq(),
     related: Seq[String] = Seq(),
+    crimesStem: Seq[String] = Seq(),
+    relatedStem: Seq[String] = Seq(),
     addresses: Seq[String] = Seq(),
     persons: Seq[String] = Seq(),
     locations: Seq[String] = Seq(),

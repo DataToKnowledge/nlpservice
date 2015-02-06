@@ -32,11 +32,13 @@ class NamedEntitiesFiller extends Actor with ActorLogging with CollectionFiller 
         val locations = fillLocations(nlp.title ++ nlp.summary ++ nlp.description ++ nlp.corpus)
         val gpe = fillGPEs(nlp.title ++ nlp.summary ++ nlp.description ++ nlp.corpus)
         val crimes = fillCrimes(nlp.title ++ nlp.summary ++ nlp.description ++ nlp.corpus)
-        val relateds = fillRelated(nlp.title ++ nlp.summary ++ nlp.description ++ nlp.corpus)
+        val related = fillRelated(nlp.title ++ nlp.summary ++ nlp.description ++ nlp.corpus)
 
         val namedEntities = NamedEntities(
           crimes = crimes,
-          related = relateds,
+          crimesStem = crimes,
+          related = related,
+          relatedStem = related,
           persons = persons,
           locations = locations,
           geopoliticals = gpe,
