@@ -32,6 +32,7 @@ trait MongoDbMappings {
         "metaKeyword" -> news.metaKeyword,
         "canonicalUrl" -> news.canonicalUrl,
         "topImage" -> news.topImage,
+        "processing" -> news.processing,
         "nlpAnalyzed" -> news.nlpAnalyzed)
 
     def fromBSon(dbo: DBObject) =
@@ -48,6 +49,7 @@ trait MongoDbMappings {
         metaKeyword = dbo.getAs[String]("metaKeyword").getOrElse(""),
         canonicalUrl = dbo.getAs[String]("canonicalUrl").getOrElse(""),
         topImage = dbo.getAs[String]("topImage"),
+        processing = dbo.getAs[Boolean]("processing").getOrElse(false),
         nlpAnalyzed = dbo.getAs[Boolean]("nlpAnalyzed").getOrElse(false))
   }
 

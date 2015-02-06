@@ -20,6 +20,7 @@ object Model {
     metaKeyword: String,
     canonicalUrl: String,
     topImage: Option[String],
+    processing: Boolean,
     nlpAnalyzed: Boolean = false)
 
   case class AnalyzedNews(
@@ -135,7 +136,7 @@ object Model {
 
   object EntityType extends Enumeration {
     type EntityType = Value
-    val B_CITY, I_CITY, B_ADDRESS, I_ADDRESS, B_CRIME, I_RELATED,B_RELATED, I_CRIME, B_DATE, I_DATE, B_PER, I_PER, B_ORG, I_ORG, B_LOC, I_LOC, B_GPE, I_GPE, O = Value
+    val B_CITY, I_CITY, B_ADDRESS, I_ADDRESS, B_CRIME, I_RELATED, B_RELATED, I_CRIME, B_DATE, I_DATE, B_PER, I_PER, B_ORG, I_ORG, B_LOC, I_LOC, B_GPE, I_GPE, O = Value
 
     def stringValue(value: EntityType) =
       value.toString().replace("_", "-")

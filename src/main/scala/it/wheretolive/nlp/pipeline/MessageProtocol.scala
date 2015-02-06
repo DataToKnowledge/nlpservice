@@ -9,7 +9,7 @@ object MessageProtocol {
 
   case object Process
 
-  case class FetchData(indexed: Boolean = false)
+  case class FetchData(indexed: Boolean = false, processing: Boolean = false)
 
   case class Data(newsList: List[CrawledNews])
 

@@ -32,9 +32,13 @@ class DataProducer extends Actor with ActorLogging with CrawledNewsMongoCollecti
   val waitTime = 10.seconds
 
   override def receive: Receive = {
-    case FetchData(indexed) =>
+    case FetchData(indexed, processing) =>
       throttleDown()
-      sender ! Data(fetchBatch(indexed, batchSize))
+      val data = fetchBatch(indexed,processing, batchSize)
+      //set as processing
+      data.foreach(d => setProcessing(d.id,true))
+
+      sender ! Data(data)
   }
 
   def throttleDown(): Unit = {

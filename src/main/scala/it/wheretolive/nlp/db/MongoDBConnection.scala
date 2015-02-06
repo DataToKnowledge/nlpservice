@@ -51,15 +51,26 @@ trait CrawledNewsMongoCollection extends MongoDBConnection {
 
   def collectionName: String
 
-  def fetchBatch(nlpAnalyzed: Boolean = false, batchSize: Int): List[CrawledNews] = {
+  def fetchBatch(nlpAnalyzed: Boolean = false, processing: Boolean = false, batchSize: Int): List[CrawledNews] = {
 
-    val query = $and("nlpAnalyzed" $eq nlpAnalyzed , "corpus" $ne "")
-
+    val query = $and("nlpAnalyzed" $eq nlpAnalyzed , "corpus" $ne "", "processing" $eq processing)
     val result = collection.find(query).
       sort(MongoDBObject("_id" -> -1)).
       limit(batchSize).map(FetchedNewsMapper.fromBSon).toList
 
     result
+  }
+
+  /**
+   *
+   * @param id
+   * @param value set processing true o false
+   * @return
+   */
+  def setProcessing(id: String, value: Boolean): Try[Int] = Try {
+    val query = MongoDBObject("_id" -> new ObjectId(id))
+    val update = $set("processing" -> value)
+    collection.update(query, update, upsert = false, multi = true).getN
   }
 
   def setAnalyzed(id: String): Try[Int] = Try {
