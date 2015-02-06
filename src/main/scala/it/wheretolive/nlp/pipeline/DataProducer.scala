@@ -35,6 +35,7 @@ class DataProducer extends Actor with ActorLogging with CrawledNewsMongoCollecti
     case FetchData(indexed, processing) =>
       throttleDown()
       val data = fetchBatch(indexed,processing, batchSize)
+      
       //set as processing
       data.foreach(d => setProcessing(d.id,true))
 
