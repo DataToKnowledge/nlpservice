@@ -60,7 +60,7 @@ object Model {
     summary: Seq[Word],
     corpus: Seq[Word],
     description: Seq[Word])
-  
+
   case class NamedEntities(
     crimes: Seq[String] = Seq(),
     relateds: Seq[String] = Seq(),
