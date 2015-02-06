@@ -60,13 +60,12 @@ object Model {
     summary: Seq[Word],
     corpus: Seq[Word],
     description: Seq[Word])
-
   
   case class NamedEntities(
     crimes: Seq[String] = Seq(),
-    related: Seq[String] = Seq(),
-    crimesStem: Seq[String] = Seq(),
-    relatedStem: Seq[String] = Seq(),
+    relateds: Seq[String] = Seq(),
+    crimeStems: Seq[String] = Seq(),
+    relatedStems: Seq[String] = Seq(),
     addresses: Seq[String] = Seq(),
     persons: Seq[String] = Seq(),
     locations: Seq[String] = Seq(),

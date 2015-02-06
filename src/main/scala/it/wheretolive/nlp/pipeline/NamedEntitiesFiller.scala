@@ -36,9 +36,9 @@ class NamedEntitiesFiller extends Actor with ActorLogging with CollectionFiller 
 
         val namedEntities = NamedEntities(
           crimes = crimes,
-          crimesStem = crimes,
-          related = related,
-          relatedStem = related,
+          crimeStems = crimes,
+          relateds = related,
+          relatedStems = related,
           persons = persons,
           locations = locations,
           geopoliticals = gpe,
