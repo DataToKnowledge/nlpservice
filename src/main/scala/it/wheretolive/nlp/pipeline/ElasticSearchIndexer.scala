@@ -8,7 +8,7 @@ import it.wheretolive.nlp.NewsPaperMapper
 import it.wheretolive.nlp.db._
 import it.wheretolive.nlp.pipeline.MessageProtocol._
 
-import scala.util.{Success, Failure}
+import scala.util.{ Success, Failure }
 
 object ElasticSearchIndexer {
   def props = Props[ElasticSearchIndexer]
@@ -37,6 +37,18 @@ class ElasticSearchIndexer extends Actor with ActorLogging with RouteSlipFallibl
 
       val newspaper = map(procNews.news.urlWebSite)
 
+      val filteredEntities = procNews.namedEntities.map { ent =>
+
+        ent.copy(
+          crimes = ent.crimes.distinct,
+          addresses = ent.addresses.distinct,
+          persons = ent.persons.distinct,
+          locations = ent.locations.distinct,
+          geopoliticals = ent.geopoliticals.distinct,
+          organizations = ent.organizations.distinct
+        )
+      }
+
       val newsToIndex = IndexedNews(
         newspaper = Option(newspaper),
         urlWebSite = procNews.news.urlWebSite,
@@ -47,17 +59,17 @@ class ElasticSearchIndexer extends Actor with ActorLogging with RouteSlipFallibl
         corpus = procNews.news.corpus,
         focusDate = procNews.focusDate,
         focusLocation = procNews.focusLocation,
-        namedEntities = procNews.namedEntities,
+        namedEntities = filteredEntities,
         tags = procNews.tags
       )
 
-      indexNews(newsToIndex).onComplete{
+      indexNews(newsToIndex).onComplete {
 
         case Success(res) =>
           sendMessageToNextTask(routeSlip, procNews.copy(indexId = Option(res.getId)))
 
         case Failure(ex) =>
-          sendToEndTask(routeSlip,procNews,myself,ex)
+          sendToEndTask(routeSlip, procNews, myself, ex)
       }
   }
 
