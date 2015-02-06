@@ -39,12 +39,12 @@ class ElasticSearchIndexer extends Actor with ActorLogging with RouteSlipFallibl
 
       val filteredEntities = procNews.namedEntities.map { ent =>
         ent.copy(
-          crimes = ent.crimes.toSet.toSeq,
-          addresses = ent.addresses.toSet.toSeq,
-          persons = ent.persons.toSet.toSeq,
-          locations = ent.locations.toSet.toSeq,
-          geopoliticals = ent.geopoliticals.toSet.toSeq,
-          organizations = ent.organizations.toSet.toSeq
+          crimes = ent.crimes.distinct,
+          addresses = ent.addresses.distinct,
+          persons = ent.persons.distinct,
+          locations = ent.locations.distinct,
+          geopoliticals = ent.geopoliticals.distinct,
+          organizations = ent.organizations.distinct
         )
       }
 
