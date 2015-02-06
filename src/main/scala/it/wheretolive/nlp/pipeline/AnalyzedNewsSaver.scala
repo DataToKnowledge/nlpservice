@@ -51,16 +51,23 @@ class AnalyzedNewsSaver extends Actor with ActorLogging with AnalyzedNewsMongoCo
         focusDate = procNews.news.newsDate.map(_.toString(ISODateTimeFormat.basicDateTime()))
       )
 
-      val result = save(analyzedNews)
+      if (inserted(analyzedNews.news.urlNews)){
+        sendToEndTask(routeSlip, procNews, myself, new Error("new already indexed"))
+      } else {
 
-      result match {
+        val result = save(analyzedNews)
 
-        case Success(res) =>
-          sendMessageToNextTask(routeSlip, procNews.copy(analyzedNewsSaved = Option(res)))
+        result match {
 
-        case Failure(ex) =>
-          sendToEndTask(routeSlip, procNews, myself, ex)
+          case Success(res) =>
+            sendMessageToNextTask(routeSlip, procNews.copy(analyzedNewsSaved = Option(res)))
+
+          case Failure(ex) =>
+            sendToEndTask(routeSlip, procNews, myself, ex)
+        }
       }
+
+
   }
 
 }
