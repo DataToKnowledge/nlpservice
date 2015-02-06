@@ -10,15 +10,15 @@ import scala.annotation.tailrec
  */
 trait CollectionFiller extends StringUtils {
 
-  def fillPersons(words: Seq[Word]) = fill(words, "PER").toList
+  def fillPersons(words: Seq[Word]) = fill(words, "PER")
 
-  def fillGPEs(words: Seq[Word]) = fill(words, "GPE").toList
+  def fillGPEs(words: Seq[Word]) = fill(words, "GPE")
 
-  def fillOrganizations(words: Seq[Word]) = fill(words, "ORG").toList
+  def fillOrganizations(words: Seq[Word]) = fill(words, "ORG")
 
-  def fillLocations(words: Seq[Word]) = fill(words, "LOC").toList
+  def fillLocations(words: Seq[Word]) = fill(words, "LOC")
 
-  def fillCrimes(words: Seq[Word]) = fill(words, "CRIME").toList
+  def fillCrimes(words: Seq[Word]) = fill(words, "CRIME")
 
   /**
    *
@@ -32,21 +32,21 @@ trait CollectionFiller extends StringUtils {
     mergeIOB(filtered, "B-" + eType).map(standardiseName)
   }
 
-  def mergeIOB(words: Seq[Word], entityType: String): Set[String] = {
+  def mergeIOB(words: Seq[Word], entityType: String): Seq[String] = {
 
       @tailrec
-      def mergeIOB0(words: Seq[Word], entity: String, acc: Set[String]): Set[String] = {
+      def mergeIOB0(words: Seq[Word], entity: String, acc: Seq[String]): Seq[String] = {
         if (words.isEmpty)
           acc ++ List(entity)
         else if (words.head.iobEntity.contains(entityType))
-          mergeIOB0(words.tail, words.head.lemma, acc + entity)
+          mergeIOB0(words.tail, words.head.lemma, acc :+ entity)
         else
           mergeIOB0(words.tail, entity + " " + words.head.lemma, acc)
 
       }
     if (words.isEmpty)
-      Set.empty
+      Seq.empty
     else
-      mergeIOB0(words.tail,words.head.lemma, Set())
+      mergeIOB0(words.tail,words.head.lemma, Seq())
   }
 }
