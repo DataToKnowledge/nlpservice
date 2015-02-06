@@ -94,6 +94,7 @@ trait MongoDbMappings {
     def toBSon(namedEntites: NamedEntities) =
       MongoDBObject(
         "crimes" -> namedEntites.crimes,
+        "related" -> namedEntites.related,
         "addresses" -> namedEntites.addresses,
         "persons" -> namedEntites.persons,
         "locations" -> namedEntites.locations,
