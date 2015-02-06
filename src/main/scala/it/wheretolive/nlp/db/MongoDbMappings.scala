@@ -51,12 +51,11 @@ trait MongoDbMappings {
         nlpAnalyzed = dbo.getAs[Boolean]("nlpAnalyzed").getOrElse(false))
   }
 
-  //FIXME disable saving nlp
   implicit object AnalyzedNewsMapper {
     def toBSon(analyzedNews: AnalyzedNews) =
       MongoDBObject(
         "news" -> FetchedNewsMapper.toBSon(analyzedNews.news),
-        //"nlp" -> NlpMapper.toBSon(analyzedNews.nlp.get),
+        "nlp" -> NlpMapper.toBSon(analyzedNews.nlp.get),
         "namedEntities" -> analyzedNews.namedEntities.map(NamedEntitiesMapper.toBSon),
         "tags" -> analyzedNews.tags.map(_.map(TagMapper.toBSon)),
         "focusLocation" -> analyzedNews.focusLocation.map(LocationMapper.toBSon),
