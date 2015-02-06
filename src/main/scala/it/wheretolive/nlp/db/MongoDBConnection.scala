@@ -81,9 +81,15 @@ trait AnalyzedNewsMongoCollection extends MongoDBConnection {
     result
   }
 
+  def inserted(urlNews: String) = {
+    val query = MongoDBObject("urlNews" -> urlNews)
+    val result = collection.find(query)
+    result.size > 0
+  }
+
   def save(aNews: AnalyzedNews): Try[Int] = Try {
     val query = MongoDBObject("urlNews" -> aNews.news.urlNews)
-    val result = collection.update[MongoDBObject, DBObject](query, AnalyzedNewsMapper.toBSon(aNews), true)
+    val result = collection.insert(AnalyzedNewsMapper.toBSon(aNews))
     result.getN
   }
 
