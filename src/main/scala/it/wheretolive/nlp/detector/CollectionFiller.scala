@@ -20,6 +20,8 @@ trait CollectionFiller extends StringUtils {
 
   def fillCrimes(words: Seq[Word]) = fill(words, "CRIME")
 
+  def fillRelated(words: Seq[Word]) = fill(words, "RELATED")
+
   /**
    *
    * @param words

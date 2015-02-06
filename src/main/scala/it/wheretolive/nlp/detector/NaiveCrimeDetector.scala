@@ -18,10 +18,10 @@ trait NaiveCrimeDetector extends NERDetector with CrimeMongoCollection {
     var mapWords = words.map(w => w.tokenId -> w).toMap
     var taggedTokenId = Set.empty[Int]
 
-    def tag(slice: Seq[Word], pos: Int, value: EntityType): Option[Word] = {
-      val tokenId = slice(pos).tokenId
-      mapWords.get(tokenId).map(w => w.copy(iobEntity = EntityType.stringValue(value)))
-    }
+      def tag(slice: Seq[Word], pos: Int, value: EntityType): Option[Word] = {
+        val tokenId = slice(pos).tokenId
+        mapWords.get(tokenId).map(w => w.copy(iobEntity = EntityType.stringValue(value)))
+      }
 
     for (sizeNGram <- range to 1 by -1) {
       val sliding = words.sliding(sizeNGram)
@@ -34,11 +34,20 @@ trait NaiveCrimeDetector extends NERDetector with CrimeMongoCollection {
 
         if (result.nonEmpty) {
 
+          val bType = if (result.head._type == "crime")
+            EntityType.B_CRIME
+          else EntityType.B_RELATED
+
+          val iType = if (result.head._type == "crime")
+            EntityType.I_CRIME
+          else EntityType.I_RELATED
+
           for (j <- 0 until slide.size) {
+
             val word = if (j == 0)
-              tag(slide, j, EntityType.B_CRIME)
+              tag(slide, j, bType)
             else
-              tag(slide, j, EntityType.I_CRIME)
+              tag(slide, j, iType)
 
             if (word.isDefined && !taggedTokenId.contains(word.get.tokenId)) {
               mapWords += (word.get.tokenId -> word.get)
