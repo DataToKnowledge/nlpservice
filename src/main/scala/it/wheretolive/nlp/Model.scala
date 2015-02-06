@@ -61,6 +61,7 @@ object Model {
     corpus: Seq[Word],
     description: Seq[Word])
 
+  
   case class NamedEntities(
     crimes: Seq[String] = Seq(),
     related: Seq[String] = Seq(),
