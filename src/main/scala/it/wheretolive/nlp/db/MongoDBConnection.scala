@@ -85,21 +85,19 @@ trait AnalyzedNewsMongoCollection extends MongoDBConnection {
   def collectionName: String
 
   def fetchBatch(indexed: Boolean = false, batchSize: Int): List[AnalyzedNews] = {
-
-    val result = collection.find("indexed" $eq indexed).
+    val result = collection.find().
       sort(MongoDBObject("id" -> -1)).
       limit(batchSize).map(AnalyzedNewsMapper.fromBSon).toList
     result
   }
 
   def inserted(urlNews: String) = {
-    val query = MongoDBObject("urlNews" -> urlNews)
+    val query = MongoDBObject("news.urlNews" -> urlNews)
     val result = collection.find(query)
     result.size > 0
   }
 
   def save(aNews: AnalyzedNews): Try[Int] = Try {
-    val query = MongoDBObject("urlNews" -> aNews.news.urlNews)
     val result = collection.insert(AnalyzedNewsMapper.toBSon(aNews))
     result.getN
   }
