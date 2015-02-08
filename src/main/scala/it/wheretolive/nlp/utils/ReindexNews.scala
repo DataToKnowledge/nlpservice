@@ -148,12 +148,12 @@ class MongoDbWorker extends Actor with ActorLogging with AnalyzedNewsMongoCollec
   }
 }
 
-object ReindexRunner extends App {
-  import MessageProtocol._
-
-  val config = ConfigFactory.load("nlpservice")
-  val actorSystem = ActorSystem("ReindexRunner",config)
-
-  val reindexActor = actorSystem.actorOf(ReindexNews.props,"reindexNews")
-  reindexActor ! Process
-}
+//object ReindexRunner extends App {
+//  import MessageProtocol._
+//
+//  val config = ConfigFactory.load("nlpservice")
+//  val actorSystem = ActorSystem("ReindexRunner",config)
+//
+//  val reindexActor = actorSystem.actorOf(ReindexNews.props,"reindexNews")
+//  reindexActor ! Process
+//}
