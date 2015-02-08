@@ -3,7 +3,6 @@ package it.wheretolive.nlp.utils
 import akka.actor.{ActorSystem, Props, Actor, ActorLogging}
 import com.typesafe.config.ConfigFactory
 import it.wheretolive.nlp.db.{ WheretoliveNewsIndex, AnalyzedNewsMongoCollection }
-import it.wheretolive.nlp.utils.AnalyzedNewsUtils
 import scala.util._
 import it.wheretolive.nlp.Model._
 
@@ -149,7 +148,7 @@ class MongoDbWorker extends Actor with ActorLogging with AnalyzedNewsMongoCollec
   }
 }
 
-class ReindexRunner extends App {
+object ReindexRunner extends App {
   import MessageProtocol._
 
   val config = ConfigFactory.load("nlpservice")
