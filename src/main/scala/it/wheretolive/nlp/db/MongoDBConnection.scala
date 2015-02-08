@@ -103,7 +103,8 @@ trait AnalyzedNewsMongoCollection extends MongoDBConnection {
   }
 
   def save(aNews: AnalyzedNews): Try[Int] = Try {
-    val result = collection.insert(AnalyzedNewsMapper.toBSon(aNews))
+    val bson = AnalyzedNewsMapper.toBSon(aNews) + ("indexd" -> true)
+    val result = collection.insert(bson)
     result.getN
   }
 
