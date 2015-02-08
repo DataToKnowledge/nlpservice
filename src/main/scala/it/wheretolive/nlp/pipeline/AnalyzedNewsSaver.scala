@@ -51,7 +51,7 @@ class AnalyzedNewsSaver extends Actor with ActorLogging with AnalyzedNewsMongoCo
         focusDate = procNews.news.newsDate.map(_.toString(ISODateTimeFormat.basicDateTime()))
       )
 
-      if (inserted(analyzedNews.news.urlNews)){
+      if (inCollection(analyzedNews.news.urlNews)){
         sendToEndTask(routeSlip, procNews, myself, new Error("new already indexed"))
       } else {
 

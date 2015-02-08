@@ -33,10 +33,10 @@ trait TextProNlpDetector {
 
     corpusTry.map { corpus =>
       val nlp = Nlp(
-        title = title,
-        summary = summary,
-        corpus = corpus.words.getOrElse(Seq()),
-        description = description)
+        title = title.toList,
+        summary = summary.toList,
+        corpus = corpus.words.getOrElse(Seq()).toList,
+        description = description.toList)
 
       val tags = corpus.keywords.
         map(_.map(kv => Tag(kv._1, kv._2)).toSeq).

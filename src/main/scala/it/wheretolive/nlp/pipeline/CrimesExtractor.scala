@@ -40,9 +40,9 @@ class CrimesExtractor extends Actor with ActorLogging with RouteSlipFallible wit
 
         val procCopy = procNews.copy(
           nlp = Option(nlp.copy(
-            title = wordsTitle,
-            summary = wordsSummary,
-            corpus = wordCorpus)))
+            title = wordsTitle.toList,
+            summary = wordsSummary.toList,
+            corpus = wordCorpus.toList)))
 
         sendMessageToNextTask(routeSlip, procCopy)
       }

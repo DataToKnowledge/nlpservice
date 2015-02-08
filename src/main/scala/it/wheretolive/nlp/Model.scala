@@ -24,6 +24,7 @@ object Model {
     nlpAnalyzed: Boolean = false)
 
   case class AnalyzedNews(
+    id: String = "",
     news: CrawledNews,
     nlp: Option[Nlp],
     namedEntities: Option[NamedEntities],
@@ -57,22 +58,22 @@ object Model {
     chunk: String)
 
   case class Nlp(
-    title: Seq[Word],
-    summary: Seq[Word],
-    corpus: Seq[Word],
-    description: Seq[Word])
+    title: List[Word],
+    summary: List[Word],
+    corpus: List[Word],
+    description: List[Word])
 
   case class NamedEntities(
-    crimes: Seq[String] = Seq(),
-    relateds: Seq[String] = Seq(),
-    crimeStems: Seq[String] = Seq(),
-    relatedStems: Seq[String] = Seq(),
-    addresses: Seq[String] = Seq(),
-    persons: Seq[String] = Seq(),
-    locations: Seq[String] = Seq(),
-    geopoliticals: Seq[String] = Seq(),
-    organizations: Seq[String] = Seq(),
-    dates: Seq[String] = Seq())
+    crimes: List[String] = List(),
+    relateds: List[String] = List(),
+    crimeStems: List[String] = List(),
+    relatedStems: List[String] = List(),
+    addresses: List[String] = List(),
+    persons: List[String] = List(),
+    locations: List[String] = List(),
+    geopoliticals: List[String] = List(),
+    organizations: List[String] = List(),
+    dates: List[String] = List())
 
   case class Tag(
     name: String,
