@@ -2,11 +2,14 @@ package it.wheretolive.nlp.utils
 
 import it.wheretolive.nlp.Model.{AnalyzedNews, IndexedNews}
 import it.wheretolive.nlp.pipeline.MessageProtocol.ProcessItem
+import org.joda.time.format.DateTimeFormat
 
 /**
  * Created by fabiofumarola on 02/02/15.
  */
 trait AnalyzedNewsUtils {
+
+  val dateFormatter = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm")
 
   /**
    *
@@ -101,7 +104,7 @@ trait AnalyzedNewsUtils {
       title = aNews.news.title,
       summary = aNews.news.summary,
       corpus = aNews.news.corpus,
-      focusDate = aNews.focusDate,
+      focusDate = aNews.news.newsDate.map(d => dateFormatter.print(d)),
       focusLocation = aNews.focusLocation,
       namedEntities = aNews.namedEntities,
       tags = aNews.tags
