@@ -4,6 +4,7 @@ import com.mongodb.DBObject
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
 import it.wheretolive.nlp.Model
+import it.wheretolive.nlp.pipeline.FocusLocationExtractor
 import org.bson.types.ObjectId
 import org.joda.time.DateTime
 import com.mongodb.casbah.commons.conversions.scala._
@@ -63,7 +64,15 @@ trait MongoDbMappings {
         "focusLocation" -> analyzedNews.focusLocation.map(LocationMapper.toBSon),
         "focusDate" -> analyzedNews.focusDate)
 
-    def fromBSon = ???
+    def fromBSon(dbo: DBObject) =
+      AnalyzedNews(
+        news = dbo.getAs[DBObject]("news").map(FetchedNewsMapper.fromBSon).get,
+        nlp = dbo.getAs[DBObject]("nlp").map(NlpMapper.fromBSon),
+        namedEntities = dbo.getAs[DBObject]("namedEntities").map(NamedEntitiesMapper.fromBSon),
+        tags = dbo.getAs[Seq[DBObject]]("tags").map(seq => seq.map(TagMapper.fromBSon)),
+        focusLocation = dbo.getAs[DBObject]("focusLocation").map(LocationMapper.fromBSon),
+        focusDate = dbo.getAs[String]("focusDate")
+      )
   }
 
   implicit object LocationMapper {
@@ -72,11 +81,22 @@ trait MongoDbMappings {
         "city_name" -> location.city_name,
         "province_name" -> location.province_name,
         "region_name" -> location.region_name,
+        "population" -> location.population,
         "wikipedia_url" -> location.wikipedia_url,
+        "geoname_url" -> location.geoname_url,
         "geo_location" -> location.geo_location
       )
 
-    def fromBSon = ???
+    def fromBSon(dbo: DBObject) =
+      Location(
+        city_name = dbo.getAs[String]("city_name").get,
+        province_name = dbo.getAs[String]("province_name").get,
+        region_name = dbo.getAs[String]("region_name").get,
+        population = dbo.getAs[String]("population").getOrElse("0"),
+        wikipedia_url = dbo.getAs[String]("wikipedia_url").get,
+        geoname_url = dbo.getAs[String]("geoname_url").getOrElse(""),
+        geo_location = dbo.getAs[String]("geo_location").get
+      )
   }
 
   implicit object TagMapper {
@@ -87,7 +107,11 @@ trait MongoDbMappings {
         "score" -> tag.score
       )
 
-    def fromBSon = ???
+    def fromBSon(dbo: DBObject) =
+      Tag(
+        name = dbo.getAs[String]("name").get,
+        score = dbo.getAs[Double]("score").get
+      )
   }
 
   implicit object NamedEntitiesMapper {
@@ -103,7 +127,17 @@ trait MongoDbMappings {
         "dates" -> namedEntites.dates,
         "organizations" -> namedEntites.organizations)
 
-    def fromBSon = ???
+    def fromBSon(dbo: DBObject) =
+      NamedEntities(
+        crimes = dbo.getAs[Seq[String]]("crimes").getOrElse(Seq()),
+        relateds = dbo.getAs[Seq[String]]("relateds").getOrElse(Seq()),
+        addresses = dbo.getAs[Seq[String]]("addresses").getOrElse(Seq()),
+        persons = dbo.getAs[Seq[String]]("persons").getOrElse(Seq()),
+        locations = dbo.getAs[Seq[String]]("locations").getOrElse(Seq()),
+        geopoliticals = dbo.getAs[Seq[String]]("geopoliticals").getOrElse(Seq()),
+        dates = dbo.getAs[Seq[String]]("dates").getOrElse(Seq()),
+        organizations = dbo.getAs[Seq[String]]("organizations").getOrElse(Seq())
+      )
   }
 
   implicit object NlpMapper {
@@ -115,8 +149,13 @@ trait MongoDbMappings {
         "corpus" -> nlp.corpus.map(WordMapper.toBSon),
         "description" -> nlp.description.map(WordMapper.toBSon))
 
-    //FIXME implement
-    def fromBSon = ???
+    def fromBSon(dbo: DBObject) =
+      Nlp(
+        title = dbo.getAs[Seq[DBObject]]("title").map(seq => seq.map(WordMapper.fromBSon)).getOrElse(Seq[Word]()),
+        summary = dbo.getAs[Seq[DBObject]]("summary").map(seq => seq.map(WordMapper.fromBSon)).getOrElse(Seq[Word]()),
+        corpus = dbo.getAs[Seq[DBObject]]("corpus").map(seq => seq.map(WordMapper.fromBSon)).getOrElse(Seq[Word]()),
+        description = dbo.getAs[Seq[DBObject]]("description").map(seq => seq.map(WordMapper.fromBSon)).getOrElse(Seq[Word]())
+      )
   }
 
   implicit object WordMapper {
@@ -134,8 +173,19 @@ trait MongoDbMappings {
         "iobEntity" -> word.iobEntity,
         "chunk" -> word.chunk)
 
-    //FIXME implement
-    def fromBSon = ???
+    def fromBSon(dbo: DBObject) =
+      Word(
+        token = dbo.getAs[String]("token").get,
+        tokenId = dbo.getAs[Int]("tokenId").get,
+        tokenStart = dbo.getAs[Int]("tokenStart").get,
+        tokenEnd = dbo.getAs[Int]("tokenEnd").get,
+        sentence = dbo.getAs[String]("sentence").get,
+        posTag = dbo.getAs[String]("posTag").get,
+        wordNetPos = dbo.getAs[String]("wordNetPos").get,
+        lemma = dbo.getAs[String]("lemma").get,
+        iobEntity = dbo.getAs[String]("iobEntity").get,
+        chunk = dbo.getAs[String]("chunk").get
+      )
   }
 
   implicit object CityMapper {
