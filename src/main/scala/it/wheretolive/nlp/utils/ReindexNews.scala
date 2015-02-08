@@ -101,7 +101,7 @@ class ElasticSearchWorker extends Actor with ActorLogging with WheretoliveNewsIn
 
       val toIndexNews = extractNewsToIndex(aNews)
 
-      indexNews(toIndexNews).onComplete {
+      indexNews(toIndexNews,aNews.news.id).onComplete {
 
         case Success(resp) =>
           send ! ESIndexed(aNews.id)

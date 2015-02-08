@@ -56,9 +56,9 @@ trait WheretoliveNewsIndex extends ElasticSearchConnection {
 
   def documentPath: String
 
-  def indexNews(news: IndexedNews): Future[IndexResponse] = {
+  def indexNews(news: IndexedNews, key: String): Future[IndexResponse] = {
     client.execute {
-      index into documentPath doc ObjectSource(news)
+      index into documentPath doc ObjectSource(news) id key
     }
   }
 }

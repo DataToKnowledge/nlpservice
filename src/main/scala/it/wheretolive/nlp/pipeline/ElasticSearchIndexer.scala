@@ -37,7 +37,7 @@ class ElasticSearchIndexer extends Actor with ActorLogging with RouteSlipFallibl
 
       val newsToIndex = extractNewsToIndex(procNews)
 
-      indexNews(newsToIndex).onComplete {
+      indexNews(newsToIndex, procNews.news.id).onComplete {
 
         case Success(res) =>
           sendMessageToNextTask(routeSlip, procNews.copy(indexId = Option(res.getId)))
