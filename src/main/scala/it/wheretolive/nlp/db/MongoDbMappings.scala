@@ -66,6 +66,7 @@ trait MongoDbMappings {
 
     def fromBSon(dbo: DBObject) =
       AnalyzedNews(
+        id = dbo._id.map(_.toString).get,
         news = dbo.getAs[DBObject]("news").map(FetchedNewsMapper.fromBSon).get,
         nlp = dbo.getAs[DBObject]("nlp").map(NlpMapper.fromBSon),
         namedEntities = dbo.getAs[DBObject]("namedEntities").map(NamedEntitiesMapper.fromBSon),
@@ -129,14 +130,14 @@ trait MongoDbMappings {
 
     def fromBSon(dbo: DBObject) =
       NamedEntities(
-        crimes = dbo.getAs[Seq[String]]("crimes").getOrElse(Seq()),
-        relateds = dbo.getAs[Seq[String]]("relateds").getOrElse(Seq()),
-        addresses = dbo.getAs[Seq[String]]("addresses").getOrElse(Seq()),
-        persons = dbo.getAs[Seq[String]]("persons").getOrElse(Seq()),
-        locations = dbo.getAs[Seq[String]]("locations").getOrElse(Seq()),
-        geopoliticals = dbo.getAs[Seq[String]]("geopoliticals").getOrElse(Seq()),
-        dates = dbo.getAs[Seq[String]]("dates").getOrElse(Seq()),
-        organizations = dbo.getAs[Seq[String]]("organizations").getOrElse(Seq())
+        crimes = dbo.getAs[List[String]]("crimes").getOrElse(List()),
+        relateds = dbo.getAs[List[String]]("relateds").getOrElse(List()),
+        addresses = dbo.getAs[List[String]]("addresses").getOrElse(List()),
+        persons = dbo.getAs[List[String]]("persons").getOrElse(List()),
+        locations = dbo.getAs[List[String]]("locations").getOrElse(List()),
+        geopoliticals = dbo.getAs[List[String]]("geopoliticals").getOrElse(List()),
+        dates = dbo.getAs[List[String]]("dates").getOrElse(List()),
+        organizations = dbo.getAs[List[String]]("organizations").getOrElse(List())
       )
   }
 
@@ -151,10 +152,10 @@ trait MongoDbMappings {
 
     def fromBSon(dbo: DBObject) =
       Nlp(
-        title = dbo.getAs[Seq[DBObject]]("title").map(seq => seq.map(WordMapper.fromBSon)).getOrElse(Seq[Word]()),
-        summary = dbo.getAs[Seq[DBObject]]("summary").map(seq => seq.map(WordMapper.fromBSon)).getOrElse(Seq[Word]()),
-        corpus = dbo.getAs[Seq[DBObject]]("corpus").map(seq => seq.map(WordMapper.fromBSon)).getOrElse(Seq[Word]()),
-        description = dbo.getAs[Seq[DBObject]]("description").map(seq => seq.map(WordMapper.fromBSon)).getOrElse(Seq[Word]())
+        title = dbo.getAs[List[DBObject]]("title").map(seq => seq.map(WordMapper.fromBSon)).getOrElse(List[Word]()),
+        summary = dbo.getAs[List[DBObject]]("summary").map(seq => seq.map(WordMapper.fromBSon)).getOrElse(List[Word]()),
+        corpus = dbo.getAs[List[DBObject]]("corpus").map(seq => seq.map(WordMapper.fromBSon)).getOrElse(List[Word]()),
+        description = dbo.getAs[List[DBObject]]("description").map(seq => seq.map(WordMapper.fromBSon)).getOrElse(List[Word]())
       )
   }
 
