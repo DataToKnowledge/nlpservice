@@ -42,6 +42,8 @@ class AnalyzedNewsSaver extends Actor with ActorLogging with AnalyzedNewsMongoCo
 
       val myself = self
 
+
+
       val analyzedNews = AnalyzedNews(
         news = procNews.news,
         nlp = procNews.nlp,
