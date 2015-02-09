@@ -99,6 +99,21 @@ trait AnalyzedNewsUtils {
   }
 
   def extractNewsToIndex(aNews: AnalyzedNews): IndexedNews = {
+
+    val filteredEntities = aNews.namedEntities.map { ent =>
+      ent.copy(
+        crimes = filterDuplicates(ent.crimes),
+        relateds = filterDuplicates(ent.relateds),
+        crimeStems = filterDuplicates(ent.crimes),
+        relatedStems = filterDuplicates(ent.relateds),
+        addresses = filterDuplicates(ent.addresses),
+        persons = filterDuplicates(ent.persons),
+        locations = filterDuplicates(ent.locations),
+        geopoliticals = filterDuplicates(ent.geopoliticals),
+        organizations = filterDuplicates(ent.organizations)
+      )
+    }
+
     IndexedNews(
       newspaper = Option(matchUrlWebSite(aNews.news.urlWebSite)),
       urlWebSite = aNews.news.urlWebSite,
@@ -109,7 +124,7 @@ trait AnalyzedNewsUtils {
       corpus = aNews.news.corpus,
       focusDate = aNews.news.newsDate.map(d => dateFormatter.print(d)),
       focusLocation = aNews.focusLocation,
-      namedEntities = aNews.namedEntities,
+      namedEntities = filteredEntities,
       tags = aNews.tags
     )
   }
