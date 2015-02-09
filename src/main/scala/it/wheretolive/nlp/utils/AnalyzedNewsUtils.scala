@@ -72,6 +72,9 @@ trait AnalyzedNewsUtils {
     val filteredEntities = procNews.namedEntities.map { ent =>
       ent.copy(
         crimes = filterDuplicates(ent.crimes),
+        relateds = filterDuplicates(ent.relateds),
+        crimeStems = filterDuplicates(ent.crimes),
+        relatedStems = filterDuplicates(ent.relateds),
         addresses = filterDuplicates(ent.addresses),
         persons = filterDuplicates(ent.persons),
         locations = filterDuplicates(ent.locations),
