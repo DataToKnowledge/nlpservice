@@ -1,11 +1,11 @@
 package it.wheretolive.nlp.detector.textpro
 
 import java.io._
-import java.nio.charset.Charset
 
-import scala.io.{Codec, Source}
+import scala.concurrent.Future
+import scala.io.{ Codec, Source }
 import scala.sys.process._
-import scala.util.{Random, Try}
+import scala.util.{ Random, Try }
 
 case class TextProFailure(msg: String) extends Throwable
 
@@ -47,10 +47,13 @@ class TextProExecutor(basePath: String) {
 
       //deleteFile(inputFolder, inputFile)
       val content = getContent(outputFile)
+
       //deleteFile(outputFolder, outputFile)
       content
     }
   }
+
+
 
   private def getContent(path: Try[String]): Try[List[String]] =
     path.map { p =>
@@ -58,7 +61,7 @@ class TextProExecutor(basePath: String) {
     }
 
   private def deleteFile(folder: String, path: Try[String]): Boolean =
-    path.map{ p =>
+    path.map { p =>
       val file = new File(folder + p)
       file.delete()
     }.isSuccess
@@ -83,7 +86,7 @@ class TextProExecutor(basePath: String) {
     inputFile.map { input =>
       val command = baseCommand + outputFolder + " " + inputFolder + input
       val result = Process(command, None, (variableName, basePath)).!
-
+      wait(400)
       if (result != 0)
         throw new TextProFailure("could not run TextPro")
 
