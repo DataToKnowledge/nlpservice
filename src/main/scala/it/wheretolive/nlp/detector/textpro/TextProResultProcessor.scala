@@ -21,6 +21,14 @@ object TextProResultProcessor {
           )
         )
 
+      case fileName :: fieldsHeader :: fields =>
+        Success(
+          KeywordsWords(
+              keywords = Success(Map.empty[String,Double]),
+              words = extractWords(fieldsHeader,fields)
+          )
+        )
+
       case _ =>
         Failure(new Throwable("TextPro does not output any result"))
     }
