@@ -27,8 +27,9 @@ trait TextProNlpDetector {
       flatMap(TextProResultProcessor.parseText)
       .flatMap(_.words).getOrElse(Seq[Word]())
 
-    val corpusTry = textProCaller.tagText(news.corpus).
-      flatMap(TextProResultProcessor.parseText)
+    val result = textProCaller.tagText(news.corpus)
+
+    val corpusTry = result.flatMap(TextProResultProcessor.parseText)
 
 
     corpusTry.map { corpus =>
