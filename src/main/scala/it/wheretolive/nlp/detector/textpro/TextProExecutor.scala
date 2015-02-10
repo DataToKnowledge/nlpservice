@@ -47,6 +47,7 @@ class TextProExecutor(basePath: String) {
 
       //deleteFile(inputFolder, inputFile)
       val content = getContent(outputFile)
+      println("content is success " + content.isSuccess)
 
       //deleteFile(outputFolder, outputFile)
       content
@@ -82,9 +83,9 @@ class TextProExecutor(basePath: String) {
    */
   private def processFile(inputFile: Try[String]): Try[String] =
     inputFile.map { input =>
+      println(input)
       val command = baseCommand + outputFolder + " " + inputFolder + input
       val result = Process(command, None, (variableName, basePath)).!
-      wait(400)
       if (result != 0)
         throw new TextProFailure("could not run TextPro")
 
