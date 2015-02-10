@@ -1,6 +1,7 @@
 package it.wheretolive.nlp.detector.textpro
 
-import java.io.{BufferedWriter, File, FileWriter}
+import java.io._
+import java.nio.charset.Charset
 
 import scala.io.{Codec, Source}
 import scala.sys.process._
@@ -68,9 +69,11 @@ class TextProExecutor(basePath: String) {
    * @return the name of the input file created
    */
   private def createInputFile(inputFile: String, content: String): Try[String] = Try {
-    val bw = new BufferedWriter(new FileWriter(inputFolder + inputFile))
+    val out = new OutputStreamWriter(new FileOutputStream(inputFolder + inputFile),"ISO-8859-1")
+    val bw = new BufferedWriter(out)
     bw.write(content)
     bw.close()
+    out.close()
     inputFile
   }
 
