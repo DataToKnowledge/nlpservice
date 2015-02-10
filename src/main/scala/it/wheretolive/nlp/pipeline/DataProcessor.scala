@@ -24,7 +24,7 @@ class DataProcessor extends Actor with ActorLogging with RouteSlipFallible {
   def config = context.system.settings.config.getConfig("nlpservice")
 
   val dataProducer = context.actorOf(DataProducer.props(), "dataProducer")
-  val textProRouter = context.actorOf(TextPro.props(), "textProActorPool")
+  val textProRouter = context.actorOf(TextPro.routerProps(), "textProActorPool")
   val crimesRouter = context.actorOf(CrimesExtractor.routerProps(), "crimesExtractorPool")
   val namedEntitiesFillerRouter = context.actorOf(NamedEntitiesFiller.routerProps(), "namedEntitiesFillerRouter")
   val focusLocationRouter = context.actorOf(FocusLocationExtractor.routerProps(), "focusLocationExtractorRouter")
