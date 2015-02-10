@@ -82,7 +82,6 @@ class TextProExecutor(basePath: String) {
    */
   private def processFile(inputFile: Try[String]): Try[String] =
     inputFile.map { input =>
-      println(input)
       val command = baseCommand + outputFolder + " " + inputFolder + input
       val result = Process(command, None, (variableName, basePath)).!
       if (result != 0)
