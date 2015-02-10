@@ -69,11 +69,9 @@ class TextProExecutor(basePath: String) {
    * @return the name of the input file created
    */
   private def createInputFile(inputFile: String, content: String): Try[String] = Try {
-    val out = new OutputStreamWriter(new FileOutputStream(inputFolder + inputFile),"ISO-8859-1")
-    val bw = new BufferedWriter(out)
+    val bw = new BufferedWriter(new FileWriter(inputFolder + inputFile))
     bw.write(content)
     bw.close()
-    out.close()
     inputFile
   }
 
