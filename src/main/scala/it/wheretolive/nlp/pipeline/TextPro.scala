@@ -45,6 +45,7 @@ class TextPro extends Actor with ActorLogging with TextProNlpDetector with Route
           )
 
         case Failure(ex) =>
+          ex.printStackTrace()
           sendToEndTask(routeSlip, procNews, mySelf, ex)
       }
   }
