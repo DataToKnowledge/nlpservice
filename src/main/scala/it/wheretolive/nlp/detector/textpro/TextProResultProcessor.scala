@@ -30,7 +30,7 @@ object TextProResultProcessor {
         )
 
       case _ =>
-        Failure(new Throwable("TextPro does not output any result"))
+        Failure(new Throwable(s"TextPro does not output any result for input \n $lines"))
     }
   }
 
