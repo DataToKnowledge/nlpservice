@@ -53,8 +53,6 @@ class TextProExecutor(basePath: String) {
     }
   }
 
-
-
   private def getContent(path: Try[String]): Try[List[String]] =
     path.map { p =>
       Source.fromFile(outputFolder + p)(Codec.ISO8859).getLines().toList

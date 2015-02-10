@@ -28,6 +28,7 @@ trait TextProNlpDetector {
       .flatMap(_.words).getOrElse(Seq[Word]())
 
     val result = textProCaller.tagText(news.corpus)
+    result.foreach(l => println(l.mkString(" \n ")))
 
     val corpusTry = result.flatMap(TextProResultProcessor.parseText)
 
