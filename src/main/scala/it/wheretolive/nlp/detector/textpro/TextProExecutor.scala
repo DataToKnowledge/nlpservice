@@ -45,9 +45,9 @@ class TextProExecutor(basePath: String) {
       val inputFile = createInputFile(fileName, text)
       val outputFile = processFile(inputFile)
 
-      deleteFile(inputFolder, inputFile)
+      //deleteFile(inputFolder, inputFile)
       val content = getContent(outputFile)
-      deleteFile(outputFolder, outputFile)
+      //deleteFile(outputFolder, outputFile)
       content
     }
   }
