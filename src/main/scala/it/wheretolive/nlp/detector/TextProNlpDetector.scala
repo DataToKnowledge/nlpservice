@@ -27,7 +27,7 @@ trait TextProNlpDetector {
       flatMap(TextProResultProcessor.parseText)
       .flatMap(_.words).getOrElse(Seq[Word]())
 
-    println(news.corpus)
+    println("corpus " + news.corpus)
     val result = textProCaller.tagText(news.corpus)
     result.foreach(l => println(l.mkString(" \n ")))
 
