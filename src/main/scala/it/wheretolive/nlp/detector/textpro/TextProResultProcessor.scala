@@ -30,7 +30,7 @@ object TextProResultProcessor {
         )
 
       case _ =>
-        Failure(new Throwable(s"TextPro does not output any result for input ${lines.size}"))
+        Failure(new Throwable(s"TextPro does not output any result for input size ${lines.size}"))
     }
   }
 
