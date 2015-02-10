@@ -67,7 +67,7 @@ class DataProcessor extends Actor with ActorLogging with RouteSlipFallible {
       continueProcessing()
 
     case RouteSlipMessageFailure(message: ProcessItem, failedTask, failure) =>
-      log.error("Error processing news with title \"{}\" from actor {} with error {}", message.news.title,failedTask.path, failure.getMessage)
+      log.error("Error processing news with title \"{}\" from actor {} with error {}", message.news.title,failedTask.path, failure.getStackTrace.mkString("\n"))
       allProcessingError += 1
       currentItemCount -=1
       continueProcessing()
