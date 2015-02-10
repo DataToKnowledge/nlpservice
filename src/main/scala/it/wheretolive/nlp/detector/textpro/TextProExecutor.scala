@@ -2,7 +2,7 @@ package it.wheretolive.nlp.detector.textpro
 
 import java.io.{BufferedWriter, File, FileWriter}
 
-import scala.io.Source
+import scala.io.{Codec, Source}
 import scala.sys.process._
 import scala.util.{Random, Try}
 
@@ -53,7 +53,7 @@ class TextProExecutor(basePath: String) {
 
   private def getContent(path: Try[String]): Try[List[String]] =
     path.map { p =>
-      Source.fromFile(outputFolder + p).getLines().toList
+      Source.fromFile(outputFolder + p)(Codec.ISO8859).getLines().toList
     }
 
   private def deleteFile(folder: String, path: Try[String]): Boolean =
