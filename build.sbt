@@ -50,3 +50,5 @@ libraryDependencies ++= Seq(
 )
 
 javaOptions += "-Xms512m -Xmx2G"
+
+mainClass in Compile := Some("it.dtk.nlp.utils.ReindexRunner")
