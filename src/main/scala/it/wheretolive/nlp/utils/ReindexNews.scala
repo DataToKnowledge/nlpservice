@@ -154,12 +154,12 @@ class MongoDbWorker extends Actor with ActorLogging with AnalyzedNewsMongoCollec
  *
  * 1. set all the analyzed news as indexed false and reindex all the news
  */
-//object ReindexRunner extends App {
-//  import MessageProtocol._
-//
-//  val config = ConfigFactory.load("nlpservice")
-//  val actorSystem = ActorSystem("ReindexRunner",config)
-//
-//  val reindexActor = actorSystem.actorOf(ReindexNews.props,"reindexNews")
-//  reindexActor ! Process
-//}
+object ReindexRunner extends App {
+  import MessageProtocol._
+
+  val config = ConfigFactory.load("nlpservice")
+  val actorSystem = ActorSystem("ReindexRunner",config)
+
+  val reindexActor = actorSystem.actorOf(ReindexNews.props,"reindexNews")
+  reindexActor ! Process
+}
