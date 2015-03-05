@@ -51,4 +51,4 @@ libraryDependencies ++= Seq(
 
 javaOptions += "-Xms512m -Xmx2G"
 
-mainClass in Compile := Some("it.wheretolive.nlp.NlpRunner")
+mainClass in Compile := Some("it.wheretolive.nlp.pipeline.NlpRunner")
