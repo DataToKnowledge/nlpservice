@@ -35,7 +35,7 @@ class ElasticSearchIndexer extends Actor with ActorLogging with RouteSlipFallibl
 
       val myself = self
 
-      val newsToIndex = extractNewsToIndex(procNews)
+      val newsToIndex = extractNewsToIndexFlatten(procNews)
 
       indexNews(newsToIndex, procNews.news.id).onComplete {
 

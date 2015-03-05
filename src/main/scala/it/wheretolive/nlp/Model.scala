@@ -45,6 +45,34 @@ object Model {
     namedEntities: Option[NamedEntities],
     tags: Option[Seq[Tag]])
 
+  case class IndexedNewsFlatten(
+    newspaper: Option[String],
+    urlWebSite: String,
+    urlNews: String,
+    imageLink: Option[String],
+    title: String,
+    summary: String,
+    corpus: String,
+    focusDate: Option[String],
+    //focuslocation info
+    cityName: Option[String],
+    provinceName: Option[String],
+    regionName: Option[String],
+    population: Option[String],
+    geoLocation: Option[String],
+    //named entities
+    crimes: List[String] = List(),
+    crimeStems: List[String] = List(),
+    relateds: List[String] = List(),
+    relatedStems: List[String] = List(),
+    addresses: List[String] = List(),
+    persons: List[String] = List(),
+    locations: List[String] = List(),
+    geopoliticals: List[String] = List(),
+    organizations: List[String] = List(),
+    dates: List[String] = List(),
+    tags: Option[Seq[Tag]])
+
   case class Word(
     tokenId: Int,
     sentence: String,
@@ -93,30 +121,6 @@ object Model {
     id: String,
     name: String,
     _type: String)
-
-  //  case class NewsToIndex(
-  //    urlWebsite: String,
-  //    urlNews: String,
-  //    title: String,
-  //    summary: String,
-  //    corpus: String,
-  //    date: String,
-  //    crimes: Seq[String],
-  //    persons: Seq[String],
-  //    locations: Seq[String],
-  //    organizations: Seq[String],
-  //    geopoliticals: Seq[String],
-  //    mainLocation: String,
-  //    position: GeoPoint,
-  //    nlp_tags: Seq[WordCount])
-
-  //  case class GeoPoint(
-  //    lat: Double,
-  //    lon: Double)
-
-  //  case class WordCount(
-  //    name: String,
-  //    rank: Double)
 
   //from GFoss Index
   case class Location(

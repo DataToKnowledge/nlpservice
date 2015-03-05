@@ -99,7 +99,7 @@ class ElasticSearchWorker extends Actor with ActorLogging with WheretoliveNewsIn
 
       val send = sender
 
-      val toIndexNews = extractNewsToIndex(aNews)
+      val toIndexNews = extractNewsToIndexFlatten(aNews)
 
       indexNews(toIndexNews,aNews.news.id).onComplete {
 
@@ -132,6 +132,7 @@ class MongoDbWorker extends Actor with ActorLogging with AnalyzedNewsMongoCollec
   val batchSize = 50
 
   override def receive: Receive = {
+
     case Fetch(size) =>
       sender ! Data(fetchBatch(false, size))
 
@@ -148,6 +149,11 @@ class MongoDbWorker extends Actor with ActorLogging with AnalyzedNewsMongoCollec
   }
 }
 
+/**
+ * this method can be used to reindex all the news in the analyzed news collection
+ *
+ * 1. set all the analyzed news as indexed false and reindex all the news
+ */
 //object ReindexRunner extends App {
 //  import MessageProtocol._
 //
