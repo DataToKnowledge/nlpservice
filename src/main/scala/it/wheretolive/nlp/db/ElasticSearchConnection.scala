@@ -1,18 +1,21 @@
 package it.wheretolive.nlp.db
 
-import com.sksamuel.elastic4s.{ElasticsearchClientUri, ElasticClient}
+import javax.naming.directory.SearchResult
+
+import com.sksamuel.elastic4s.{SearchType, ElasticsearchClientUri, ElasticClient}
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.source.ObjectSource
 import it.wheretolive.nlp.Model._
+import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.action.index.IndexResponse
+import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.index.query.MatchQueryBuilder
-import org.json4s.{DefaultFormats, _}
+import org.json4s.{ DefaultFormats, _ }
 import org.json4s.jackson.JsonMethods._
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import org.elasticsearch.common.settings.ImmutableSettings
-
 
 /**
  * Created by fabiofumarola on 11/01/15.
@@ -27,7 +30,7 @@ trait ElasticSearchConnection {
 
   val settings = ImmutableSettings.settingsBuilder().put("cluster.name", clusterName.getOrElse("")).build()
   val uri = ElasticsearchClientUri(s"elasticsearch://$host:$port")
-  val client = ElasticClient.remote(settings,uri)
+  val client = ElasticClient.remote(settings, uri)
 }
 
 trait GeodataGFossIndex extends ElasticSearchConnection {
@@ -41,14 +44,14 @@ trait GeodataGFossIndex extends ElasticSearchConnection {
   def documentPath: String
 
   //TODO change to future
-  def searchLocation(name: String, maxCount: Int = 1): Array[Location]= {
-      val result = client.execute {
-        search in documentPath limit maxCount query {
-          matchQuery("city_name", name).operator(MatchQueryBuilder.Operator.AND)
-        }
-      }.map(_.getHits.hits().map(r => parse(r.getSourceAsString).extract[Location]))
+  def searchLocation(name: String, maxCount: Int = 1): Array[Location] = {
+    val result = client.execute {
+      search in documentPath limit maxCount query {
+        matchQuery("city_name", name).operator(MatchQueryBuilder.Operator.AND)
+      }
+    }.map(_.getHits.hits().map(r => parse(r.getSourceAsString).extract[Location]))
 
-      result.await
+    result.await
   }
 }
 
@@ -62,9 +65,24 @@ trait WheretoliveNewsIndex extends ElasticSearchConnection {
     }
   }
 
+  def searchByTitle(title: String): Future[SearchResponse] = {
+    client.execute {
+      search in documentPath rawQuery {
+        s"""{
+          |    "query": {
+          |        "match_phrase": {
+          |         "title": $title
+          |        }
+          |    }
+          |}"""
+      }
+    }
+  }
+
   def indexNews(news: IndexedNewsFlatten, key: String): Future[IndexResponse] = {
     client.execute {
       index into documentPath doc ObjectSource(news) id key
     }
   }
+
 }
