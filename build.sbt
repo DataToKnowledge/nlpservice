@@ -14,7 +14,6 @@ enablePlugins(JavaAppPackaging)
 
 bashScriptConfigLocation := Some("${app_home}/../conf/jvmopts")
 
-
 resolvers ++= Seq(
   "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
   "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
